@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BM Home — Halı Renk Atölyesi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="https://www.bmhome.com.tr" target="_blank" rel="noopener" aria-label="BM Home">
+      <!-- Brand mark: typographic wordmark; replace with <img class="brand-logo" src="../assets/brand/bmhome-logo.png"> when official logo available -->
+      <span class="brand-mark">
+        <span class="brand-mark-bm">BM</span>
+        <span class="brand-mark-home">HOME</span>
+      </span>
+      <span class="brand-sep" aria-hidden="true"></span>
+      <span class="brand-title">
+        <span class="brand-eyebrow">Halı Renk Atölyesi</span>
+        <span class="brand-sub">Müşteriye özel kombinasyon · Fabrika SKU</span>
+      </span>
+    </a>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" role="tab" data-mode="studio" aria-selected="true">Studio</button>
+      <button class="tab" role="tab" data-mode="finder" aria-selected="false">Renk → Halı</button>
+    </nav>
+    <div class="topbar-actions" id="topbarActions">
+      <span class="powered-by" title="Bu otomasyon Levn tarafından geliştirilmiştir">
+        <span class="pb-label">Powered by</span>
+        <span class="pb-brand">Levn<span class="pb-dot">·</span>Otomation</span>
+      </span>
+    </div>
+  </header>
+
+  <!-- ============ STUDIO MODU ============ -->
+  <main class="mode-panel" id="studioPanel" data-active="true">
+    <section class="picker-pane" aria-label="Halı seç">
+      <div class="pane-header">
+        <h2>Halı Seç</h2>
+        <span class="result-count" id="studioPickerCount"></span>
+      </div>
+      <div class="picker-controls">
+        <input type="search" id="rugSearch" placeholder="Desen adı, SKU ya da koleksiyon…" aria-label="Halı ara">
+        <select id="rugCollectionFilter" aria-label="Koleksiyon filtresi">
+          <option value="">Tüm koleksiyonlar</option>
+        </select>
+      </div>
+      <div class="rug-picker-grid" id="rugPickerGrid"></div>
+    </section>
+
+    <section class="editor-pane" aria-label="Renk düzenleyici">
+      <div class="editor-empty" id="editorEmpty">
+        <div class="editor-empty-inner">
+          <div class="editor-empty-icon">◈</div>
+          <h3>Bir halı seçin</h3>
+          <p>Soldaki listeden bir halı seçerek renklerini özelleştirmeye başlayın.</p>
+        </div>
+      </div>
+
+      <div class="editor-content" id="editorContent" hidden>
+        <div class="editor-header">
+          <div class="editor-rug-info">
+            <h2 id="editorTitle"></h2>
+            <div class="editor-subline">
+              <span class="rug-collection" id="editorCollection"></span>
+              <a id="editorProductLink" href="#" target="_blank" rel="noopener">Ürün sayfasını aç ↗</a>
+            </div>
+          </div>
+          <div class="editor-actions">
+            <button class="btn-ai-lock" id="aiColorizeBtn" type="button"
+                    aria-disabled="true"
+                    title="Yakında: AI ile halıyı gerçek renklerde göster">
+              <span class="ai-lock-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="7" width="10" height="7" rx="1.5"/>
+                  <path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>
+                </svg>
+              </span>
+              <span class="ai-lock-label">
+                <span class="ai-lock-title">AI ile Renklendir</span>
+                <span class="ai-lock-sub">Yakında</span>
+              </span>
+            </button>
+            <button class="btn-ghost" id="editorPrint" type="button">Çıktı al / PDF</button>
+            <button class="btn-ghost" id="editorReset" type="button">Orijinale döndür</button>
+          </div>
+          <div class="ai-status" id="aiStatus" aria-live="polite"></div>
+        </div>
+
+        <div class="editor-grid">
+          <div class="editor-preview">
+            <div class="rug-preview-image" id="rugPreviewImage">
+              <div class="preview-badge" id="previewBadge" hidden>
+                <span class="preview-badge-icon">⚠︎</span>
+                <span>Görsel orijinal renkleri gösteriyor</span>
+              </div>
+            </div>
+            <div class="rug-preview-caption" id="rugPreviewCaption">Referans görsel (orijinal renklerle)</div>
+          </div>
+
+          <div class="editor-panel">
+            <div class="sku-card">
+              <div class="sku-label">Üretim Kodu</div>
+              <div class="sku-value" id="skuValue"></div>
+              <div class="sku-actions">
+                <button class="btn-primary" id="skuCopy" type="button">Kopyala</button>
+                <span class="sku-status" id="skuStatus"></span>
+              </div>
+              <div class="sku-original" id="skuOriginal"></div>
+            </div>
+
+            <div class="existing-match" id="existingMatch" hidden></div>
+
+            <div class="slots-wrap">
+              <div class="slots-header">
+                <span>Renk Slotları</span>
+                <span class="slots-hint" id="slotsHint">Değiştirmek için bir slota dokunun</span>
+              </div>
+              <div class="slots-grid" id="slotsGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="similar-wrap">
+          <div class="similar-section">
+            <div class="similar-header">
+              <h3>Aynı desenin diğer renkleri</h3>
+              <span class="result-count" id="sameDesignCount"></span>
+            </div>
+            <div class="similar-row" id="sameDesignRow"></div>
+          </div>
+
+          <div class="similar-section">
+            <div class="similar-header">
+              <h3>Bu paletle uyumlu diğer halılar</h3>
+              <span class="result-count" id="samePaletteCount"></span>
+            </div>
+            <div class="similar-row" id="samePaletteRow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FINDER MODU (Renk → Halı) ============ -->
+  <main class="mode-panel" id="finderPanel">
+    <section class="colors-pane" aria-label="Renk paleti">
+      <div class="pane-header">
+        <h2>Renkler</h2>
+        <div class="controls">
+          <input type="search" id="colorSearch" placeholder="Renk ara…" aria-label="Renk ara">
+          <label class="verified-toggle">
+            <input type="checkbox" id="verifiedOnly" checked>
+            Yalnızca doğrulanmış
+          </label>
+        </div>
+      </div>
+      <div class="finder-selection" id="finderSelection" aria-live="polite">
+        <span class="selection-label">Seçilen:</span>
+        <div class="selected-chips" id="selectedChips"></div>
+        <button id="clearBtn" class="btn-ghost" type="button" hidden>Temizle</button>
+      </div>
+      <div class="color-grid" id="colorGrid" role="listbox" aria-multiselectable="true"></div>
+    </section>
+
+    <section class="rugs-pane" aria-label="Uyumlu halılar">
+      <div class="pane-header">
+        <h2 id="rugsTitle">Halılar</h2>
+        <span class="result-count" id="resultCount"></span>
+      </div>
+      <div class="rug-grid" id="rugGrid"></div>
+      <div class="empty-state" id="emptyState">
+        Başlamak için soldan bir veya birkaç renk seçin.
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ RENK PALET POPOVER (Studio slot seçimi için) ============ -->
+  <div class="palette-popover" id="palettePopover" hidden>
+    <div class="palette-backdrop" id="paletteBackdrop"></div>
+    <div class="palette-dialog" role="dialog" aria-label="Renk seç">
+      <div class="palette-header">
+        <h3 id="paletteTitle">Renk seç</h3>
+        <button class="btn-ghost" id="paletteClose" type="button" aria-label="Kapat">✕</button>
+      </div>
+      <div class="palette-controls">
+        <input type="search" id="paletteSearch" placeholder="Renk ara…" aria-label="Renk ara">
+        <label class="verified-toggle">
+          <input type="checkbox" id="paletteVerifiedOnly" checked>
+          Yalnızca doğrulanmış
+        </label>
+      </div>
+      <div class="palette-grid" id="paletteGrid"></div>
+    </div>
+  </div>
+
+  <!-- ============ PRINT SHEET (sadece print modunda görünür) ============ -->
+  <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

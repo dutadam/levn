@@ -1,0 +1,34 @@
+# macOS
+.DS_Store
+._*
+
+# Python / build artefacts
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE / tooling
+.vscode/
+.idea/
+*.swp
+.claude/
+
+# Local sunucu scratch alanları (repo'ya girmemeli)
+/tmp/
+*.log
+
+# Proje-özel cache/artefakt
+artifacts/.tmp/
+scripts/.cache/
+
+# Scraper / otomasyon çıktıları (büyük + yeniden üretilebilir)
+# Sadece yayında kullanılanlar repo'da:
+# - data/*.json
+# - assets/colors/*.jpg
+# - assets/brand/
+# İstersen aşağıdakileri blok altına al:
+# artifacts/raw/
+# artifacts/raw_html/
+# artifacts/crops/
