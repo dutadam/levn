@@ -227,6 +227,23 @@ h1.display, h2.display, h3.display {
   grid-template-columns: 420px 1fr;
 }
 
+/* ============ PANE TOGGLE (mobilde aç/kapat) ============ */
+.pane-toggle {
+  display: none;
+  border: 0; background: transparent;
+  color: var(--text-muted);
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.25s var(--ease), background 0.2s;
+  flex-shrink: 0;
+}
+.pane-toggle:hover { background: var(--bg-2); }
+.pane-toggle svg { display: block; }
+/* Collapsed: chevron rotated up */
+.picker-pane.collapsed .pane-toggle,
+.colors-pane.collapsed .pane-toggle { transform: rotate(180deg); }
+
 /* ============ PANE HEADERS ============ */
 .pane-header {
   display: flex;
@@ -1667,14 +1684,41 @@ h1.display, h2.display, h3.display {
     grid-template-rows: auto;
   }
 
+  /* ---- Pane toggle visible on mobile ---- */
+  .pane-toggle { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+
   /* ---- Picker / Colors pane ---- */
   .picker-pane, .colors-pane {
-    max-height: 40vh;
+    max-height: 50vh;
     overflow-y: auto;
     border-right: none;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
+    transition: max-height 0.3s var(--ease);
   }
+  /* Collapsed: sadece header göster */
+  .picker-pane.collapsed,
+  .colors-pane.collapsed {
+    max-height: 56px;
+    overflow: hidden;
+  }
+  .picker-pane.collapsed .picker-controls,
+  .picker-pane.collapsed .rug-picker-grid,
+  .colors-pane.collapsed .finder-selection,
+  .colors-pane.collapsed .color-grid,
+  .colors-pane.collapsed .controls {
+    display: none;
+  }
+
+  /* ---- Editor empty: mobilde minimal ---- */
+  .editor-empty {
+    padding: 24px 16px;
+    min-height: 0;
+    height: auto;
+  }
+  .editor-empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .editor-empty h3 { font-size: 20px; }
+  .editor-empty p { font-size: 13px; }
 
   /* ---- Editor pane ---- */
   .editor-pane {

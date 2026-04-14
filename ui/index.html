@@ -41,6 +41,9 @@
       <div class="pane-header">
         <h2>Halı Seç</h2>
         <span class="result-count" id="studioPickerCount"></span>
+        <button class="pane-toggle" id="pickerToggle" type="button" aria-label="Paneli aç/kapat">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg>
+        </button>
       </div>
       <div class="picker-controls">
         <input type="search" id="rugSearch" placeholder="Desen adı, SKU ya da koleksiyon…" aria-label="Halı ara">
@@ -56,7 +59,7 @@
         <div class="editor-empty-inner">
           <div class="editor-empty-icon">◈</div>
           <h3>Bir halı seçin</h3>
-          <p>Soldaki listeden bir halı seçerek renklerini özelleştirmeye başlayın.</p>
+          <p>Yukarıdaki listeden bir halı seçerek renklerini özelleştirmeye başlayın.</p>
         </div>
       </div>
 
@@ -157,6 +160,9 @@
             Yalnızca doğrulanmış
           </label>
         </div>
+        <button class="pane-toggle" id="colorsToggle" type="button" aria-label="Paneli aç/kapat">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg>
+        </button>
       </div>
       <div class="finder-selection" id="finderSelection" aria-live="polite">
         <span class="selection-label">Seçilen:</span>
@@ -173,7 +179,7 @@
       </div>
       <div class="rug-grid" id="rugGrid"></div>
       <div class="empty-state" id="emptyState">
-        Başlamak için soldan bir veya birkaç renk seçin.
+        Başlamak için yukarıdan bir veya birkaç renk seçin.
       </div>
     </section>
   </main>

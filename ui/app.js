@@ -36,6 +36,20 @@ async function init() {
       requestAnimationFrame(() => openRugInStudio(rug || productId));
     });
 
+    // Mobil: panel collapse toggle'ları
+    const pickerToggle = document.getElementById("pickerToggle");
+    const colorsToggle = document.getElementById("colorsToggle");
+    if (pickerToggle) {
+      pickerToggle.addEventListener("click", () => {
+        document.querySelector(".picker-pane")?.classList.toggle("collapsed");
+      });
+    }
+    if (colorsToggle) {
+      colorsToggle.addEventListener("click", () => {
+        document.querySelector(".colors-pane")?.classList.toggle("collapsed");
+      });
+    }
+
     switchMode("studio");
   } catch (err) {
     document.body.innerHTML = `<div style="padding:40px;font-family:sans-serif;">

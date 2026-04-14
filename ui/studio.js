@@ -115,15 +115,16 @@ function selectRug(rug) {
   studio.workingCodes = [...codes];
   renderPicker();     // re-render to highlight active
   renderEditor();
-  // Mobilde editor'e scroll — picker altında kalan editor'ü görünür yap
+  // Mobilde: picker'ı daralt + editor'e scroll
   if (window.innerWidth <= 900) {
+    document.querySelector(".picker-pane")?.classList.add("collapsed");
     setTimeout(() => {
       const el = document.querySelector(".editor-header") || document.getElementById("editorContent");
       if (el) {
         const y = el.getBoundingClientRect().top + window.scrollY - 8;
         window.scrollTo({ top: y, behavior: "smooth" });
       }
-    }, 100);
+    }, 120);
   }
 }
 
