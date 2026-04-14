@@ -36,18 +36,57 @@ async function init() {
       requestAnimationFrame(() => openRugInStudio(rug || productId));
     });
 
-    // Mobil: panel collapse toggle'ları
+    // Mobil: panel collapse toggle'ları + karşılıklı aç/kapa
     const pickerToggle = document.getElementById("pickerToggle");
     const colorsToggle = document.getElementById("colorsToggle");
     if (pickerToggle) {
       pickerToggle.addEventListener("click", () => {
-        document.querySelector(".picker-pane")?.classList.toggle("collapsed");
+        const picker = document.querySelector(".picker-pane");
+        const editor = document.querySelector(".editor-pane");
+        if (!picker) return;
+        const opening = picker.classList.contains("collapsed");
+        picker.classList.toggle("collapsed");
+        // Picker açılıyorsa editor'ü collapse et, kapanıyorsa aç
+        if (opening && editor) editor.classList.add("collapsed");
+        else if (editor) editor.classList.remove("collapsed");
       });
     }
     if (colorsToggle) {
       colorsToggle.addEventListener("click", () => {
-        document.querySelector(".colors-pane")?.classList.toggle("collapsed");
+        const colors = document.querySelector(".colors-pane");
+        const rugs = document.querySelector(".rugs-pane");
+        if (!colors) return;
+        const opening = colors.classList.contains("collapsed");
+        colors.classList.toggle("collapsed");
+        if (opening && rugs) rugs.classList.add("collapsed");
+        else if (rugs) rugs.classList.remove("collapsed");
       });
+    }
+
+    // Mobilde başlangıçta alt panelleri collapse et
+    if (window.innerWidth <= 900) {
+      document.querySelector(".editor-pane")?.classList.add("collapsed");
+      document.querySelector(".rugs-pane")?.classList.add("collapsed");
+      const ecb = document.getElementById("editorCollapsedBar");
+      if (ecb) ecb.hidden = false;
+
+      // Alt panele tıklayınca: üstü kapat, altı aç
+      const editorPane = document.querySelector(".editor-pane");
+      const rugsPane = document.querySelector(".rugs-pane");
+      if (editorPane) {
+        editorPane.addEventListener("click", (e) => {
+          if (!editorPane.classList.contains("collapsed")) return;
+          editorPane.classList.remove("collapsed");
+          document.querySelector(".picker-pane")?.classList.add("collapsed");
+        });
+      }
+      if (rugsPane) {
+        rugsPane.addEventListener("click", (e) => {
+          if (!rugsPane.classList.contains("collapsed")) return;
+          rugsPane.classList.remove("collapsed");
+          document.querySelector(".colors-pane")?.classList.add("collapsed");
+        });
+      }
     }
 
     switchMode("studio");

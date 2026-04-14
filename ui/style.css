@@ -1689,7 +1689,7 @@ h1.display, h2.display, h3.display {
 
   /* ---- Picker / Colors pane ---- */
   .picker-pane, .colors-pane {
-    max-height: 50vh;
+    max-height: calc(100vh - var(--topbar-h) - 56px);
     overflow-y: auto;
     border-right: none;
     border-bottom: 1px solid var(--border);
@@ -1709,6 +1709,43 @@ h1.display, h2.display, h3.display {
   .colors-pane.collapsed .controls {
     display: none;
   }
+
+  /* Alt paneller collapsed: ince bar */
+  .editor-pane.collapsed,
+  .rugs-pane.collapsed {
+    max-height: 48px;
+    overflow: hidden;
+    flex: 0 0 auto;
+    cursor: pointer;
+    border-top: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  .editor-pane.collapsed .editor-content,
+  .editor-pane.collapsed .editor-empty,
+  .rugs-pane.collapsed .rug-grid,
+  .rugs-pane.collapsed .result-count {
+    display: none;
+  }
+  /* Collapsed bar: sadece collapsed modda görünür */
+  .editor-collapsed-bar {
+    display: none;
+  }
+  .editor-pane.collapsed .editor-collapsed-bar {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: var(--font-serif);
+    color: var(--text-muted);
+  }
+  .ecb-icon {
+    font-size: 10px;
+    opacity: 0.5;
+  }
+  .rugs-pane.collapsed .pane-header { padding: 12px 16px; }
+  .rugs-pane.collapsed .pane-header h2 { font-size: 14px; color: var(--text-muted); }
+  .rugs-pane.collapsed .empty-state { display: none; }
 
   /* ---- Editor empty + Finder empty: mobilde tek satır ---- */
   .editor-empty {

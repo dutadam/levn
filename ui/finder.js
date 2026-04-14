@@ -125,14 +125,24 @@ function renderRugs() {
 
   if (!finder.selected.size) {
     empty.style.display = "";
-    empty.textContent = "Başlamak için soldan bir veya birkaç renk seçin.";
+    empty.textContent = "Başlamak için yukarıdan bir veya birkaç renk seçin.";
     container.style.display = "none";
     count.textContent = "";
     title.textContent = "Halılar";
+    // Mobilde: renk seçimi temizlenince rugs-pane collapse et, colors aç
+    if (window.innerWidth <= 900) {
+      document.querySelector(".rugs-pane")?.classList.add("collapsed");
+      document.querySelector(".colors-pane")?.classList.remove("collapsed");
+    }
     return;
   }
   empty.style.display = "none";
   container.style.display = "";
+  // Mobilde: renk seçilince rugs-pane aç, colors collapse et
+  if (window.innerWidth <= 900) {
+    document.querySelector(".rugs-pane")?.classList.remove("collapsed");
+    document.querySelector(".colors-pane")?.classList.add("collapsed");
+  }
 
   const scored = state.rugs
     .map((rug) => ({ rug, score: scoreRug(rug) }))

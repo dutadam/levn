@@ -115,9 +115,10 @@ function selectRug(rug) {
   studio.workingCodes = [...codes];
   renderPicker();     // re-render to highlight active
   renderEditor();
-  // Mobilde: picker'ı daralt + editor'e scroll
+  // Mobilde: picker'ı daralt, editor'ü aç + scroll
   if (window.innerWidth <= 900) {
     document.querySelector(".picker-pane")?.classList.add("collapsed");
+    document.querySelector(".editor-pane")?.classList.remove("collapsed");
     setTimeout(() => {
       const el = document.querySelector(".editor-header") || document.getElementById("editorContent");
       if (el) {
@@ -130,13 +131,16 @@ function selectRug(rug) {
 
 function renderEditor() {
   const rug = studio.currentRug;
+  const bar = $("editorCollapsedBar");
   if (!rug) {
     $("editorEmpty").hidden = false;
     $("editorContent").hidden = true;
+    if (bar) { bar.hidden = true; $("ecbLabel").textContent = "Bir halı seçin"; }
     return;
   }
   $("editorEmpty").hidden = true;
   $("editorContent").hidden = false;
+  if (bar) { bar.hidden = false; $("ecbLabel").textContent = `▸ ${rug.title || "Halı düzenleyici"}`; }
 
   const parsed = rug.sku_parsed || {};
 
