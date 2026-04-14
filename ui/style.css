@@ -1710,15 +1710,26 @@ h1.display, h2.display, h3.display {
     display: none;
   }
 
-  /* ---- Editor empty: mobilde minimal ---- */
+  /* ---- Editor empty + Finder empty: mobilde tek satır ---- */
   .editor-empty {
-    padding: 24px 16px;
+    padding: 14px 16px;
     min-height: 0;
     height: auto;
   }
-  .editor-empty-icon { font-size: 36px; margin-bottom: 10px; }
-  .editor-empty h3 { font-size: 20px; }
-  .editor-empty p { font-size: 13px; }
+  .editor-empty-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+  }
+  .editor-empty-icon { font-size: 22px; margin-bottom: 0; line-height: 1; flex-shrink: 0; }
+  .editor-empty h3 { font-size: 15px; margin-bottom: 0; }
+  .editor-empty p { display: none; }
+
+  .empty-state, .grid-empty {
+    padding: 14px 16px;
+    font-size: 13px;
+  }
 
   /* ---- Editor pane ---- */
   .editor-pane {
