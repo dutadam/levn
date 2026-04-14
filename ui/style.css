@@ -1617,38 +1617,183 @@ h1.display, h2.display, h3.display {
 }
 
 /* ============ RESPONSIVE ============ */
+
+/* --- Tablet / narrow desktop --- */
 @media (max-width: 1100px) {
-  #studioPanel { grid-template-columns: 300px 1fr; }
-  .editor-grid { grid-template-columns: minmax(240px, 320px) 1fr; }
+  #studioPanel { grid-template-columns: 280px 1fr; }
+  .editor-grid { grid-template-columns: minmax(220px, 300px) 1fr; }
 }
+
+/* --- Tablet portrait / large phone (≤ 900px) --- */
 @media (max-width: 900px) {
   :root { --topbar-h: auto; }
+
+  html, body {
+    height: auto;
+    overflow: auto;
+    overflow-x: hidden;
+  }
+
+  /* ---- Topbar compact ---- */
   .topbar {
     flex-wrap: wrap;
     padding: 10px 16px;
-    gap: 10px;
+    gap: 8px;
     height: auto;
   }
-  .tabs { order: 3; width: 100%; }
+  .brand { gap: 10px; }
+  .brand-mark-bm { font-size: 22px; }
+  .brand-mark-home { font-size: 10px; letter-spacing: 0.2em; }
+  .brand-sep { height: 22px; }
+  .brand-eyebrow { font-size: 14px; }
+  .brand-sub { font-size: 8.5px; display: none; }
+  .powered-by { display: none; }
+  .topbar-actions { display: none; }
+  .tabs { order: 3; width: 100%; justify-content: center; margin-left: 0; }
+  .tab { flex: 1; text-align: center; padding: 10px 8px; }
+
+  /* ---- Panels: dikey stack ---- */
   .mode-panel {
     height: auto;
-    min-height: calc(100vh - 120px);
+    min-height: 0;
+    overflow: visible;
+  }
+  .mode-panel[data-active="true"] {
+    display: flex;
+    flex-direction: column;
   }
   #studioPanel, #finderPanel {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto;
   }
+
+  /* ---- Picker / Colors pane ---- */
   .picker-pane, .colors-pane {
-    max-height: 45vh;
+    max-height: 40vh;
+    overflow-y: auto;
     border-right: none;
     border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
   }
-  .editor-grid { grid-template-columns: 1fr; }
+
+  /* ---- Editor pane ---- */
+  .editor-pane {
+    overflow-y: visible;
+    overflow: visible;
+    flex: 1;
+  }
+  .editor-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
   .editor-preview { position: static; }
-  .slots-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  .editor-header {
+    padding: 16px 16px 10px;
+    gap: 10px;
+  }
+  .editor-rug-info h2 { font-size: 24px; }
+  .editor-grid { padding: 4px 16px 20px; }
+
+  /* ---- Slots ---- */
+  .slots-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+  .slot { min-height: 155px; padding: 14px 8px 12px; }
+  .slot-swatch { width: 72px; height: 72px; }
+  .slot-name { font-size: 12px; }
+
+  /* ---- Similar ---- */
+  .similar-wrap { padding: 8px 16px 0; }
+  .similar-card { width: 160px; }
+
+  /* ---- Finder rugs ---- */
+  .rug-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 0 16px; }
+  .rugs-pane { overflow-y: visible; overflow: visible; flex: 1; }
+
+  /* ---- Palette popover ---- */
+  .palette-dialog {
+    width: 100vw;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    margin-top: auto;
+  }
 }
+
+/* --- Mobile (≤ 600px) --- */
 @media (max-width: 600px) {
-  .editor-header { flex-direction: column; align-items: stretch; }
-  .editor-grid, .similar-wrap { padding-left: 16px; padding-right: 16px; }
-  .similar-card { width: 150px; }
+  /* Topbar extra compact */
+  .topbar { padding: 8px 12px; gap: 6px; }
+  .brand-mark-bm { font-size: 20px; }
+  .brand-mark-home { font-size: 9px; }
+  .brand-sep { display: none; }
+  .brand-title { display: none; }
+  .tab { font-size: 12px; padding: 9px 6px; }
+
+  /* Editor */
+  .editor-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 12px 8px;
+    gap: 8px;
+  }
+  .editor-rug-info h2 { font-size: 18px; margin-bottom: 4px; }
+  .editor-subline { font-size: 11px; }
+  .editor-actions {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .editor-actions > * { flex: 1 1 auto; min-width: 0; text-align: center; }
+  .editor-grid, .similar-wrap { padding-left: 12px; padding-right: 12px; }
+
+  /* AI butonu kompakt */
+  .btn-ai-lock { padding: 6px 10px 6px 8px; gap: 7px; }
+  .ai-lock-title { font-size: 11px; }
+  .btn-ghost { padding: 7px 10px; font-size: 11px; }
+
+  /* Picker daha kısa */
+  .picker-pane, .colors-pane { max-height: 32vh; }
+  .picker-card { grid-template-columns: 56px 1fr; gap: 10px; padding: 8px 10px; }
+  .picker-img { width: 56px; height: 56px; }
+  .picker-title { font-size: 12px; }
+
+  /* Preview image küçült */
+  .rug-preview-image {
+    width: 60%;
+    padding-top: 60%;
+    margin: 0 auto;
+    border-radius: var(--radius-lg);
+  }
+  .editor-preview { text-align: center; }
+
+  /* Slots: 2 kolon */
+  .slots-grid { grid-template-columns: repeat(2, 1fr); }
+  .slot-swatch { width: 64px; height: 64px; }
+
+  /* Similar cards */
+  .similar-card { width: 140px; }
+
+  /* SKU card */
+  .sku-value { font-size: 16px; padding: 10px 12px; }
+  .sku-card { padding: 14px 16px; }
+
+  /* Finder rug grid */
+  .rug-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 12px; }
+  .rug-action-primary { font-size: 10px; padding: 7px 8px; }
+
+  /* Color grid */
+  .color-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 0 12px; }
+
+  /* Palette popover fullscreen */
+  .palette-dialog {
+    width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    margin-top: 0;
+  }
+  .palette-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
+
+  /* Finder selection chips */
+  .finder-selection { padding: 4px 12px 10px; }
+
+  /* Pane headers */
+  .pane-header { padding: 16px 12px 10px; }
+  .pane-header h2 { font-size: 18px; }
 }
