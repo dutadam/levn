@@ -269,6 +269,7 @@ export class RecolorEngine {
     }
 
     // Slot hedef LAB'ları (başlangıç: orijinal = palette LAB)
+    this.slotOriginalCodes = codes.slice();   // değişiklik tespiti için sabit
     this.slotTargetCodes = codes.slice();
     this.slotTargetLab = codes.map((c) => (this.palette[c] && this.palette[c].lab) || null);
 
@@ -293,6 +294,11 @@ export class RecolorEngine {
     const k = this.k;
 
     // Cluster j için hedef LAB ve orig center LAB
+    // KRİTİK: shift hedef = (palette_LAB - cluster_center_LAB). Bu, değişen
+    // slot'lar için "hedefe yolculuk", DEĞİŞMEYENLER için de seed drift
+    // (saf palette ↔ gerçek ortalama farkı) demek. Değişmemiş slot'lara
+    // shift UYGULAMIYORUZ — aksi halde dokunulmayan renkler de palette'e
+    // doğru kayar. `changed[j]` mask'i bunu engelliyor.
     const targetL = new Float32Array(k);
     const targetA = new Float32Array(k);
     const targetB = new Float32Array(k);
@@ -300,6 +306,7 @@ export class RecolorEngine {
     const origA = new Float32Array(k);
     const origB = new Float32Array(k);
     const hasTarget = new Uint8Array(k);
+    const changed = new Uint8Array(k);
     for (let j = 0; j < k; j++) {
       const tgt = this.slotTargetLab[j];
       if (tgt) {
@@ -309,7 +316,14 @@ export class RecolorEngine {
         origB[j] = this.centers[j * 3 + 2];
         hasTarget[j] = 1;
       }
+      const origCode = (this.slotOriginalCodes && this.slotOriginalCodes[j]);
+      const curCode = this.slotTargetCodes[j];
+      changed[j] = (origCode !== undefined && curCode !== origCode) ? 1 : 0;
     }
+    // Hiç değişiklik yoksa orijinali aynen döndür — gereksiz hesap yok
+    let anyChanged = false;
+    for (let j = 0; j < k; j++) if (changed[j]) { anyChanged = true; break; }
+    if (!anyChanged) return new ImageData(out, this.w, this.h);
 
     for (let i = 0; i < n; i++) {
       const L = this.origLab[i * 3];
@@ -320,31 +334,26 @@ export class RecolorEngine {
       const w1 = this.weight1[i];
       const w2 = 1 - w1;
 
-      // Her iki cluster için (L,a,b) kayma hesapla, ağırlıklı karıştır
+      // Her iki cluster için (L,a,b) kayma hesapla — SADECE değişmişlere.
       let shiftL = 0, shiftA = 0, shiftB = 0;
-      let totalW = 0;
-      if (hasTarget[l1]) {
-        // Adaptive L blend: |targetL - origL| büyükse daha çok L kayması
+      if (hasTarget[l1] && changed[l1]) {
         const dLslot = targetL[l1] - origL[l1];
         const absD = Math.abs(dLslot);
         const lBlend = clamp01(0.2 + absD * 0.007); // 0 fark → 0.2, 80 fark → 0.76
         shiftL += w1 * (dLslot * intensity * lBlend);
         shiftA += w1 * ((targetA[l1] - origA[l1]) * intensity);
         shiftB += w1 * ((targetB[l1] - origB[l1]) * intensity);
-        totalW += w1;
       }
-      if (hasTarget[l2]) {
+      if (hasTarget[l2] && changed[l2]) {
         const dLslot = targetL[l2] - origL[l2];
         const absD = Math.abs(dLslot);
         const lBlend = clamp01(0.2 + absD * 0.007);
-        shiftL += w2 * (dLslot * intensity * lBlend);
-        shiftA += w2 * ((targetA[l2] - origA[l2]) * intensity);
-        shiftB += w2 * ((targetB[l2] - origB[l2]) * intensity);
-        totalW += w2;
+        // Secondary katkıyı biraz zayıflat (bleed azalt): 0.6x
+        shiftL += w2 * 0.6 * (dLslot * intensity * lBlend);
+        shiftA += w2 * 0.6 * ((targetA[l2] - origA[l2]) * intensity);
+        shiftB += w2 * 0.6 * ((targetB[l2] - origB[l2]) * intensity);
       }
-      if (totalW <= 0) continue; // hiç hedef yok → orijinal bırak
-      // totalW<1 durumunda (bir cluster hedefsiz) orantıla
-      if (totalW < 1) { shiftL /= totalW; shiftA /= totalW; shiftB /= totalW; }
+      if (shiftL === 0 && shiftA === 0 && shiftB === 0) continue;
 
       const newL = L + shiftL;
       const newA = A + shiftA;
