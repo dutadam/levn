@@ -17,6 +17,7 @@ import {
   collectionLabel, allCollectionsSorted,
 } from "./shared.js?v=7";
 import { openPalette } from "./palette.js?v=7";
+import { RecolorEngine } from "./recolor.js?v=7";
 
 const studio = {
   // Picker (rug list)
@@ -26,6 +27,16 @@ const studio = {
   // Editor
   currentRug: null,
   workingCodes: [],
+
+  // Recolor engine state (Faz 5a)
+  recolor: {
+    engine: null,
+    ready: false,
+    busy: false,
+    loadToken: 0,      // selectRug çağrıları yarıştığında en sonuncusu kazanır
+    scores: [],
+    hasFailed: false,  // CORS/yükleme hatası
+  },
 };
 
 function $(id) { return document.getElementById(id); }
@@ -150,10 +161,79 @@ function renderEditor() {
   $("rugPreviewImage").style.backgroundImage = `url('${rug.img_url || ""}')`;
   $("skuOriginal").textContent = `Orijinal: ${parsed.raw || rug.sku_raw || ""}`;
 
+  // Faz 5a: recolor engine'i başlat
+  initRecolorFor(rug);
+
   renderSkuAndSlots();
   renderModifiedIndicator();
   renderExistingMatch();
   renderSimilar();
+}
+
+/* ============ RECOLOR (Faz 5a MVP) ============ */
+
+function ensureCanvas() {
+  const host = $("rugPreviewImage");
+  if (!host) return null;
+  let canvas = host.querySelector("canvas.recolor-canvas");
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.className = "recolor-canvas";
+    canvas.setAttribute("aria-hidden", "true");
+    host.appendChild(canvas);
+  }
+  return canvas;
+}
+
+function showCanvas(show) {
+  const host = $("rugPreviewImage");
+  if (!host) return;
+  host.classList.toggle("recolor-active", !!show);
+}
+
+async function initRecolorFor(rug) {
+  const token = ++studio.recolor.loadToken;
+  studio.recolor.ready = false;
+  studio.recolor.hasFailed = false;
+  studio.recolor.scores = [];
+  showCanvas(false);
+
+  const codes = (rug.sku_parsed && rug.sku_parsed.codes) || [];
+  if (!codes.length || !rug.img_url || !Object.keys(state.palette).length) return;
+
+  try {
+    const eng = new RecolorEngine(state.palette);
+    studio.recolor.engine = eng;
+    await eng.loadImage(rug.img_url);
+    // Sırada başka halı seçildi mi? Bu yarışı kaybettiysek çık.
+    if (token !== studio.recolor.loadToken) return;
+    eng.segment(Math.max(2, codes.length));
+    const { scores } = eng.matchSlots(codes);
+    if (token !== studio.recolor.loadToken) return;
+    studio.recolor.scores = scores;
+    studio.recolor.ready = true;
+    // İlk render: orijinal (workingCodes = orig codes)
+    applyRecolor();
+  } catch (e) {
+    if (token !== studio.recolor.loadToken) return;
+    console.warn("[recolor] init failed:", e);
+    studio.recolor.hasFailed = true;
+    studio.recolor.ready = false;
+  }
+}
+
+function applyRecolor() {
+  const { engine, ready } = studio.recolor;
+  if (!engine || !ready) return;
+  // Güncel workingCodes ile engine slot'larını eşitle
+  studio.workingCodes.forEach((code, i) => engine.setSlot(i, code));
+  const imgData = engine.render({ intensity: 0.85 });
+  const canvas = ensureCanvas();
+  if (!canvas) return;
+  canvas.width = engine.w;
+  canvas.height = engine.h;
+  engine.drawTo(canvas, imgData);
+  showCanvas(true);
 }
 
 /* Changed? */
@@ -178,13 +258,22 @@ function renderModifiedIndicator() {
   const container = $("editorContent");
   container.classList.toggle("is-modified", mod);
   const caption = $("rugPreviewCaption");
+  const recolorActive = studio.recolor.ready && !studio.recolor.hasFailed;
   if (caption) {
-    caption.textContent = mod
-      ? "⚠︎ Görsel orijinal renklerle — seçili kombinasyon farklı"
-      : "Referans görsel (orijinal renklerle)";
+    if (!mod) {
+      caption.textContent = "Referans görsel (orijinal renklerle)";
+    } else if (recolorActive) {
+      caption.textContent = "Canlı önizleme · yeni renk kombinasyonu (yaklaşık)";
+    } else {
+      caption.textContent = "⚠︎ Görsel orijinal renklerle — seçili kombinasyon farklı";
+    }
   }
   const badge = $("previewBadge");
-  if (badge) badge.hidden = !mod;
+  if (badge) {
+    // Canvas aktif ve modified ise badge gizli (canvas gerçeği gösteriyor).
+    // Canvas pasifse (CORS/fail) eski uyarıyı göster.
+    badge.hidden = !(mod && !recolorActive);
+  }
 }
 
 function renderSkuAndSlots() {
@@ -228,6 +317,7 @@ function renderSkuAndSlots() {
       });
       if (res && res.code) {
         studio.workingCodes[i] = res.code;
+        applyRecolor();               // canlı görsel güncelle
         renderSkuAndSlots();
         renderModifiedIndicator();
         renderExistingMatch();
@@ -502,6 +592,7 @@ function resetRug() {
   const rug = studio.currentRug;
   if (!rug) return;
   studio.workingCodes = [...((rug.sku_parsed && rug.sku_parsed.codes) || [])];
+  applyRecolor();                // canvas'ı da orijinale döndür
   renderSkuAndSlots();
   renderModifiedIndicator();
   renderExistingMatch();

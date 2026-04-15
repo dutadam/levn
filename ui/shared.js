@@ -3,6 +3,7 @@
 export const state = {
   colors: {},        // code → {name_tr, verified, ...}
   assets: {},        // code → {file, mode, ...}
+  palette: {},       // code → {rgb:[r,g,b], hsl, lab, hex} (Faz 5 recolor)
   rugs: [],          // rug list
   rugsByDesign: {},  // desen → [rug,...]
   collections: [],   // unique collection slugs (sorted)
@@ -18,14 +19,16 @@ export async function loadJSON(path) {
 }
 
 export async function loadAll() {
-  const [colors, assets, rugs] = await Promise.all([
+  const [colors, assets, rugs, palette] = await Promise.all([
     loadJSON(DATA_BASE + "color_db.json"),
     loadJSON(DATA_BASE + "color_assets.json"),
     loadJSON(DATA_BASE + "rug_db.json"),
+    loadJSON(DATA_BASE + "color_palette.json").catch(() => ({})),
   ]);
   state.colors = colors;
   state.assets = assets;
   state.rugs = rugs;
+  state.palette = palette || {};
 
   // Index by design code for fast "same design" lookup
   const byDesign = {};

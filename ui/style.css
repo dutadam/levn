@@ -527,7 +527,19 @@ h1.display, h2.display, h3.display {
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
-  overflow: hidden;
+}
+/* Faz 5: canvas overlay — recolor motoru hazır olduğunda devreye girer */
+.rug-preview-image .recolor-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.rug-preview-image.recolor-active .recolor-canvas {
+  opacity: 1;
 }
 .preview-badge {
   position: absolute;
