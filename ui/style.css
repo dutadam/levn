@@ -1815,8 +1815,8 @@ h1.display, h2.display, h3.display {
   .ai-lock-title { font-size: 11px; }
   .btn-ghost { padding: 7px 10px; font-size: 11px; }
 
-  /* Picker daha kısa */
-  .picker-pane, .colors-pane { max-height: 32vh; }
+  /* Picker tam ekran */
+  .picker-pane, .colors-pane { max-height: calc(100vh - var(--topbar-h)); }
   .picker-card { grid-template-columns: 56px 1fr; gap: 10px; padding: 8px 10px; }
   .picker-img { width: 56px; height: 56px; }
   .picker-title { font-size: 12px; }
