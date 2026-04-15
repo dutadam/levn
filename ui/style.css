@@ -244,6 +244,10 @@ h1.display, h2.display, h3.display {
 .picker-pane.collapsed .pane-toggle,
 .colors-pane.collapsed .pane-toggle { transform: rotate(180deg); }
 
+/* Desktop: FAB ve back-btn gizli (sadece mobilde görünür) */
+.list-rugs-fab { display: none; }
+.rugs-back-btn { display: none; }
+
 /* ============ PANE HEADERS ============ */
 .pane-header {
   display: flex;
@@ -1721,6 +1725,68 @@ h1.display, h2.display, h3.display {
     border: none;
   }
   .editor-collapsed-bar { display: none; }
+
+  /* ---- Mobilde rugs-pane içinde "← Renkler" back butonu ---- */
+  .rugs-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    padding: 6px 8px;
+    margin-right: 6px;
+    color: var(--ink-2, #4a4038);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .rugs-back-btn:hover { background: rgba(0,0,0,0.04); }
+  .rugs-back-btn svg { flex-shrink: 0; }
+  /* Sadece rugs-pane expanded iken göster; collapsed iken header gizli zaten */
+  .rugs-pane.collapsed .rugs-back-btn { display: none; }
+
+  /* ---- Mobil floating CTA: "Halıları listele" ---- */
+  .list-rugs-fab {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px 12px 20px;
+    background: var(--accent, #b8533a);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.14);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  }
+  .list-rugs-fab:hover { transform: translateX(-50%) translateY(-1px); box-shadow: 0 10px 26px rgba(0,0,0,0.26); }
+  .list-rugs-fab:active { transform: translateX(-50%) translateY(0); }
+  .list-rugs-fab[hidden] { display: none; }
+  .list-rugs-fab .lrf-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .list-rugs-fab svg { flex-shrink: 0; opacity: 0.9; }
 
   /* ---- Editor empty + Finder empty: mobilde tek satır ---- */
   .editor-empty {

@@ -70,9 +70,8 @@ async function init() {
       const ecb = document.getElementById("editorCollapsedBar");
       if (ecb) ecb.hidden = false;
 
-      // Alt panele tıklayınca: üstü kapat, altı aç
+      // Alt panele tıklayınca: üstü kapat, altı aç (sadece editor için)
       const editorPane = document.querySelector(".editor-pane");
-      const rugsPane = document.querySelector(".rugs-pane");
       if (editorPane) {
         editorPane.addEventListener("click", (e) => {
           if (!editorPane.classList.contains("collapsed")) return;
@@ -80,13 +79,37 @@ async function init() {
           document.querySelector(".picker-pane")?.classList.add("collapsed");
         });
       }
-      if (rugsPane) {
-        rugsPane.addEventListener("click", (e) => {
-          if (!rugsPane.classList.contains("collapsed")) return;
-          rugsPane.classList.remove("collapsed");
-          document.querySelector(".colors-pane")?.classList.add("collapsed");
+    }
+
+    // Finder (Renk→Halı): floating "Halıları listele" butonu + "← Renkler" back
+    const listRugsFab = document.getElementById("listRugsFab");
+    if (listRugsFab) {
+      listRugsFab.addEventListener("click", () => {
+        document.querySelector(".rugs-pane")?.classList.remove("collapsed");
+        document.querySelector(".colors-pane")?.classList.add("collapsed");
+        listRugsFab.hidden = true;
+        // rugs-pane'i viewport'a kaydır
+        requestAnimationFrame(() => {
+          document.querySelector(".rugs-pane")?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
-      }
+      });
+    }
+    const rugsBackBtn = document.getElementById("rugsBackBtn");
+    if (rugsBackBtn) {
+      rugsBackBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelector(".rugs-pane")?.classList.add("collapsed");
+        document.querySelector(".colors-pane")?.classList.remove("collapsed");
+        // FAB'ı tekrar göster (eğer seçili renk varsa)
+        const fab = document.getElementById("listRugsFab");
+        const lrfCount = document.getElementById("lrfCount");
+        const hasCount = lrfCount && parseInt(lrfCount.textContent || "0", 10) > 0;
+        if (fab && window.innerWidth <= 900 && hasCount) fab.hidden = false;
+        // colors-pane'i viewport'a kaydır
+        requestAnimationFrame(() => {
+          document.querySelector(".colors-pane")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
     }
 
     switchMode("studio");

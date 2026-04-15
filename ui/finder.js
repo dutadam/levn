@@ -116,6 +116,22 @@ function scoreRug(rug) {
   return s;
 }
 
+function updateFab(rugCount) {
+  const fab = document.getElementById("listRugsFab");
+  if (!fab) return;
+  const isMobile = window.innerWidth <= 900;
+  const rugsPane = document.querySelector(".rugs-pane");
+  const rugsOpen = rugsPane && !rugsPane.classList.contains("collapsed");
+  // Show FAB only on mobile, when user has selected colors, and rugs-pane is collapsed
+  if (isMobile && finder.selected.size > 0 && !rugsOpen) {
+    fab.hidden = false;
+    const lrfCount = document.getElementById("lrfCount");
+    if (lrfCount) lrfCount.textContent = String(rugCount || 0);
+  } else {
+    fab.hidden = true;
+  }
+}
+
 function renderRugs() {
   const container = $("rugGrid");
   const empty = $("emptyState");
@@ -129,20 +145,16 @@ function renderRugs() {
     container.style.display = "none";
     count.textContent = "";
     title.textContent = "Halılar";
-    // Mobilde: renk seçimi temizlenince rugs-pane collapse et, colors aç
+    // Mobilde: renk seçimi temizlenince rugs-pane collapse et, colors aç, FAB gizle
     if (window.innerWidth <= 900) {
       document.querySelector(".rugs-pane")?.classList.add("collapsed");
       document.querySelector(".colors-pane")?.classList.remove("collapsed");
     }
+    updateFab(0);
     return;
   }
   empty.style.display = "none";
   container.style.display = "";
-  // Mobilde: renk seçilince rugs-pane aç, colors collapse et
-  if (window.innerWidth <= 900) {
-    document.querySelector(".rugs-pane")?.classList.remove("collapsed");
-    document.querySelector(".colors-pane")?.classList.add("collapsed");
-  }
 
   const scored = state.rugs
     .map((rug) => ({ rug, score: scoreRug(rug) }))
@@ -154,6 +166,9 @@ function renderRugs() {
     ? `${scored.length} halı — her biri seçili ${needCount} rengi barındırıyor`
     : `Seçili ${needCount} rengin hepsini birden içeren halı yok`;
   title.textContent = "Uyumlu Halılar";
+
+  // Mobilde: FAB göster (colors-pane açık kalır, kullanıcı daha fazla renk ekleyebilir)
+  updateFab(scored.length);
 
   const seen = new Set();
   for (const { rug } of scored) {
