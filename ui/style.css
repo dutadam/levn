@@ -527,6 +527,7 @@ h1.display, h2.display, h3.display {
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  overflow: hidden;
 }
 .preview-badge {
   position: absolute;

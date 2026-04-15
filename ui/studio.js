@@ -15,8 +15,8 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js";
-import { openPalette } from "./palette.js";
+} from "./shared.js?v=7";
+import { openPalette } from "./palette.js?v=7";
 
 const studio = {
   // Picker (rug list)
