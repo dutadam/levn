@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=7";
-import { openPalette } from "./palette.js?v=7";
-import { RecolorEngine } from "./recolor.js?v=7";
+} from "./shared.js?v=9";
+import { openPalette } from "./palette.js?v=9";
+import { RecolorEngine } from "./recolor.js?v=9";
 
 const studio = {
   // Picker (rug list)
@@ -36,6 +36,15 @@ const studio = {
     loadToken: 0,      // selectRug çağrıları yarıştığında en sonuncusu kazanır
     scores: [],
     hasFailed: false,  // CORS/yükleme hatası
+  },
+
+  // Görsel görüntüleme UI state
+  view: {
+    sliderPos: 50,        // 0..100 yüzde
+    sliderActive: false,  // önce/sonra modunda mı?
+    fsOpen: false,
+    fsCompare: false,     // fullscreen'de önce/sonra modu
+    fsSliderPos: 50,
   },
 };
 
@@ -197,9 +206,17 @@ async function initRecolorFor(rug) {
   studio.recolor.hasFailed = false;
   studio.recolor.scores = [];
   showCanvas(false);
+  showPreviewTools(false);
+  setSliderMode(false);
+  const warn = $("recolorQualityWarn");
+  if (warn) warn.hidden = true;
+  showRecolorSpinner(true);
 
   const codes = (rug.sku_parsed && rug.sku_parsed.codes) || [];
-  if (!codes.length || !rug.img_url || !Object.keys(state.palette).length) return;
+  if (!codes.length || !rug.img_url || !Object.keys(state.palette).length) {
+    showRecolorSpinner(false);
+    return;
+  }
 
   try {
     const eng = new RecolorEngine(state.palette);
@@ -207,10 +224,9 @@ async function initRecolorFor(rug) {
     await eng.loadImage(rug.img_url);
     // Sırada başka halı seçildi mi? Bu yarışı kaybettiysek çık.
     if (token !== studio.recolor.loadToken) return;
-    eng.segment(Math.max(2, codes.length));
-    const { scores } = eng.matchSlots(codes);
+    const { drift } = eng.segment(codes);
     if (token !== studio.recolor.loadToken) return;
-    studio.recolor.scores = scores;
+    studio.recolor.scores = drift;
     studio.recolor.ready = true;
     // İlk render: orijinal (workingCodes = orig codes)
     applyRecolor();
@@ -219,6 +235,8 @@ async function initRecolorFor(rug) {
     console.warn("[recolor] init failed:", e);
     studio.recolor.hasFailed = true;
     studio.recolor.ready = false;
+  } finally {
+    if (token === studio.recolor.loadToken) showRecolorSpinner(false);
   }
 }
 
@@ -227,13 +245,233 @@ function applyRecolor() {
   if (!engine || !ready) return;
   // Güncel workingCodes ile engine slot'larını eşitle
   studio.workingCodes.forEach((code, i) => engine.setSlot(i, code));
-  const imgData = engine.render({ intensity: 0.85 });
+  const imgData = engine.render({ intensity: 0.9 });
   const canvas = ensureCanvas();
   if (!canvas) return;
   canvas.width = engine.w;
   canvas.height = engine.h;
   engine.drawTo(canvas, imgData);
   showCanvas(true);
+  showPreviewTools(true);
+  updateQualityWarn();
+
+  // Fullscreen açıksa oraya da aynı render'ı yansıt
+  if (studio.view.fsOpen) {
+    const fsCanvas = $("fsCanvas");
+    if (fsCanvas) {
+      fsCanvas.width = engine.w;
+      fsCanvas.height = engine.h;
+      engine.drawTo(fsCanvas, imgData);
+    }
+  }
+}
+
+function showPreviewTools(show) {
+  const tools = $("previewTools");
+  if (tools) tools.hidden = !show;
+}
+
+function updateQualityWarn() {
+  const warn = $("recolorQualityWarn");
+  const txt = $("recolorQualityWarnText");
+  if (!warn) return;
+  const scores = studio.recolor.scores || [];
+  if (!scores.length) { warn.hidden = true; return; }
+
+  // Drift eşik: >30 δE ciddi, >22 hafif uyarı
+  const SOFT = 22, HARD = 35;
+  let softCount = 0, hardCount = 0;
+  const badSlots = [];
+  scores.forEach((d, i) => {
+    if (d > HARD) { hardCount++; badSlots.push(i + 1); }
+    else if (d > SOFT) { softCount++; }
+  });
+  const anyMod = isModified();
+  if (!anyMod || (hardCount === 0 && softCount === 0)) {
+    warn.hidden = true;
+    return;
+  }
+  warn.hidden = false;
+  if (hardCount > 0) {
+    warn.style.background = "rgba(220, 130, 80, 0.94)";
+    if (txt) txt.textContent = `Slot ${badSlots.join(", ")} bu halıda net karşılığını bulamadı — sonuç yaklaşıktır.`;
+  } else {
+    warn.style.background = "rgba(255, 190, 90, 0.94)";
+    if (txt) txt.textContent = "Bazı renkler halıda kısmi temsil ediliyor — sonuç yaklaşıktır.";
+  }
+}
+
+function showRecolorSpinner(show) {
+  const host = $("rugPreviewImage");
+  if (!host) return;
+  let spinner = host.querySelector(".recolor-spinner");
+  if (show) {
+    if (!spinner) {
+      spinner = document.createElement("div");
+      spinner.className = "recolor-spinner";
+      spinner.innerHTML = `
+        <div class="spinner-ring"></div>
+        <div class="spinner-label">Renkler uygulanıyor…</div>`;
+      host.appendChild(spinner);
+    }
+    spinner.hidden = false;
+    host.classList.add("is-loading");
+  } else {
+    if (spinner) spinner.hidden = true;
+    host.classList.remove("is-loading");
+  }
+}
+
+/* ============ SLIDER (önce/sonra karşılaştırma) ============ */
+
+function setSliderMode(on) {
+  studio.view.sliderActive = !!on;
+  const host = $("rugPreviewImage");
+  const btn = $("previewSliderBtn");
+  if (host) host.classList.toggle("slider-mode", !!on);
+  if (btn) {
+    btn.classList.toggle("active", !!on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  if (on) updateSliderPos(studio.view.sliderPos);
+}
+
+function updateSliderPos(pct) {
+  pct = Math.max(0, Math.min(100, pct));
+  studio.view.sliderPos = pct;
+  const host = $("rugPreviewImage");
+  if (host) host.style.setProperty("--slider-pos", `${pct}%`);
+}
+
+function initSliderDrag() {
+  const host = $("rugPreviewImage");
+  const handle = $("sliderHandle");
+  if (!host || !handle) return;
+
+  let dragging = false;
+  const onMove = (clientX) => {
+    if (!dragging) return;
+    const rect = host.getBoundingClientRect();
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    updateSliderPos(pct);
+  };
+  const start = (e) => {
+    if (!studio.view.sliderActive) return;
+    dragging = true;
+    e.preventDefault();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    onMove(cx);
+  };
+  const move = (e) => {
+    if (!dragging) return;
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    onMove(cx);
+  };
+  const end = () => { dragging = false; };
+
+  handle.addEventListener("mousedown", start);
+  host.addEventListener("mousedown", (e) => {
+    // host'a direkt tıkla — handle dışındaki bir noktayı seçerse slider'ı oraya taşı
+    if (!studio.view.sliderActive) return;
+    if (e.target.closest(".preview-tool-btn")) return;
+    start(e);
+  });
+  window.addEventListener("mousemove", move);
+  window.addEventListener("mouseup", end);
+
+  handle.addEventListener("touchstart", start, { passive: false });
+  window.addEventListener("touchmove", move, { passive: false });
+  window.addEventListener("touchend", end);
+
+  // Klavye erişilebilirliği
+  handle.addEventListener("keydown", (e) => {
+    if (!studio.view.sliderActive) return;
+    const step = e.shiftKey ? 10 : 4;
+    if (e.key === "ArrowLeft")  { updateSliderPos(studio.view.sliderPos - step); e.preventDefault(); }
+    if (e.key === "ArrowRight") { updateSliderPos(studio.view.sliderPos + step); e.preventDefault(); }
+    if (e.key === "Home")       { updateSliderPos(0); e.preventDefault(); }
+    if (e.key === "End")        { updateSliderPos(100); e.preventDefault(); }
+  });
+}
+
+/* ============ FULLSCREEN MODAL ============ */
+
+function openFullscreen() {
+  const modal = $("fullscreenModal");
+  const fsCanvas = $("fsCanvas");
+  const { engine, ready } = studio.recolor;
+  if (!modal || !fsCanvas) return;
+
+  studio.view.fsOpen = true;
+  studio.view.fsCompare = false;
+  modal.setAttribute("open", "");
+  document.body.style.overflow = "hidden";
+
+  if (engine && ready) {
+    // Full-res render: engine maxSide=640, canvas ekranı kaplasın diye
+    // CSS width/height:auto kullanıyoruz; canvas pixel boyutu = engine.w/h
+    fsCanvas.width = engine.w;
+    fsCanvas.height = engine.h;
+    const data = engine.render({ intensity: 0.9 });
+    engine.drawTo(fsCanvas, data);
+  } else {
+    // Recolor yoksa orijinal görseli göster
+    const rug = studio.currentRug;
+    if (!rug || !rug.img_url) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      fsCanvas.width = img.naturalWidth;
+      fsCanvas.height = img.naturalHeight;
+      const ctx = fsCanvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+    };
+    img.onerror = () => {
+      // CORS fail — CSS background ile bas
+      fsCanvas.style.backgroundImage = `url('${rug.img_url}')`;
+      fsCanvas.style.backgroundSize = "contain";
+      fsCanvas.style.backgroundRepeat = "no-repeat";
+      fsCanvas.style.backgroundPosition = "center";
+    };
+    img.src = rug.img_url;
+  }
+  updateFsCompareBtn();
+}
+
+function closeFullscreen() {
+  const modal = $("fullscreenModal");
+  if (!modal) return;
+  studio.view.fsOpen = false;
+  studio.view.fsCompare = false;
+  modal.removeAttribute("open");
+  document.body.style.overflow = "";
+  const fsCanvas = $("fsCanvas");
+  if (fsCanvas) {
+    fsCanvas.style.backgroundImage = "";
+  }
+}
+
+function toggleFsCompare() {
+  const { engine, ready } = studio.recolor;
+  if (!engine || !ready) return;
+  const fsCanvas = $("fsCanvas");
+  if (!fsCanvas) return;
+  studio.view.fsCompare = !studio.view.fsCompare;
+  // compare=true → orijinal göster; false → modified göster
+  const data = studio.view.fsCompare ? engine.renderOriginal() : engine.render({ intensity: 0.9 });
+  engine.drawTo(fsCanvas, data);
+  updateFsCompareBtn();
+}
+
+function updateFsCompareBtn() {
+  const btn = $("fsCompareBtn");
+  if (!btn) return;
+  const { engine, ready } = studio.recolor;
+  btn.hidden = !(engine && ready);
+  btn.classList.toggle("active", studio.view.fsCompare);
+  btn.setAttribute("aria-pressed", studio.view.fsCompare ? "true" : "false");
+  const lbl = $("fsCompareLabel");
+  if (lbl) lbl.textContent = studio.view.fsCompare ? "Orijinali gizle" : "Önce / Sonra";
 }
 
 /* Changed? */
@@ -274,6 +512,7 @@ function renderModifiedIndicator() {
     // Canvas pasifse (CORS/fail) eski uyarıyı göster.
     badge.hidden = !(mod && !recolorActive);
   }
+  updateQualityWarn();
 }
 
 function renderSkuAndSlots() {
@@ -507,6 +746,30 @@ function buildPrintHTML() {
   const newSku = buildSku(parsed.desen, parsed.tip, work);
   const date = new Date().toLocaleDateString("tr-TR");
 
+  // Recolor engine aktif + modifiye → canvas'ın dataURL'ini kullan (canlı render'ı bas).
+  // Değilse orijinal CDN görseline düş.
+  const { engine, ready, hasFailed } = studio.recolor;
+  const modified = isModified();
+  let printImgSrc = rug.img_url || "";
+  let printImgCap = "Referans halı görseli (orijinal renklerle)";
+  if (engine && ready && !hasFailed) {
+    try {
+      // Güncel render'ı garanti et: slot'ları eşitle, _srcCanvas'a yaz, dataURL al.
+      work.forEach((code, i) => engine.setSlot(i, code));
+      const data = modified ? engine.render({ intensity: 0.9 }) : engine.renderOriginal();
+      // drawTo yan etki olarak _srcCanvas'a putImageData yapıyor → toDataURL fresh.
+      const tmp = document.createElement("canvas");
+      tmp.width = engine.w; tmp.height = engine.h;
+      engine.drawTo(tmp, data);
+      printImgSrc = engine.toDataURL("image/jpeg", 0.92);
+      printImgCap = modified
+        ? "Canlı önizleme · yeni renk kombinasyonu (yaklaşık)"
+        : "Referans halı görseli (orijinal renklerle)";
+    } catch (e) {
+      console.warn("[print] toDataURL failed, falling back to CDN image", e);
+    }
+  }
+
   const slotRows = work.map((code, i) => {
     const o = orig[i];
     const oC = state.colors[o] || {};
@@ -545,8 +808,8 @@ function buildPrintHTML() {
 
     <section class="print-cmp">
       <div class="print-img-card">
-        <img src="${escapeHtml(rug.img_url || "")}" alt="" crossorigin="anonymous">
-        <div class="print-cap">Referans halı görseli (orijinal renklerle)</div>
+        <img src="${escapeHtml(printImgSrc)}" alt="" crossorigin="anonymous">
+        <div class="print-cap">${escapeHtml(printImgCap)}</div>
       </div>
       <div class="print-table-wrap">
         <h3>Renk Karşılaştırma</h3>
@@ -651,4 +914,55 @@ export function initStudio() {
 
   const aiBtn = document.getElementById("aiColorizeBtn");
   if (aiBtn) aiBtn.addEventListener("click", handleAiLockClick);
+
+  // Preview tools
+  const sliderBtn = $("previewSliderBtn");
+  if (sliderBtn) {
+    sliderBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setSliderMode(!studio.view.sliderActive);
+    });
+  }
+  const fsBtn = $("previewFullscreenBtn");
+  if (fsBtn) {
+    fsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openFullscreen();
+    });
+  }
+  // Preview alanına direkt tıkla → fullscreen (slider modu hariç, tool butonları hariç)
+  const host = $("rugPreviewImage");
+  if (host) {
+    host.addEventListener("click", (e) => {
+      if (studio.view.sliderActive) return;
+      if (e.target.closest(".preview-tool-btn")) return;
+      if (e.target.closest(".slider-handle")) return;
+      if (!studio.currentRug) return;
+      openFullscreen();
+    });
+  }
+
+  // Slider drag
+  initSliderDrag();
+
+  // Fullscreen modal
+  const fsClose = $("fsCloseBtn");
+  if (fsClose) fsClose.addEventListener("click", closeFullscreen);
+  const fsCompare = $("fsCompareBtn");
+  if (fsCompare) fsCompare.addEventListener("click", toggleFsCompare);
+  const fsModal = $("fullscreenModal");
+  if (fsModal) {
+    fsModal.addEventListener("click", (e) => {
+      // Modal backdrop'a tıkla → kapat (ama canvas veya butonlara değil)
+      if (e.target === fsModal) closeFullscreen();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (!studio.view.fsOpen) return;
+    if (e.key === "Escape") closeFullscreen();
+    else if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      toggleFsCompare();
+    }
+  });
 }

@@ -1,14 +1,27 @@
-/* Levn — canvas tabanlı renk değiştirme motoru (Faz 5a MVP).
+/* Levn — canvas tabanlı renk değiştirme motoru (Faz 5a v2).
+ *
+ * v2 iyileştirmeleri:
+ *   • Seeded k-means: küme merkezleri SKU kodlarının palette LAB'ları ile
+ *     başlar. Sonuç: cluster `i` ↔ slot `i` 1:1 (greedy matching gereksiz).
+ *   • Soft pixel assignment: top-2 yakın kümeye δE ağırlıklı karışım —
+ *     cluster sınırlarında sert kenar olmaz, geçişler yumuşar.
+ *   • Adaptive L blend: hedef-orig L farkına göre blend oranı ölçeklenir
+ *     (krem→siyah gibi büyük geçişlerde karanlık yeterince karanlık olur).
+ *   • Seed drift score: her slotun eşleşme kalitesi (düşük=iyi, yüksek=
+ *     halıda o renk pek yok demek).
  *
  * Akış:
  *   const eng = new RecolorEngine(palette);
- *   await eng.loadImage(url);     // img → offscreen canvas + örneklenmiş piksel buffer
- *   eng.segment(k);               // k-means → her piksele küme etiketi
- *   eng.matchSlots(codes);        // kümeleri original renk kodlarıyla eşle (LAB δE)
- *   eng.recolor(slotIdx, code);   // o slotun kümesini yeni renkle boya (L-koruyarak)
- *   eng.drawTo(canvas);           // final'i hedef canvas'a çiz
+ *   await eng.loadImage(url);
+ *   eng.segment(codes);              // seed edilmiş k-means
+ *   eng.render();                    // ImageData (orijinal)
+ *   eng.setSlot(i, newCode);
+ *   eng.render();                    // güncellenmiş
+ *   eng.drawTo(canvas, imageData);
  *
- * Not: Ana thread. Gerekirse ileride Worker'a taşınır (Faz 5b).
+ * Yan çıktılar:
+ *   eng.slotScores  — slot bazlı eşleme kalitesi (δE drift)
+ *   eng.renderOriginal() — canvas için bozulmamış orijinal ImageData
  */
 
 // -------- sRGB ↔ LAB ------------------------------------------------------
@@ -46,57 +59,40 @@ function labToRgb(L, a, b) {
   return [linearToSrgb(rl), linearToSrgb(gl), linearToSrgb(bl)];
 }
 function deltaE(lab1, lab2) {
-  // Basit Euclidean CIE76 — yeterli; ilerde CIEDE2000 eklenebilir
   const dL = lab1[0] - lab2[0];
   const da = lab1[1] - lab2[1];
   const db = lab1[2] - lab2[2];
   return Math.sqrt(dL * dL + da * da + db * db);
 }
 
-// -------- K-means (LAB uzayında) ------------------------------------------
-function kmeans(labs, k, { maxIter = 15, seed = 42 } = {}) {
-  const n = labs.length / 3;
-  // k-means++ seed
+// -------- Seeded k-means (LAB uzayında) -----------------------------------
+/**
+ * Seed edilmiş k-means: başlangıç merkezleri dışarıdan gelir (her slotun
+ * palette LAB'ı). İterasyonlar sonucu merkez "seed"e yakın kalırsa iyi
+ * eşleme, çok drift ederse kötü eşleme (halıda o renk yok demek).
+ *
+ * @param {Float32Array} labs alt-örneklenmiş piksel LAB'ları (n*3)
+ * @param {number[][]} seeds  k adet başlangıç merkezi [[L,a,b], ...]
+ * @returns {{centers:Float32Array, drift:number[]}}
+ */
+function seededKMeans(labs, seeds, { maxIter = 12 } = {}) {
+  const k = seeds.length;
   const centers = new Float32Array(k * 3);
-  let rng = mulberry32(seed);
-  // İlk merkez rastgele
-  const first = Math.floor(rng() * n);
-  centers[0] = labs[first * 3];
-  centers[1] = labs[first * 3 + 1];
-  centers[2] = labs[first * 3 + 2];
-  const distSq = new Float32Array(n);
-  for (let c = 1; c < k; c++) {
-    let total = 0;
-    for (let i = 0; i < n; i++) {
-      let best = Infinity;
-      for (let j = 0; j < c; j++) {
-        const dL = labs[i * 3] - centers[j * 3];
-        const da = labs[i * 3 + 1] - centers[j * 3 + 1];
-        const db = labs[i * 3 + 2] - centers[j * 3 + 2];
-        const d = dL * dL + da * da + db * db;
-        if (d < best) best = d;
-      }
-      distSq[i] = best;
-      total += best;
-    }
-    // Proportional pick
-    let r = rng() * total;
-    let pickIdx = 0;
-    for (let i = 0; i < n; i++) {
-      r -= distSq[i];
-      if (r <= 0) { pickIdx = i; break; }
-    }
-    centers[c * 3] = labs[pickIdx * 3];
-    centers[c * 3 + 1] = labs[pickIdx * 3 + 1];
-    centers[c * 3 + 2] = labs[pickIdx * 3 + 2];
+  const initCenters = new Float32Array(k * 3);
+  for (let j = 0; j < k; j++) {
+    centers[j * 3] = seeds[j][0];
+    centers[j * 3 + 1] = seeds[j][1];
+    centers[j * 3 + 2] = seeds[j][2];
+    initCenters[j * 3] = seeds[j][0];
+    initCenters[j * 3 + 1] = seeds[j][1];
+    initCenters[j * 3 + 2] = seeds[j][2];
   }
-
+  const n = labs.length / 3;
   const labels = new Uint8Array(n);
   const sums = new Float64Array(k * 3);
   const counts = new Uint32Array(k);
 
   for (let iter = 0; iter < maxIter; iter++) {
-    // Assign
     let changed = 0;
     for (let i = 0; i < n; i++) {
       const L = labs[i * 3], a = labs[i * 3 + 1], b = labs[i * 3 + 2];
@@ -112,7 +108,6 @@ function kmeans(labs, k, { maxIter = 15, seed = 42 } = {}) {
     }
     if (iter > 0 && changed === 0) break;
 
-    // Update
     sums.fill(0);
     counts.fill(0);
     for (let i = 0; i < n; i++) {
@@ -128,42 +123,46 @@ function kmeans(labs, k, { maxIter = 15, seed = 42 } = {}) {
         centers[j * 3 + 1] = sums[j * 3 + 1] / counts[j];
         centers[j * 3 + 2] = sums[j * 3 + 2] / counts[j];
       }
+      // Eğer kümeye hiç piksel düşmediyse merkezi seed'de bırak — drift sonsuz olmasın
     }
   }
 
-  return { labels, centers };
-}
+  // Drift = initial seed vs son center arasındaki δE
+  const drift = new Array(k);
+  for (let j = 0; j < k; j++) {
+    drift[j] = deltaE(
+      [initCenters[j * 3], initCenters[j * 3 + 1], initCenters[j * 3 + 2]],
+      [centers[j * 3], centers[j * 3 + 1], centers[j * 3 + 2]]
+    );
+  }
 
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function () {
-    a = (a + 0x6D2B79F5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return { centers, drift, counts: Array.from(counts) };
 }
 
 // -------- RecolorEngine ---------------------------------------------------
 export class RecolorEngine {
   /**
-   * @param {Object<string,{rgb:[number,number,number], lab:[number,number,number]}>} palette
+   * @param {Object<string,{rgb:number[], lab:number[]}>} palette
    */
   constructor(palette) {
     this.palette = palette || {};
-    this.img = null;          // HTMLImageElement
-    this.w = 0; this.h = 0;   // downscaled canvas boyutu
-    this.origPixels = null;   // Uint8ClampedArray (RGBA) — sub-sampled
-    this.origL = null;        // Float32Array pixel L değerleri
-    this.labels = null;       // Uint8Array küme etiketleri
+    this.img = null;
+    this.w = 0; this.h = 0;
+    this.origPixels = null;       // Uint8ClampedArray RGBA
+    this.origLab = null;           // Float32Array n*3 LAB (hızlı erişim)
     this.k = 0;
-    this.centers = null;      // Float32Array k*3 LAB
-    this.slotToCluster = [];  // slot idx → cluster idx
-    this.slotTargetCodes = [];// slot idx → hedef renk kodu
-    this.slotTargetLab = [];  // slot idx → hedef LAB (hızlı)
-    this.slotOriginalCenterLab = []; // matching anındaki orig küme LAB
-    this.maxSide = 640;       // downscale hedefi — mobil için yeterli
+    this.centers = null;           // Float32Array k*3 (orig küme merkezleri)
+    this.slotTargetLab = [];       // slot idx → hedef LAB
+    this.slotTargetCodes = [];
+    // Soft assignment: her piksel için top-2 cluster + primary weight
+    this.label1 = null;            // Uint8Array primary cluster
+    this.label2 = null;            // Uint8Array secondary cluster
+    this.weight1 = null;            // Float32Array primary weight [0..1]
+    this.slotScores = [];          // drift/küme-başı metrik
+    this.clusterCounts = [];
+    this.maxSide = 640;
+    this._srcCanvas = null;
+    this._srcCtx = null;
   }
 
   async loadImage(url) {
@@ -183,157 +182,173 @@ export class RecolorEngine {
     this.origPixels = imgData.data;
     this._srcCanvas = c;
     this._srcCtx = ctx;
-    this._srcImageData = imgData;
-    // Per-pixel L precompute (yaygın kullanım)
+    // Tam piksel LAB precompute — render döngüsünde hız için kritik
     const n = this.w * this.h;
-    this.origL = new Float32Array(n);
+    this.origLab = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
       const r = this.origPixels[i * 4];
       const g = this.origPixels[i * 4 + 1];
       const b = this.origPixels[i * 4 + 2];
-      this.origL[i] = rgbToLab(r, g, b)[0];
+      const [L, A, B] = rgbToLab(r, g, b);
+      this.origLab[i * 3] = L;
+      this.origLab[i * 3 + 1] = A;
+      this.origLab[i * 3 + 2] = B;
     }
-  }
-
-  segment(k, { sampleStride = 3 } = {}) {
-    if (!this.origPixels) throw new Error("loadImage çağrılmadı");
-    const n = this.w * this.h;
-    // Alt-örnekleme ile k-means (hız için)
-    const sampled = [];
-    for (let i = 0; i < n; i += sampleStride) {
-      const r = this.origPixels[i * 4];
-      const g = this.origPixels[i * 4 + 1];
-      const b = this.origPixels[i * 4 + 2];
-      const a = this.origPixels[i * 4 + 3];
-      if (a < 32) continue; // şeffaf pikselleri atla
-      const [L, aa, bb] = rgbToLab(r, g, b);
-      sampled.push(L, aa, bb);
-    }
-    const labs = Float32Array.from(sampled);
-    const { centers } = kmeans(labs, k, { maxIter: 12 });
-    this.centers = centers;
-    this.k = k;
-    // Full pixel assignment
-    this.labels = new Uint8Array(n);
-    for (let i = 0; i < n; i++) {
-      const r = this.origPixels[i * 4];
-      const g = this.origPixels[i * 4 + 1];
-      const b = this.origPixels[i * 4 + 2];
-      const [L, aa, bb] = rgbToLab(r, g, b);
-      let best = 0, bestD = Infinity;
-      for (let j = 0; j < k; j++) {
-        const dL = L - centers[j * 3];
-        const da = aa - centers[j * 3 + 1];
-        const db = bb - centers[j * 3 + 2];
-        const d = dL * dL + da * da + db * db;
-        if (d < bestD) { bestD = d; best = j; }
-      }
-      this.labels[i] = best;
-    }
-    return { centers, k };
   }
 
   /**
-   * Orijinal SKU kodlarını küme merkezlerine eşle.
-   * Greedy: her koda en yakın (δE) serbest küme atanır.
-   * @param {string[]} codes slot sırası ile renk kodları
-   * @returns {{slotToCluster:number[], scores:number[]}}
+   * Seed edilmiş segmentasyon. codes[i] = slot i'nin orijinal renk kodu.
+   * Palette'te olmayan kodlar için fallback seed üretilir.
    */
-  matchSlots(codes) {
-    if (!this.centers) throw new Error("segment çağrılmadı");
-    const k = this.k;
-    const freeClusters = new Set();
-    for (let j = 0; j < k; j++) freeClusters.add(j);
+  segment(codes, { sampleStride = 3 } = {}) {
+    if (!this.origPixels) throw new Error("loadImage çağrılmadı");
+    const n = this.w * this.h;
 
-    // Tüm (slot, cluster) δE matrisini hesapla
-    const rows = codes.map((code) => {
+    // Seed hazırla: her slot için palette LAB; yoksa k-means++ ile doldur
+    const seeds = [];
+    for (const code of codes) {
       const pal = this.palette[code];
-      if (!pal || !pal.lab) return null;
-      return pal.lab;
-    });
-
-    const slotToCluster = new Array(codes.length).fill(-1);
-    const scores = new Array(codes.length).fill(Infinity);
-
-    // İterasyon: her turda en iyi (slot, cluster) çiftini bul, kilitle.
-    const slotIdxRemaining = rows.map((r, i) => (r ? i : -1)).filter((x) => x >= 0);
-    while (slotIdxRemaining.length && freeClusters.size) {
-      let bestSlot = -1, bestCluster = -1, bestD = Infinity;
-      for (const si of slotIdxRemaining) {
-        if (slotToCluster[si] !== -1) continue;
-        const lab = rows[si];
-        for (const j of freeClusters) {
-          const cL = this.centers[j * 3];
-          const ca = this.centers[j * 3 + 1];
-          const cb = this.centers[j * 3 + 2];
-          const d = deltaE(lab, [cL, ca, cb]);
-          if (d < bestD) { bestD = d; bestSlot = si; bestCluster = j; }
-        }
-      }
-      if (bestSlot === -1) break;
-      slotToCluster[bestSlot] = bestCluster;
-      scores[bestSlot] = bestD;
-      freeClusters.delete(bestCluster);
-      const idx = slotIdxRemaining.indexOf(bestSlot);
-      if (idx >= 0) slotIdxRemaining.splice(idx, 1);
+      if (pal && pal.lab) seeds.push(pal.lab.slice());
+      else seeds.push(null); // fallback
+    }
+    // Null seed'leri rastgele piksel ile doldur (deterministic seed=42)
+    let rng = mulberry32(42);
+    for (let j = 0; j < seeds.length; j++) {
+      if (seeds[j]) continue;
+      const pi = Math.floor(rng() * n);
+      seeds[j] = [
+        this.origLab[pi * 3],
+        this.origLab[pi * 3 + 1],
+        this.origLab[pi * 3 + 2],
+      ];
     }
 
-    this.slotToCluster = slotToCluster;
+    // Alt-örnekleme: k-means için daha hızlı
+    const sampledLabs = [];
+    for (let i = 0; i < n; i += sampleStride) {
+      const a = this.origPixels[i * 4 + 3];
+      if (a < 32) continue;
+      sampledLabs.push(
+        this.origLab[i * 3],
+        this.origLab[i * 3 + 1],
+        this.origLab[i * 3 + 2],
+      );
+    }
+    const labs = Float32Array.from(sampledLabs);
+    const { centers, drift, counts } = seededKMeans(labs, seeds, { maxIter: 10 });
+    this.centers = centers;
+    this.k = seeds.length;
+    this.slotScores = drift;
+    this.clusterCounts = counts;
+
+    // Tam piksel soft-assignment: top-2 cluster + primary weight
+    this.label1 = new Uint8Array(n);
+    this.label2 = new Uint8Array(n);
+    this.weight1 = new Float32Array(n);
+    const k = this.k;
+    for (let i = 0; i < n; i++) {
+      const L = this.origLab[i * 3], A = this.origLab[i * 3 + 1], B = this.origLab[i * 3 + 2];
+      let d1 = Infinity, d2 = Infinity;
+      let l1 = 0, l2 = 0;
+      for (let j = 0; j < k; j++) {
+        const dL = L - centers[j * 3];
+        const da = A - centers[j * 3 + 1];
+        const db = B - centers[j * 3 + 2];
+        const d = dL * dL + da * da + db * db;
+        if (d < d1) { d2 = d1; l2 = l1; d1 = d; l1 = j; }
+        else if (d < d2) { d2 = d; l2 = j; }
+      }
+      this.label1[i] = l1;
+      this.label2[i] = l2;
+      // Weight hesaplama: softmax-benzeri 1/(d+eps) ağırlıklı
+      // Yumuşatma: primary çok yakınsa w1→1; eşit mesafede w1→0.5
+      const eps = 4; // LAB² birimi
+      const w1raw = 1 / (d1 + eps);
+      const w2raw = 1 / (d2 + eps);
+      this.weight1[i] = w1raw / (w1raw + w2raw);
+    }
+
+    // Slot hedef LAB'ları (başlangıç: orijinal = palette LAB)
     this.slotTargetCodes = codes.slice();
-    this.slotTargetLab = codes.map((c) => this.palette[c]?.lab || null);
-    this.slotOriginalCenterLab = slotToCluster.map((j) => {
-      if (j < 0) return null;
-      return [this.centers[j * 3], this.centers[j * 3 + 1], this.centers[j * 3 + 2]];
-    });
-    return { slotToCluster, scores };
+    this.slotTargetLab = codes.map((c) => (this.palette[c] && this.palette[c].lab) || null);
+
+    return {
+      drift,
+      counts,
+      // UI için: drift>25 uyarı, drift>45 ciddi uyarı
+    };
   }
 
-  /** Kullanıcı slot[i]'yi `newCode`'a çevirdi. */
   setSlot(slotIdx, newCode) {
     if (slotIdx < 0 || slotIdx >= this.slotTargetCodes.length) return;
     this.slotTargetCodes[slotIdx] = newCode;
-    this.slotTargetLab[slotIdx] = this.palette[newCode]?.lab || null;
+    this.slotTargetLab[slotIdx] = (this.palette[newCode] && this.palette[newCode].lab) || null;
   }
 
-  /**
-   * Güncel slot → renk eşlemesine göre tüm görüntüyü yeniden boya.
-   * L-koruyarak: her pikselin orijinal L'si sabit, a/b hedef renge doğru kaydırılır.
-   * @param {number} intensity 0..1 (1=tam boya, 0.8 önerilen — doku korunur)
-   * @returns {ImageData}
-   */
-  render({ intensity = 0.85 } = {}) {
-    if (!this.origPixels) throw new Error("loadImage çağrılmadı");
+  /** Güncel slot hedeflerine göre tüm ImageData'yı üret. */
+  render({ intensity = 0.9 } = {}) {
+    if (!this.origLab) throw new Error("loadImage çağrılmadı");
     const n = this.w * this.h;
     const out = new Uint8ClampedArray(this.origPixels);
-    // Cluster → target Lab (kısa erişim)
-    const clusterTarget = new Array(this.k).fill(null);
-    const clusterOrigCenter = new Array(this.k).fill(null);
-    for (let si = 0; si < this.slotToCluster.length; si++) {
-      const cj = this.slotToCluster[si];
-      if (cj < 0) continue;
-      clusterTarget[cj] = this.slotTargetLab[si];
-      clusterOrigCenter[cj] = this.slotOriginalCenterLab[si];
+    const k = this.k;
+
+    // Cluster j için hedef LAB ve orig center LAB
+    const targetL = new Float32Array(k);
+    const targetA = new Float32Array(k);
+    const targetB = new Float32Array(k);
+    const origL = new Float32Array(k);
+    const origA = new Float32Array(k);
+    const origB = new Float32Array(k);
+    const hasTarget = new Uint8Array(k);
+    for (let j = 0; j < k; j++) {
+      const tgt = this.slotTargetLab[j];
+      if (tgt) {
+        targetL[j] = tgt[0]; targetA[j] = tgt[1]; targetB[j] = tgt[2];
+        origL[j] = this.centers[j * 3];
+        origA[j] = this.centers[j * 3 + 1];
+        origB[j] = this.centers[j * 3 + 2];
+        hasTarget[j] = 1;
+      }
     }
 
     for (let i = 0; i < n; i++) {
-      const lbl = this.labels[i];
-      const tgt = clusterTarget[lbl];
-      const origC = clusterOrigCenter[lbl];
-      if (!tgt || !origC) continue; // slot eşlenmemiş cluster → dokunma
+      const L = this.origLab[i * 3];
+      const A = this.origLab[i * 3 + 1];
+      const B = this.origLab[i * 3 + 2];
+      const l1 = this.label1[i];
+      const l2 = this.label2[i];
+      const w1 = this.weight1[i];
+      const w2 = 1 - w1;
 
-      const r = this.origPixels[i * 4];
-      const g = this.origPixels[i * 4 + 1];
-      const b = this.origPixels[i * 4 + 2];
-      const [L, aa, bb] = rgbToLab(r, g, b);
+      // Her iki cluster için (L,a,b) kayma hesapla, ağırlıklı karıştır
+      let shiftL = 0, shiftA = 0, shiftB = 0;
+      let totalW = 0;
+      if (hasTarget[l1]) {
+        // Adaptive L blend: |targetL - origL| büyükse daha çok L kayması
+        const dLslot = targetL[l1] - origL[l1];
+        const absD = Math.abs(dLslot);
+        const lBlend = clamp01(0.2 + absD * 0.007); // 0 fark → 0.2, 80 fark → 0.76
+        shiftL += w1 * (dLslot * intensity * lBlend);
+        shiftA += w1 * ((targetA[l1] - origA[l1]) * intensity);
+        shiftB += w1 * ((targetB[l1] - origB[l1]) * intensity);
+        totalW += w1;
+      }
+      if (hasTarget[l2]) {
+        const dLslot = targetL[l2] - origL[l2];
+        const absD = Math.abs(dLslot);
+        const lBlend = clamp01(0.2 + absD * 0.007);
+        shiftL += w2 * (dLslot * intensity * lBlend);
+        shiftA += w2 * ((targetA[l2] - origA[l2]) * intensity);
+        shiftB += w2 * ((targetB[l2] - origB[l2]) * intensity);
+        totalW += w2;
+      }
+      if (totalW <= 0) continue; // hiç hedef yok → orijinal bırak
+      // totalW<1 durumunda (bir cluster hedefsiz) orantıla
+      if (totalW < 1) { shiftL /= totalW; shiftA /= totalW; shiftB /= totalW; }
 
-      // Pikselin L'sini koru, a/b'yi hedef (cluster merkezine göre) kaydır.
-      // newA = aa + (tgt.a - origC.a) * intensity
-      // Bu, dokunun varyansını koruyup merkezini tgt'ye taşır.
-      const newA = aa + (tgt[1] - origC[1]) * intensity;
-      const newB = bb + (tgt[2] - origC[2]) * intensity;
-      // L küçük bir kayma alabilir — çok koyu→çok açık geçişlerde tamamen L-kilit
-      // hatalı hissediyor; %20 oranında hedef L'ye doğru kayalım.
-      const newL = L + (tgt[0] - origC[0]) * intensity * 0.2;
+      const newL = L + shiftL;
+      const newA = A + shiftA;
+      const newB = B + shiftB;
 
       const [nr, ng, nb] = labToRgb(newL, newA, newB);
       out[i * 4] = nr;
@@ -343,22 +358,40 @@ export class RecolorEngine {
     return new ImageData(out, this.w, this.h);
   }
 
-  /** Render sonucunu bir canvas'a (hedef boyutta) scale ederek çizer. */
+  /** Orijinal görseli ImageData olarak döndür (slider karşılaştırması için). */
+  renderOriginal() {
+    const copy = new Uint8ClampedArray(this.origPixels);
+    return new ImageData(copy, this.w, this.h);
+  }
+
+  /** Render çıktısını hedef canvas'a scale çizer. */
   drawTo(targetCanvas, imageData) {
     const ctx = targetCanvas.getContext("2d");
-    // Önce offscreen'e yaz, sonra scale çiz
     this._srcCtx.putImageData(imageData, 0, 0);
     ctx.imageSmoothingQuality = "high";
     ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
     ctx.drawImage(this._srcCanvas, 0, 0, targetCanvas.width, targetCanvas.height);
   }
 
-  /** Kolaylık: tüm pipeline'ı tek fonksiyonda. */
-  async init(url, codes) {
-    await this.loadImage(url);
-    this.segment(Math.max(2, codes.length));
-    this.matchSlots(codes);
+  /** PDF/download için: güncel render'ı JPEG dataURL olarak döndür. */
+  toDataURL(type = "image/jpeg", quality = 0.9) {
+    return this._srcCanvas.toDataURL(type, quality);
   }
+}
+
+function clamp01(x) {
+  return x < 0 ? 0 : x > 1 ? 1 : x;
+}
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 function loadHTMLImage(url) {
@@ -366,7 +399,7 @@ function loadHTMLImage(url) {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
-    img.onerror = (e) => reject(new Error(`Görsel yüklenemedi: ${url}`));
+    img.onerror = () => reject(new Error(`Görsel yüklenemedi: ${url}`));
     img.src = url;
   });
 }

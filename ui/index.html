@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
   <header class="topbar">
@@ -103,6 +103,24 @@
               <div class="preview-badge" id="previewBadge" hidden>
                 <span class="preview-badge-icon">⚠︎</span>
                 <span>Görsel orijinal renkleri gösteriyor</span>
+              </div>
+              <div class="preview-tools" id="previewTools" hidden>
+                <button class="preview-tool-btn" id="previewSliderBtn" type="button" title="Önce / Sonra karşılaştır" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 2v12M4 5l-2 3 2 3M12 5l2 3-2 3"/></svg>
+                  <span>Karşılaştır</span>
+                </button>
+                <button class="preview-tool-btn" id="previewFullscreenBtn" type="button" title="Tam ekran">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>
+                  <span>Tam ekran</span>
+                </button>
+              </div>
+              <div class="slider-label-before">ÖNCE</div>
+              <div class="slider-label-after">SONRA</div>
+              <div class="slider-divider"></div>
+              <div class="slider-handle" id="sliderHandle" aria-label="Karşılaştırma kaydırıcısı" role="slider" tabindex="0">‹›</div>
+              <div class="recolor-quality-warn" id="recolorQualityWarn" hidden>
+                <span>⚠︎</span>
+                <span id="recolorQualityWarnText">Bazı renkler halıda tam karşılığını bulamadı — sonuç yaklaşıktır.</span>
               </div>
             </div>
             <div class="rug-preview-caption" id="rugPreviewCaption">Referans görsel (orijinal renklerle)</div>
@@ -218,9 +236,21 @@
     </div>
   </div>
 
+  <!-- ============ FULLSCREEN MODAL (halıyı tam ekran görmek için) ============ -->
+  <div class="fullscreen-modal" id="fullscreenModal" role="dialog" aria-label="Halı tam ekran" aria-modal="true">
+    <div class="fs-stage">
+      <button class="fs-compare" id="fsCompareBtn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 2v12M4 5l-2 3 2 3M12 5l2 3-2 3"/></svg>
+        <span id="fsCompareLabel">Önce / Sonra</span>
+      </button>
+      <button class="fs-close" id="fsCloseBtn" type="button" aria-label="Kapat">✕ Kapat (Esc)</button>
+      <canvas class="fs-canvas" id="fsCanvas"></canvas>
+    </div>
+  </div>
+
   <!-- ============ PRINT SHEET (sadece print modunda görünür) ============ -->
   <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
 
-  <script type="module" src="app.js?v=8"></script>
+  <script type="module" src="app.js?v=9"></script>
 </body>
 </html>
