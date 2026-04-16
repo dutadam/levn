@@ -1,6 +1,6 @@
 /* Levn — paylaşılan renk paleti popover. Studio slot tıklandığında açılır. */
 
-import { state, assetUrl, escapeHtml, normalize, verifiedSortedColors, colorFamily } from "./shared.js?v=9";
+import { state, assetUrl, escapeHtml, normalize, verifiedSortedColors, colorFamily } from "./shared.js?v=10";
 
 let resolveFn = null;
 let currentSlotIndex = -1;

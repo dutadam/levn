@@ -223,7 +223,7 @@ export class RecolorEngine {
       ];
     }
 
-    // Alt-örnekleme: k-means için daha hızlı
+    // Alt-örnekleme: k-means drift skoru için (assignment'a ETKİSİ YOK)
     const sampledLabs = [];
     for (let i = 0; i < n; i += sampleStride) {
       const a = this.origPixels[i * 4 + 3];
@@ -236,42 +236,122 @@ export class RecolorEngine {
     }
     const labs = Float32Array.from(sampledLabs);
     const { centers, drift, counts } = seededKMeans(labs, seeds, { maxIter: 10 });
-    this.centers = centers;
     this.k = seeds.length;
     this.slotScores = drift;
     this.clusterCounts = counts;
 
-    // Tam piksel soft-assignment: top-2 cluster + primary weight
-    this.label1 = new Uint8Array(n);
-    this.label2 = new Uint8Array(n);
-    this.weight1 = new Float32Array(n);
+    // ★ K-means center'lar ile assignment yap (seeds sadece başlangıç).
+    // K-means center'lar halıdaki gerçek piksel dağılımını yansıtır; palette
+    // seeds çok farklı düşebilir (swatch ≠ halı dokusu). Render formülünde
+    // shift = target_LAB - cluster_center_LAB kullanılır.
     const k = this.k;
+    this.centers = centers;
+
+    // Adaptive sigma: minimum inter-CENTER mesafesine göre.
+    let minInterCenter2 = Infinity;
+    for (let i = 0; i < k; i++) {
+      for (let j = i + 1; j < k; j++) {
+        const dL = centers[i * 3] - centers[j * 3];
+        const da = centers[i * 3 + 1] - centers[j * 3 + 1];
+        const db = centers[i * 3 + 2] - centers[j * 3 + 2];
+        const d2 = dL * dL + da * da + db * db;
+        if (d2 < minInterCenter2) minInterCenter2 = d2;
+      }
+    }
+    // sigma² ölçeği: minDist²'nin yarısı → δE=minDist'te weight ≈ exp(-2) ≈ 0.135
+    // Bu, yakın renklerde orta düzey bleed sağlar (çok keskin olursa doku kaybı olur).
+    const sigma2 = Math.max(16, Math.min(256, minInterCenter2 * 0.5));
+
+    // Tam piksel soft-assignment: TOP-M cluster + Gaussian ağırlıklar (alpha matting).
+    const M = Math.min(3, k);
+    this.topM = M;
+    this.labelsM = new Uint8Array(n * M);
+    this.weightsM = new Float32Array(n * M);
     for (let i = 0; i < n; i++) {
       const L = this.origLab[i * 3], A = this.origLab[i * 3 + 1], B = this.origLab[i * 3 + 2];
-      let d1 = Infinity, d2 = Infinity;
-      let l1 = 0, l2 = 0;
+      // Mini insertion sort ile top-M bul — k-means centers'a göre
+      const bestD = new Float32Array(M); bestD.fill(Infinity);
+      const bestJ = new Int32Array(M);
       for (let j = 0; j < k; j++) {
         const dL = L - centers[j * 3];
         const da = A - centers[j * 3 + 1];
         const db = B - centers[j * 3 + 2];
         const d = dL * dL + da * da + db * db;
-        if (d < d1) { d2 = d1; l2 = l1; d1 = d; l1 = j; }
-        else if (d < d2) { d2 = d; l2 = j; }
+        for (let m = 0; m < M; m++) {
+          if (d < bestD[m]) {
+            for (let s = M - 1; s > m; s--) { bestD[s] = bestD[s - 1]; bestJ[s] = bestJ[s - 1]; }
+            bestD[m] = d; bestJ[m] = j;
+            break;
+          }
+        }
       }
-      this.label1[i] = l1;
-      this.label2[i] = l2;
-      // Weight hesaplama: softmax-benzeri 1/(d+eps) ağırlıklı
-      // Yumuşatma: primary çok yakınsa w1→1; eşit mesafede w1→0.5
-      const eps = 4; // LAB² birimi
-      const w1raw = 1 / (d1 + eps);
-      const w2raw = 1 / (d2 + eps);
-      this.weight1[i] = w1raw / (w1raw + w2raw);
+      // Gaussian weights — adaptive sigma
+      let wSum = 0;
+      const ws = new Float32Array(M);
+      for (let m = 0; m < M; m++) {
+        ws[m] = Math.exp(-bestD[m] / sigma2);
+        wSum += ws[m];
+      }
+      for (let m = 0; m < M; m++) {
+        this.labelsM[i * M + m] = bestJ[m];
+        this.weightsM[i * M + m] = wSum > 0 ? ws[m] / wSum : (m === 0 ? 1 : 0);
+      }
     }
 
-    // Slot hedef LAB'ları (başlangıç: orijinal = palette LAB)
+    // Her cluster'ın tam-örnekleme LAB istatistikleri (histogram spec için orig std)
+    this.clusterStdL = new Float32Array(k);
+    this.clusterStda = new Float32Array(k);
+    this.clusterStdb = new Float32Array(k);
+    this.clusterMeanL = new Float32Array(k);
+    this.clusterMeana = new Float32Array(k);
+    this.clusterMeanb = new Float32Array(k);
+    {
+      const sumL = new Float64Array(k), suma = new Float64Array(k), sumb = new Float64Array(k);
+      const cnt = new Uint32Array(k);
+      for (let i = 0; i < n; i++) {
+        const j = this.labelsM[i * M]; // primary cluster
+        sumL[j] += this.origLab[i * 3];
+        suma[j] += this.origLab[i * 3 + 1];
+        sumb[j] += this.origLab[i * 3 + 2];
+        cnt[j]++;
+      }
+      for (let j = 0; j < k; j++) {
+        if (cnt[j] > 0) {
+          this.clusterMeanL[j] = sumL[j] / cnt[j];
+          this.clusterMeana[j] = suma[j] / cnt[j];
+          this.clusterMeanb[j] = sumb[j] / cnt[j];
+        } else {
+          this.clusterMeanL[j] = centers[j * 3];
+          this.clusterMeana[j] = centers[j * 3 + 1];
+          this.clusterMeanb[j] = centers[j * 3 + 2];
+        }
+      }
+      const vsL = new Float64Array(k), vsa = new Float64Array(k), vsb = new Float64Array(k);
+      for (let i = 0; i < n; i++) {
+        const j = this.labelsM[i * M];
+        const dL = this.origLab[i * 3] - this.clusterMeanL[j];
+        const da = this.origLab[i * 3 + 1] - this.clusterMeana[j];
+        const db = this.origLab[i * 3 + 2] - this.clusterMeanb[j];
+        vsL[j] += dL * dL; vsa[j] += da * da; vsb[j] += db * db;
+      }
+      for (let j = 0; j < k; j++) {
+        const c = cnt[j] || 1;
+        // std + küçük epsilon (divide-by-zero koru)
+        this.clusterStdL[j] = Math.max(0.5, Math.sqrt(vsL[j] / c));
+        this.clusterStda[j] = Math.max(0.3, Math.sqrt(vsa[j] / c));
+        this.clusterStdb[j] = Math.max(0.3, Math.sqrt(vsb[j] / c));
+      }
+      this.clusterCountsPixel = Array.from(cnt);
+    }
+
+    // Slot hedef LAB + std'leri (başlangıç: orijinal = palette LAB)
     this.slotOriginalCodes = codes.slice();   // değişiklik tespiti için sabit
     this.slotTargetCodes = codes.slice();
     this.slotTargetLab = codes.map((c) => (this.palette[c] && this.palette[c].lab) || null);
+    this.slotTargetStd = codes.map((c) => {
+      const p = this.palette[c];
+      return (p && p.lab_std) ? p.lab_std : null;
+    });
 
     return {
       drift,
@@ -283,81 +363,109 @@ export class RecolorEngine {
   setSlot(slotIdx, newCode) {
     if (slotIdx < 0 || slotIdx >= this.slotTargetCodes.length) return;
     this.slotTargetCodes[slotIdx] = newCode;
-    this.slotTargetLab[slotIdx] = (this.palette[newCode] && this.palette[newCode].lab) || null;
+    const p = this.palette[newCode];
+    this.slotTargetLab[slotIdx] = (p && p.lab) || null;
+    this.slotTargetStd[slotIdx] = (p && p.lab_std) || null;
   }
 
-  /** Güncel slot hedeflerine göre tüm ImageData'yı üret. */
-  render({ intensity = 0.9 } = {}) {
+  /** Güncel slot hedeflerine göre tüm ImageData'yı üret.
+   *
+   * Histogram specification (v3):
+   *   Her cluster için pixel LAB dağılımını hedef renk dağılımına REMAP eder:
+   *     newL = targetMeanL + (pixelL - clusterMeanL) * (targetStdL / clusterStdL)
+   *   Aynı a, b için de. Std yoksa std-scaling skip → sadece mean shift.
+   *
+   *   Bu shift = target - center'dan daha güçlü: L varyasyonunun *amplitüdü*
+   *   de hedef swatch'ın std'sine göre ölçeklenir. Texture korunur (relative
+   *   rank), ama kontrast hedefe uyar.
+   *
+   * Alpha matting:
+   *   Pixel'in top-M cluster'ına Gaussian-normalized weight ile karışık
+   *   remap uygula → cluster sınırlarında yumuşak geçiş.
+   *
+   * Shift sadece `changed[j]` cluster'lara uygulanır (dokunulmamış renkler
+   * orijinal kalır).
+   */
+  render({ intensity = 1.0, sharp = 0.9 } = {}) {
     if (!this.origLab) throw new Error("loadImage çağrılmadı");
     const n = this.w * this.h;
     const out = new Uint8ClampedArray(this.origPixels);
     const k = this.k;
+    const M = this.topM || 1;
 
-    // Cluster j için hedef LAB ve orig center LAB
-    // KRİTİK: shift hedef = (palette_LAB - cluster_center_LAB). Bu, değişen
-    // slot'lar için "hedefe yolculuk", DEĞİŞMEYENLER için de seed drift
-    // (saf palette ↔ gerçek ortalama farkı) demek. Değişmemiş slot'lara
-    // shift UYGULAMIYORUZ — aksi halde dokunulmayan renkler de palette'e
-    // doğru kayar. `changed[j]` mask'i bunu engelliyor.
     const targetL = new Float32Array(k);
     const targetA = new Float32Array(k);
     const targetB = new Float32Array(k);
-    const origL = new Float32Array(k);
-    const origA = new Float32Array(k);
-    const origB = new Float32Array(k);
+    const tStdL = new Float32Array(k);
+    const tStdA = new Float32Array(k);
+    const tStdB = new Float32Array(k);
     const hasTarget = new Uint8Array(k);
+    const hasStd = new Uint8Array(k);
     const changed = new Uint8Array(k);
     for (let j = 0; j < k; j++) {
       const tgt = this.slotTargetLab[j];
       if (tgt) {
         targetL[j] = tgt[0]; targetA[j] = tgt[1]; targetB[j] = tgt[2];
-        origL[j] = this.centers[j * 3];
-        origA[j] = this.centers[j * 3 + 1];
-        origB[j] = this.centers[j * 3 + 2];
         hasTarget[j] = 1;
       }
-      const origCode = (this.slotOriginalCodes && this.slotOriginalCodes[j]);
+      const tst = this.slotTargetStd && this.slotTargetStd[j];
+      if (tst) {
+        tStdL[j] = tst[0]; tStdA[j] = tst[1]; tStdB[j] = tst[2];
+        hasStd[j] = 1;
+      }
+      const origCode = this.slotOriginalCodes && this.slotOriginalCodes[j];
       const curCode = this.slotTargetCodes[j];
       changed[j] = (origCode !== undefined && curCode !== origCode) ? 1 : 0;
     }
-    // Hiç değişiklik yoksa orijinali aynen döndür — gereksiz hesap yok
     let anyChanged = false;
     for (let j = 0; j < k; j++) if (changed[j]) { anyChanged = true; break; }
     if (!anyChanged) return new ImageData(out, this.w, this.h);
+
+    // Std ölçek clamp'leri: çok büyük/küçük amplifikasyonları engelle
+    const MIN_SCALE = 0.6, MAX_SCALE = 1.8;
 
     for (let i = 0; i < n; i++) {
       const L = this.origLab[i * 3];
       const A = this.origLab[i * 3 + 1];
       const B = this.origLab[i * 3 + 2];
-      const l1 = this.label1[i];
-      const l2 = this.label2[i];
-      const w1 = this.weight1[i];
-      const w2 = 1 - w1;
 
-      // Her iki cluster için (L,a,b) kayma hesapla — SADECE değişmişlere.
+      // Her cluster için histogram-spec'lenmiş LAB hesapla, weight'le karıştır.
+      // shiftL/A/B = remapped - original.
       let shiftL = 0, shiftA = 0, shiftB = 0;
-      if (hasTarget[l1] && changed[l1]) {
-        const dLslot = targetL[l1] - origL[l1];
-        const absD = Math.abs(dLslot);
-        const lBlend = clamp01(0.2 + absD * 0.007); // 0 fark → 0.2, 80 fark → 0.76
-        shiftL += w1 * (dLslot * intensity * lBlend);
-        shiftA += w1 * ((targetA[l1] - origA[l1]) * intensity);
-        shiftB += w1 * ((targetB[l1] - origB[l1]) * intensity);
+      let contribW = 0;
+      for (let m = 0; m < M; m++) {
+        const j = this.labelsM[i * M + m];
+        const w = this.weightsM[i * M + m];
+        if (w < 0.01) continue; // ihmal edilebilir katkı
+        if (!hasTarget[j] || !changed[j]) continue;
+        // sharp: primary (m=0) için w'yi biraz artır, tail için kıs → sınır yumuşatma ile
+        // bleed arası denge
+        const wEff = (m === 0 ? w + (1 - w) * (1 - sharp) : w * sharp);
+        const cMeanL = this.clusterMeanL[j];
+        const cMeanA = this.clusterMeana[j];
+        const cMeanB = this.clusterMeanb[j];
+        const cStdL = this.clusterStdL[j];
+        const cStdA = this.clusterStda[j];
+        const cStdB = this.clusterStdb[j];
+        const sL = hasStd[j] ? clampScale(tStdL[j] / cStdL, MIN_SCALE, MAX_SCALE) : 1;
+        const sA = hasStd[j] ? clampScale(tStdA[j] / cStdA, MIN_SCALE, MAX_SCALE) : 1;
+        const sB = hasStd[j] ? clampScale(tStdB[j] / cStdB, MIN_SCALE, MAX_SCALE) : 1;
+        const remapL = targetL[j] + (L - cMeanL) * sL;
+        const remapA = targetA[j] + (A - cMeanA) * sA;
+        const remapB = targetB[j] + (B - cMeanB) * sB;
+        shiftL += wEff * (remapL - L);
+        shiftA += wEff * (remapA - A);
+        shiftB += wEff * (remapB - B);
+        contribW += wEff;
       }
-      if (hasTarget[l2] && changed[l2]) {
-        const dLslot = targetL[l2] - origL[l2];
-        const absD = Math.abs(dLslot);
-        const lBlend = clamp01(0.2 + absD * 0.007);
-        // Secondary katkıyı biraz zayıflat (bleed azalt): 0.6x
-        shiftL += w2 * 0.6 * (dLslot * intensity * lBlend);
-        shiftA += w2 * 0.6 * ((targetA[l2] - origA[l2]) * intensity);
-        shiftB += w2 * 0.6 * ((targetB[l2] - origB[l2]) * intensity);
-      }
-      if (shiftL === 0 && shiftA === 0 && shiftB === 0) continue;
+      if (contribW === 0) continue;
 
-      const newL = L + shiftL;
-      const newA = A + shiftA;
-      const newB = B + shiftB;
+      // Normalize: shift'leri toplam katkı weight'ine böl.
+      // Böylece primary cluster %95 weight'le bile shift'in tamamı uygulanır.
+      const norm = 1 / contribW;
+      const newL = L + shiftL * norm * intensity;
+      const newA = A + shiftA * norm * intensity;
+      const newB = B + shiftB * norm * intensity;
 
       const [nr, ng, nb] = labToRgb(newL, newA, newB);
       out[i * 4] = nr;
@@ -390,6 +498,10 @@ export class RecolorEngine {
 
 function clamp01(x) {
   return x < 0 ? 0 : x > 1 ? 1 : x;
+}
+
+function clampScale(x, lo, hi) {
+  return x < lo ? lo : x > hi ? hi : x;
 }
 
 function mulberry32(seed) {

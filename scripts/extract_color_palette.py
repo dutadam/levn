@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Levn Faz 5 — Renk swatch'lerinden sayısal palet üret.
+"""Levn Faz 5 — Renk swatch'lerinden sayısal palet üret (v2).
+
+v2 iyileştirmeleri:
+  • Dominant RGB: LAB uzayında trimlenmiş ortalama (histogram bucket mode
+    yerine). Daha stabil, renk algısıyla tutarlı.
+  • L_std, a_std, b_std: swatch'ın LAB dağılımının genişliği — histogram
+    spec için runtime'da kullanılır (mean+std matching).
+  • Trim %5-%95: aşırı aydınlık/karanlık vignette ve noise dışlanır.
 
 Her color_assets.json girişindeki swatch JPEG'inin merkez %60 bölgesinden
-histogram-dominant RGB çıkarır; ayrıca HSL ve LAB dönüşümlerini kaydeder.
-Bu veri runtime'da k-means küme → renk kodu eşlemesi için kullanılır.
+robust istatistik çıkarır; HSL ve LAB dönüşümleri + dağılım genişliğini
+kaydeder. Bu veri runtime'da k-means küme → renk kodu eşlemesi ve
+histogram-spec renk değişimi için kullanılır.
 
 Çıktı: data/color_palette.json
 {
@@ -11,6 +19,7 @@ Bu veri runtime'da k-means küme → renk kodu eşlemesi için kullanılır.
     "rgb": [232, 220, 200],
     "hsl": [36, 0.28, 0.85],
     "lab": [88.2, 2.1, 14.3],
+    "lab_std": [4.1, 0.8, 1.5],
     "hex": "#e8dcc8",
     "source": "plain_single"
   },
@@ -55,7 +64,11 @@ def center_crop(img: Image.Image, frac: float = CENTER_FRAC) -> Image.Image:
     return img.crop((x0, y0, x0 + cw, y0 + ch))
 
 
-def dominant_rgb(img_path: Path) -> tuple[int, int, int] | None:
+def dominant_lab_stats(img_path: Path):
+    """Swatch'ın LAB uzayında trimlenmiş ortalamasını ve std'lerini döndür.
+
+    Returns: ((L,a,b) mean, (L,a,b) std, (r,g,b) mean) veya None.
+    """
     try:
         with Image.open(img_path) as im:
             im = im.convert("RGB")
@@ -65,31 +78,32 @@ def dominant_rgb(img_path: Path) -> tuple[int, int, int] | None:
     except Exception as e:
         print(f"[warn] {img_path.name}: {e}", file=sys.stderr)
         return None
-
     if not pixels:
         return None
 
-    # Bucket'la quantize ederek dominant bucket'ı bul
-    buckets = Counter()
-    for r, g, b in pixels:
-        bk = (r // BUCKET_SIZE, g // BUCKET_SIZE, b // BUCKET_SIZE)
-        buckets[bk] += 1
-
-    # En kalabalık top 3 bucket'ın ağırlıklı ortalamasını al
-    # (tek bucket çok kaba kaçar, histogram tepesi yumuşasın)
-    top = buckets.most_common(3)
-    total = sum(c for _, c in top)
-    r_sum = g_sum = b_sum = 0
-    for (r, g, b), c in top:
-        # Bucket merkezine doğru kaydır
-        r_sum += (r * BUCKET_SIZE + BUCKET_SIZE // 2) * c
-        g_sum += (g * BUCKET_SIZE + BUCKET_SIZE // 2) * c
-        b_sum += (b * BUCKET_SIZE + BUCKET_SIZE // 2) * c
-
+    # Her piksel için LAB hesapla
+    labs = [rgb_to_lab(r, g, b) for r, g, b in pixels]
+    labs.sort(key=lambda t: t[0])  # L'ye göre sırala, outlier kırpma için
+    lo = int(len(labs) * 0.05)
+    hi = int(len(labs) * 0.95)
+    trimmed = labs[lo:hi] if hi > lo else labs
+    n = len(trimmed)
+    # Mean
+    sumL = sum(t[0] for t in trimmed)
+    suma = sum(t[1] for t in trimmed)
+    sumb = sum(t[2] for t in trimmed)
+    meanL, meana, meanb = sumL / n, suma / n, sumb / n
+    # Std
+    varL = sum((t[0] - meanL) ** 2 for t in trimmed) / n
+    vara = sum((t[1] - meana) ** 2 for t in trimmed) / n
+    varb = sum((t[2] - meanb) ** 2 for t in trimmed) / n
+    stdL, stda, stdb = math.sqrt(varL), math.sqrt(vara), math.sqrt(varb)
+    # LAB mean → RGB geri dönüş (hex için)
+    r, g, b = lab_to_rgb(meanL, meana, meanb)
     return (
-        min(255, max(0, round(r_sum / total))),
-        min(255, max(0, round(g_sum / total))),
-        min(255, max(0, round(b_sum / total))),
+        (round(meanL, 2), round(meana, 2), round(meanb, 2)),
+        (round(stdL, 2), round(stda, 2), round(stdb, 2)),
+        (r, g, b),
     )
 
 
@@ -123,6 +137,31 @@ def rgb_to_lab(r: int, g: int, b: int) -> tuple[float, float, float]:
     return (round(L, 2), round(a, 2), round(b_, 2))
 
 
+def lab_to_rgb(L: float, a: float, b_: float) -> tuple[int, int, int]:
+    """D65 LAB → sRGB 8-bit. recolor.js'teki ile aynı math."""
+    fy = (L + 16) / 116
+    fx = a / 500 + fy
+    fz = fy - b_ / 200
+
+    def finv(t: float) -> float:
+        t3 = t ** 3
+        return t3 if t3 > 0.008856 else (t - 16 / 116) / 7.787
+
+    x = finv(fx) * 0.95047
+    y = finv(fy) * 1.0
+    z = finv(fz) * 1.08883
+    rl = x * 3.2404542 + y * -1.5371385 + z * -0.4985314
+    gl = x * -0.9692660 + y * 1.8760108 + z * 0.0415560
+    bl = x * 0.0556434 + y * -0.2040259 + z * 1.0572252
+
+    def linear_to_srgb(u: float) -> int:
+        u = max(0.0, min(1.0, u))
+        v = u * 12.92 if u <= 0.0031308 else 1.055 * (u ** (1 / 2.4)) - 0.055
+        return max(0, min(255, round(v * 255)))
+
+    return linear_to_srgb(rl), linear_to_srgb(gl), linear_to_srgb(bl)
+
+
 def hex_of(r: int, g: int, b: int) -> str:
     return f"#{r:02x}{g:02x}{b:02x}"
 
@@ -147,16 +186,18 @@ def main() -> int:
             missing += 1
             continue
 
-        rgb = dominant_rgb(img_path)
-        if rgb is None:
+        stats = dominant_lab_stats(img_path)
+        if stats is None:
             missing += 1
             continue
 
-        r, g, b = rgb
+        (lab_mean, lab_std, rgb_mean) = stats
+        r, g, b = rgb_mean
         palette[code] = {
             "rgb": [r, g, b],
             "hsl": list(rgb_to_hsl(r, g, b)),
-            "lab": list(rgb_to_lab(r, g, b)),
+            "lab": list(lab_mean),
+            "lab_std": list(lab_std),
             "hex": hex_of(r, g, b),
             "source": info.get("mode") if isinstance(info, dict) else None,
         }
