@@ -160,7 +160,7 @@ export class RecolorEngine {
     this.weight1 = null;            // Float32Array primary weight [0..1]
     this.slotScores = [];          // drift/küme-başı metrik
     this.clusterCounts = [];
-    this.maxSide = 640;
+    this.maxSide = 1024;
     this._srcCanvas = null;
     this._srcCtx = null;
   }

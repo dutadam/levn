@@ -40,11 +40,7 @@ const studio = {
 
   // Görsel görüntüleme UI state
   view: {
-    sliderPos: 50,        // 0..100 yüzde
-    sliderActive: false,  // önce/sonra modunda mı?
     fsOpen: false,
-    fsCompare: false,     // fullscreen'de önce/sonra modu
-    fsSliderPos: 50,
   },
 };
 
@@ -167,7 +163,8 @@ function renderEditor() {
   $("editorTitle").textContent = rug.title || "";
   $("editorCollection").textContent = collectionLabel(rug.collection);
   $("editorProductLink").href = rug.product_url || "#";
-  $("rugPreviewImage").style.backgroundImage = `url('${rug.img_url || ""}')`;
+  const origImg = $("previewOrigImg");
+  if (origImg) origImg.src = rug.img_url || "";
   $("skuOriginal").textContent = `Orijinal: ${parsed.raw || rug.sku_raw || ""}`;
 
   // Faz 5a: recolor engine'i başlat
@@ -207,7 +204,6 @@ async function initRecolorFor(rug) {
   studio.recolor.scores = [];
   showCanvas(false);
   showPreviewTools(false);
-  setSliderMode(false);
   const warn = $("recolorQualityWarn");
   if (warn) warn.hidden = true;
   showRecolorSpinner(true);
@@ -245,7 +241,7 @@ function applyRecolor() {
   if (!engine || !ready) return;
   // Güncel workingCodes ile engine slot'larını eşitle
   studio.workingCodes.forEach((code, i) => engine.setSlot(i, code));
-  const imgData = engine.render({ intensity: 0.9 });
+  const imgData = engine.render({ intensity: 1.0 });
   const canvas = ensureCanvas();
   if (!canvas) return;
   canvas.width = engine.w;
@@ -322,78 +318,6 @@ function showRecolorSpinner(show) {
   }
 }
 
-/* ============ SLIDER (önce/sonra karşılaştırma) ============ */
-
-function setSliderMode(on) {
-  studio.view.sliderActive = !!on;
-  const host = $("rugPreviewImage");
-  const btn = $("previewSliderBtn");
-  if (host) host.classList.toggle("slider-mode", !!on);
-  if (btn) {
-    btn.classList.toggle("active", !!on);
-    btn.setAttribute("aria-pressed", on ? "true" : "false");
-  }
-  if (on) updateSliderPos(studio.view.sliderPos);
-}
-
-function updateSliderPos(pct) {
-  pct = Math.max(0, Math.min(100, pct));
-  studio.view.sliderPos = pct;
-  const host = $("rugPreviewImage");
-  if (host) host.style.setProperty("--slider-pos", `${pct}%`);
-}
-
-function initSliderDrag() {
-  const host = $("rugPreviewImage");
-  const handle = $("sliderHandle");
-  if (!host || !handle) return;
-
-  let dragging = false;
-  const onMove = (clientX) => {
-    if (!dragging) return;
-    const rect = host.getBoundingClientRect();
-    const pct = ((clientX - rect.left) / rect.width) * 100;
-    updateSliderPos(pct);
-  };
-  const start = (e) => {
-    if (!studio.view.sliderActive) return;
-    dragging = true;
-    e.preventDefault();
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    onMove(cx);
-  };
-  const move = (e) => {
-    if (!dragging) return;
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    onMove(cx);
-  };
-  const end = () => { dragging = false; };
-
-  handle.addEventListener("mousedown", start);
-  host.addEventListener("mousedown", (e) => {
-    // host'a direkt tıkla — handle dışındaki bir noktayı seçerse slider'ı oraya taşı
-    if (!studio.view.sliderActive) return;
-    if (e.target.closest(".preview-tool-btn")) return;
-    start(e);
-  });
-  window.addEventListener("mousemove", move);
-  window.addEventListener("mouseup", end);
-
-  handle.addEventListener("touchstart", start, { passive: false });
-  window.addEventListener("touchmove", move, { passive: false });
-  window.addEventListener("touchend", end);
-
-  // Klavye erişilebilirliği
-  handle.addEventListener("keydown", (e) => {
-    if (!studio.view.sliderActive) return;
-    const step = e.shiftKey ? 10 : 4;
-    if (e.key === "ArrowLeft")  { updateSliderPos(studio.view.sliderPos - step); e.preventDefault(); }
-    if (e.key === "ArrowRight") { updateSliderPos(studio.view.sliderPos + step); e.preventDefault(); }
-    if (e.key === "Home")       { updateSliderPos(0); e.preventDefault(); }
-    if (e.key === "End")        { updateSliderPos(100); e.preventDefault(); }
-  });
-}
-
 /* ============ FULLSCREEN MODAL ============ */
 
 function openFullscreen() {
@@ -403,7 +327,6 @@ function openFullscreen() {
   if (!modal || !fsCanvas) return;
 
   studio.view.fsOpen = true;
-  studio.view.fsCompare = false;
   modal.setAttribute("open", "");
   document.body.style.overflow = "hidden";
 
@@ -412,7 +335,7 @@ function openFullscreen() {
     // CSS width/height:auto kullanıyoruz; canvas pixel boyutu = engine.w/h
     fsCanvas.width = engine.w;
     fsCanvas.height = engine.h;
-    const data = engine.render({ intensity: 0.9 });
+    const data = engine.render({ intensity: 1.0 });
     engine.drawTo(fsCanvas, data);
   } else {
     // Recolor yoksa orijinal görseli göster
@@ -435,43 +358,18 @@ function openFullscreen() {
     };
     img.src = rug.img_url;
   }
-  updateFsCompareBtn();
 }
 
 function closeFullscreen() {
   const modal = $("fullscreenModal");
   if (!modal) return;
   studio.view.fsOpen = false;
-  studio.view.fsCompare = false;
   modal.removeAttribute("open");
   document.body.style.overflow = "";
   const fsCanvas = $("fsCanvas");
   if (fsCanvas) {
     fsCanvas.style.backgroundImage = "";
   }
-}
-
-function toggleFsCompare() {
-  const { engine, ready } = studio.recolor;
-  if (!engine || !ready) return;
-  const fsCanvas = $("fsCanvas");
-  if (!fsCanvas) return;
-  studio.view.fsCompare = !studio.view.fsCompare;
-  // compare=true → orijinal göster; false → modified göster
-  const data = studio.view.fsCompare ? engine.renderOriginal() : engine.render({ intensity: 0.9 });
-  engine.drawTo(fsCanvas, data);
-  updateFsCompareBtn();
-}
-
-function updateFsCompareBtn() {
-  const btn = $("fsCompareBtn");
-  if (!btn) return;
-  const { engine, ready } = studio.recolor;
-  btn.hidden = !(engine && ready);
-  btn.classList.toggle("active", studio.view.fsCompare);
-  btn.setAttribute("aria-pressed", studio.view.fsCompare ? "true" : "false");
-  const lbl = $("fsCompareLabel");
-  if (lbl) lbl.textContent = studio.view.fsCompare ? "Orijinali gizle" : "Önce / Sonra";
 }
 
 /* Changed? */
@@ -916,13 +814,6 @@ export function initStudio() {
   if (aiBtn) aiBtn.addEventListener("click", handleAiLockClick);
 
   // Preview tools
-  const sliderBtn = $("previewSliderBtn");
-  if (sliderBtn) {
-    sliderBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      setSliderMode(!studio.view.sliderActive);
-    });
-  }
   const fsBtn = $("previewFullscreenBtn");
   if (fsBtn) {
     fsBtn.addEventListener("click", (e) => {
@@ -930,39 +821,27 @@ export function initStudio() {
       openFullscreen();
     });
   }
-  // Preview alanına direkt tıkla → fullscreen (slider modu hariç, tool butonları hariç)
+  // Preview alanına direkt tıkla → fullscreen
   const host = $("rugPreviewImage");
   if (host) {
     host.addEventListener("click", (e) => {
-      if (studio.view.sliderActive) return;
       if (e.target.closest(".preview-tool-btn")) return;
-      if (e.target.closest(".slider-handle")) return;
       if (!studio.currentRug) return;
       openFullscreen();
     });
   }
 
-  // Slider drag
-  initSliderDrag();
-
   // Fullscreen modal
   const fsClose = $("fsCloseBtn");
   if (fsClose) fsClose.addEventListener("click", closeFullscreen);
-  const fsCompare = $("fsCompareBtn");
-  if (fsCompare) fsCompare.addEventListener("click", toggleFsCompare);
   const fsModal = $("fullscreenModal");
   if (fsModal) {
     fsModal.addEventListener("click", (e) => {
-      // Modal backdrop'a tıkla → kapat (ama canvas veya butonlara değil)
       if (e.target === fsModal) closeFullscreen();
     });
   }
   document.addEventListener("keydown", (e) => {
     if (!studio.view.fsOpen) return;
     if (e.key === "Escape") closeFullscreen();
-    else if (e.key === " " || e.key === "Enter") {
-      e.preventDefault();
-      toggleFsCompare();
-    }
   });
 }
