@@ -330,16 +330,30 @@ function openFullscreen() {
   modal.setAttribute("open", "");
   document.body.style.overflow = "hidden";
 
+  // Orijinal görseli fs-orig-img'e yükle
+  const fsOrigImg = $("fsOrigImg");
+  const rug = studio.currentRug;
+  if (fsOrigImg && rug && rug.img_url) {
+    fsOrigImg.src = rug.img_url;
+  }
+
+  // Fullscreen toggle state sıfırla
+  const fsStage = fsCanvas.closest(".fs-stage");
+  if (fsStage) fsStage.classList.remove("show-original");
+  const fsOrigBtn = $("fsOrigBtn");
+  if (fsOrigBtn) {
+    fsOrigBtn.setAttribute("aria-pressed", "false");
+    const lbl = $("fsOrigLabel");
+    if (lbl) lbl.textContent = "Orijinal";
+  }
+
   if (engine && ready) {
-    // Full-res render: engine maxSide=640, canvas ekranı kaplasın diye
-    // CSS width/height:auto kullanıyoruz; canvas pixel boyutu = engine.w/h
     fsCanvas.width = engine.w;
     fsCanvas.height = engine.h;
     const data = engine.render({ intensity: 1.0 });
     engine.drawTo(fsCanvas, data);
   } else {
-    // Recolor yoksa orijinal görseli göster
-    const rug = studio.currentRug;
+    // Recolor yoksa orijinal görseli canvas'a da çiz
     if (!rug || !rug.img_url) return;
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -350,7 +364,6 @@ function openFullscreen() {
       ctx.drawImage(img, 0, 0);
     };
     img.onerror = () => {
-      // CORS fail — CSS background ile bas
       fsCanvas.style.backgroundImage = `url('${rug.img_url}')`;
       fsCanvas.style.backgroundSize = "contain";
       fsCanvas.style.backgroundRepeat = "no-repeat";
@@ -842,6 +855,20 @@ export function initStudio() {
       if (e.target.closest(".preview-tool-btn")) return;
       if (!studio.currentRug) return;
       openFullscreen();
+    });
+  }
+
+  // Fullscreen orijinal toggle
+  const fsOrigBtn = $("fsOrigBtn");
+  if (fsOrigBtn) {
+    fsOrigBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const fsStage = $("fsCanvas").closest(".fs-stage");
+      const isShowing = fsStage.classList.toggle("show-original");
+      fsOrigBtn.setAttribute("aria-pressed", isShowing ? "true" : "false");
+      fsOrigBtn.classList.toggle("active", isShowing);
+      const lbl = $("fsOrigLabel");
+      if (lbl) lbl.textContent = isShowing ? "Yeni Renk" : "Orijinal";
     });
   }
 

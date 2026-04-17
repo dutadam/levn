@@ -258,9 +258,9 @@ export class RecolorEngine {
         if (d2 < minInterCenter2) minInterCenter2 = d2;
       }
     }
-    // sigma² ölçeği: minDist²'nin yarısı → δE=minDist'te weight ≈ exp(-2) ≈ 0.135
-    // Bu, yakın renklerde orta düzey bleed sağlar (çok keskin olursa doku kaybı olur).
-    const sigma2 = Math.max(16, Math.min(256, minInterCenter2 * 0.5));
+    // sigma² ölçeği: minDist²'nin 1/4'ü → cluster merkezinde secondary weight exp(-4)≈0.018
+    // → primary weight ≈ 0.96 (tam doygunluk). Sınır piksellerinde exp(-1)≈0.37 (yumuşak geçiş).
+    const sigma2 = Math.max(25, Math.min(400, minInterCenter2 * 0.25));
 
     // Tam piksel soft-assignment: TOP-M cluster + Gaussian ağırlıklar (alpha matting).
     const M = Math.min(3, k);
@@ -429,17 +429,21 @@ export class RecolorEngine {
       const A = this.origLab[i * 3 + 1];
       const B = this.origLab[i * 3 + 2];
 
-      // Soft-blend: her cluster'ın histogram-spec shift'ini ham weight ile karıştır.
-      // Normalization YAPMA — weight doğal olarak sınır piksellerini yumuşatır.
-      // (Normalize edilirse: w=0.05'teki sınır pikseli bile tam shift alır → sert kenar)
+      // Soft-blend: normalize (doygunluk koru) + smoothstep (sınırda sert kenar yok).
+      //
+      // changedW = değişen cluster'lara ait toplam weight (0..1).
+      // shift = sum(w_j * delta_j) / changedW → deep pixel: tam shift, sınır: tam shift ama...
+      // ...smoothstep(changedW) ile çarpılır → changedW küçükse yavaşça sıfıra iner.
+      //
+      // Sonuç: merkez pixel (changedW≈0.96) → ~tam doygunluk, sınır (changedW≈0.2) → ~%40 shift.
+      // Büyük ΔL için sert halka artefaktı ortadan kalkar.
       let shiftL = 0, shiftA = 0, shiftB = 0;
-      let anyContrib = false;
+      let changedW = 0;
       for (let m = 0; m < M; m++) {
         const j = this.labelsM[i * M + m];
         const w = this.weightsM[i * M + m];
-        if (w < 0.02) continue; // ihmal edilebilir katkı
+        if (w < 0.01) continue;
         if (!hasTarget[j] || !changed[j]) continue;
-        anyContrib = true;
         const cMeanL = this.clusterMeanL[j];
         const cMeanA = this.clusterMeana[j];
         const cMeanB = this.clusterMeanb[j];
@@ -452,16 +456,19 @@ export class RecolorEngine {
         const remapL = targetL[j] + (L - cMeanL) * sL;
         const remapA = targetA[j] + (A - cMeanA) * sA;
         const remapB = targetB[j] + (B - cMeanB) * sB;
-        // Ham weight: top-1 cluster ~0.9 → neredeyse tam shift; sınır piksel ~0.3 → kısmi shift
         shiftL += w * (remapL - L);
         shiftA += w * (remapA - A);
         shiftB += w * (remapB - B);
+        changedW += w;
       }
-      if (!anyContrib) continue;
+      if (changedW < 0.01) continue;
 
-      const newL = L + shiftL * intensity;
-      const newA = A + shiftA * intensity;
-      const newB = B + shiftB * intensity;
+      // Normalize → doygunluk koru; smoothstep → sınırda yumuşak geçiş (sert halka yok)
+      const blend = smoothstep(0.0, 0.55, changedW);
+      const normFactor = blend / changedW;
+      const newL = L + shiftL * normFactor * intensity;
+      const newA = A + shiftA * normFactor * intensity;
+      const newB = B + shiftB * normFactor * intensity;
 
       const [nr, ng, nb] = labToRgb(newL, newA, newB);
       out[i * 4] = nr;
@@ -494,6 +501,11 @@ export class RecolorEngine {
 
 function clamp01(x) {
   return x < 0 ? 0 : x > 1 ? 1 : x;
+}
+
+function smoothstep(lo, hi, x) {
+  const t = Math.max(0, Math.min(1, (x - lo) / (hi - lo)));
+  return t * t * (3 - 2 * t);
 }
 
 function clampScale(x, lo, hi) {
