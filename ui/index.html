@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
   <header class="topbar">
@@ -106,6 +106,10 @@
                 <span>Görsel orijinal renkleri gösteriyor</span>
               </div>
               <div class="preview-tools" id="previewTools" hidden>
+                <button class="preview-tool-btn" id="previewOriginalBtn" type="button" title="Orijinali göster" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="8" r="5"/><path d="M8 3v2M8 11v2M3 8h2M11 8h2"/></svg>
+                  <span id="previewOriginalLabel">Orijinal</span>
+                </button>
                 <button class="preview-tool-btn" id="previewFullscreenBtn" type="button" title="Tam ekran">
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>
                   <span>Tam ekran</span>
@@ -240,6 +244,6 @@
   <!-- ============ PRINT SHEET (sadece print modunda görünür) ============ -->
   <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
 
-  <script type="module" src="app.js?v=10"></script>
+  <script type="module" src="app.js?v=11"></script>
 </body>
 </html>

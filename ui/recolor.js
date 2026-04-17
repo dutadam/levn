@@ -386,7 +386,7 @@ export class RecolorEngine {
    * Shift sadece `changed[j]` cluster'lara uygulanır (dokunulmamış renkler
    * orijinal kalır).
    */
-  render({ intensity = 1.0, sharp = 0.9 } = {}) {
+  render({ intensity = 1.0 } = {}) {
     if (!this.origLab) throw new Error("loadImage çağrılmadı");
     const n = this.w * this.h;
     const out = new Uint8ClampedArray(this.origPixels);
@@ -429,18 +429,17 @@ export class RecolorEngine {
       const A = this.origLab[i * 3 + 1];
       const B = this.origLab[i * 3 + 2];
 
-      // Her cluster için histogram-spec'lenmiş LAB hesapla, weight'le karıştır.
-      // shiftL/A/B = remapped - original.
+      // Soft-blend: her cluster'ın histogram-spec shift'ini ham weight ile karıştır.
+      // Normalization YAPMA — weight doğal olarak sınır piksellerini yumuşatır.
+      // (Normalize edilirse: w=0.05'teki sınır pikseli bile tam shift alır → sert kenar)
       let shiftL = 0, shiftA = 0, shiftB = 0;
-      let contribW = 0;
+      let anyContrib = false;
       for (let m = 0; m < M; m++) {
         const j = this.labelsM[i * M + m];
         const w = this.weightsM[i * M + m];
-        if (w < 0.01) continue; // ihmal edilebilir katkı
+        if (w < 0.02) continue; // ihmal edilebilir katkı
         if (!hasTarget[j] || !changed[j]) continue;
-        // sharp: primary (m=0) için w'yi biraz artır, tail için kıs → sınır yumuşatma ile
-        // bleed arası denge
-        const wEff = (m === 0 ? w + (1 - w) * (1 - sharp) : w * sharp);
+        anyContrib = true;
         const cMeanL = this.clusterMeanL[j];
         const cMeanA = this.clusterMeana[j];
         const cMeanB = this.clusterMeanb[j];
@@ -453,19 +452,16 @@ export class RecolorEngine {
         const remapL = targetL[j] + (L - cMeanL) * sL;
         const remapA = targetA[j] + (A - cMeanA) * sA;
         const remapB = targetB[j] + (B - cMeanB) * sB;
-        shiftL += wEff * (remapL - L);
-        shiftA += wEff * (remapA - A);
-        shiftB += wEff * (remapB - B);
-        contribW += wEff;
+        // Ham weight: top-1 cluster ~0.9 → neredeyse tam shift; sınır piksel ~0.3 → kısmi shift
+        shiftL += w * (remapL - L);
+        shiftA += w * (remapA - A);
+        shiftB += w * (remapB - B);
       }
-      if (contribW === 0) continue;
+      if (!anyContrib) continue;
 
-      // Normalize: shift'leri toplam katkı weight'ine böl.
-      // Böylece primary cluster %95 weight'le bile shift'in tamamı uygulanır.
-      const norm = 1 / contribW;
-      const newL = L + shiftL * norm * intensity;
-      const newA = A + shiftA * norm * intensity;
-      const newB = B + shiftB * norm * intensity;
+      const newL = L + shiftL * intensity;
+      const newA = A + shiftA * intensity;
+      const newB = B + shiftB * intensity;
 
       const [nr, ng, nb] = labToRgb(newL, newA, newB);
       out[i * 4] = nr;

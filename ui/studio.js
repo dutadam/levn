@@ -821,6 +821,20 @@ export function initStudio() {
       openFullscreen();
     });
   }
+  // Orijinal toggle butonu
+  const origBtn = $("previewOriginalBtn");
+  if (origBtn) {
+    origBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const imgHost = $("rugPreviewImage");
+      const isShowing = imgHost.classList.toggle("show-original");
+      origBtn.classList.toggle("active", isShowing);
+      origBtn.setAttribute("aria-pressed", isShowing ? "true" : "false");
+      const lbl = $("previewOriginalLabel");
+      if (lbl) lbl.textContent = isShowing ? "Yeni Renk" : "Orijinal";
+    });
+  }
+
   // Preview alanına direkt tıkla → fullscreen
   const host = $("rugPreviewImage");
   if (host) {
