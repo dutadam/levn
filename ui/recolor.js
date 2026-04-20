@@ -438,44 +438,26 @@ export class RecolorEngine {
       maxDrift: this.config.maxKmeansDrift,
       seedStds: useMaha ? seedStds : null,
     });
-    // Mahalanobis için piksel başına inv-σ² tablolarını kaydet (soft assignment'ta kullanılır)
+    // Mahalanobis k-means içinde kullanıldı; soft assignment Euclidean. Dead code temizlendi.
     this.useMahalanobis = useMaha;
-    if (useMaha) {
-      this.invVarL = new Float32Array(seeds.length);
-      this.invVarA = new Float32Array(seeds.length);
-      this.invVarB = new Float32Array(seeds.length);
-      for (let j = 0; j < seeds.length; j++) {
-        const s = seedStds[j];
-        const sL = Math.max(1.5, s[0] || 3);
-        const sA = Math.max(0.8, s[1] || 1);
-        const sB = Math.max(0.8, s[2] || 1);
-        this.invVarL[j] = 1 / (sL * sL);
-        this.invVarA[j] = 1 / (sA * sA);
-        this.invVarB[j] = 1 / (sB * sB);
-      }
-    }
     this.k = seeds.length;
     this.slotScores = drift;
     this.clusterCounts = counts;
     const k = this.k;
     this.centers = centers;
 
-    // Adaptive sigma: minimum inter-CENTER mesafesine göre (soft-assign metriğiyle aynı)
+    // ★ Soft assignment Euclidean + chromaWeight kullanıyor (Mahalanobis SADECE k-means'te).
+    // Neden: Mahalanobis σ plain halıdan geliyor, multi-color halıda σ daha geniş.
+    // Örn: 5621 (krem) σ_b=0.3 çok dar → 5621 basin'i b ekseninde çok daralıyor,
+    // tesadüfi nötr pikseller yanlış atanıyor, cluster semantiği bozuluyor.
+    // Euclidean ile basin'ler üniform → boundary davranışı öngörülebilir.
     let minInterCenter2 = Infinity;
     for (let i = 0; i < k; i++) {
       for (let j = i + 1; j < k; j++) {
         const dL = centers[i * 3] - centers[j * 3];
         const da = centers[i * 3 + 1] - centers[j * 3 + 1];
         const db = centers[i * 3 + 2] - centers[j * 3 + 2];
-        let d2;
-        if (useMaha) {
-          // i'ye göre Mahalanobis (asymetrik; symmetric için min alalım)
-          const d2i = dL*dL*this.invVarL[i] + chromaW*(da*da*this.invVarA[i] + db*db*this.invVarB[i]);
-          const d2j = dL*dL*this.invVarL[j] + chromaW*(da*da*this.invVarA[j] + db*db*this.invVarB[j]);
-          d2 = Math.min(d2i, d2j);
-        } else {
-          d2 = dL * dL + chromaW * (da * da + db * db);
-        }
+        const d2 = dL * dL + chromaW * (da * da + db * db);
         if (d2 < minInterCenter2) minInterCenter2 = d2;
       }
     }
@@ -496,14 +478,8 @@ export class RecolorEngine {
         const dL = L - centers[j * 3];
         const da = A - centers[j * 3 + 1];
         const db = B - centers[j * 3 + 2];
-        // ★ Mahalanobis: her cluster kendi σ'sine göre mesafe hesaplar
-        // → ince chroma farkları (7141 vs 9811) kendi σ_b'leriyle amplifiye olur
-        let d;
-        if (useMaha) {
-          d = dL * dL * this.invVarL[j] + chromaW * (da * da * this.invVarA[j] + db * db * this.invVarB[j]);
-        } else {
-          d = dL * dL + chromaW * (da * da + db * db);
-        }
+        // Euclidean + chromaWeight (soft assignment için öngörülebilir basin'ler)
+        const d = dL * dL + chromaW * (da * da + db * db);
         for (let m = 0; m < M; m++) {
           if (d < bestD[m]) {
             for (let s = M - 1; s > m; s--) { bestD[s] = bestD[s - 1]; bestJ[s] = bestJ[s - 1]; }
@@ -669,13 +645,12 @@ export class RecolorEngine {
     // Aşama 2: Shift map'i Gaussian blur ile yumuşat (piksel gürültüsü siler).
     // Aşama 3: Shift map'i orijinal LAB'a uygula → doku korunur + organik geçiş.
     const shiftMap = new Float32Array(n * 3);
-    const preserveThresh = this.config.preserveUnchanged;
     for (let i = 0; i < n; i++) {
-      // ★ Hard-lock: primary cluster değişmedi VE weight > preserveThresh ise SKIP
-      // Bu, "5621 (nil) cluster'a ait pixel'in 7141 → 8741 shift'inden etkilenmesini" engeller
+      // ★ STRICT HARD-LOCK: primary cluster değişmediyse piksel dokunulmaz.
+      // Soft edge effect → shiftBlur'dan geliyor (shiftBlurSigma=2.0), pixel-level
+      // accumulation'dan değil. Bu sayede değişmeyen renklere sızma yok.
       const primaryJ = this.labelsM[i * M];
-      const primaryW = this.weightsM[i * M];
-      if (!changed[primaryJ] && primaryW > preserveThresh) continue;
+      if (!changed[primaryJ]) continue;
 
       const L = this.origLab[i * 3];
       const A = this.origLab[i * 3 + 1];
