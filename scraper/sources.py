@@ -8,6 +8,7 @@ COLLECTIONS = [
     {"slug": "plain",       "priority": "high",   "note": "tek renk, renk kodu doğrulama için altın kaynak"},
     {"slug": "amorph",      "priority": "high",   "note": "çok renkli, SERENITY serisi sıralı renk adları veriyor"},
     {"slug": "marquise",    "priority": "high",   "note": "çok renkli"},
+    {"slug": "oriental",    "priority": "high",   "note": "çok renkli (53 halı) — 2026'da homepage nav'a eklendi"},
     {"slug": "coral",       "priority": "medium", "note": "çok renkli"},
     {"slug": "crystal",     "priority": "medium", "note": "çok renkli"},
     {"slug": "istanbul",    "priority": "medium", "note": "çok renkli"},

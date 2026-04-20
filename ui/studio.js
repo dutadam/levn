@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=17";
-import { openPalette } from "./palette.js?v=17";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=17";
+} from "./shared.js?v=18";
+import { openPalette } from "./palette.js?v=18";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=18";
 
 const studio = {
   // Picker (rug list)
@@ -968,6 +968,12 @@ function initAdminPanel() {
       $("adminIntensityOut").textContent = studio.admin.intensity.toFixed(2);
     });
   }
+  const maha = $("adminMaha");
+  if (maha) {
+    maha.addEventListener("change", () => {
+      studio.admin.config.useMahalanobis = maha.checked;
+    });
+  }
 
   $("adminClose")?.addEventListener("click", () => panel.hidden = true);
   $("adminToggle")?.addEventListener("click", toggleAdminPanel);
@@ -1402,6 +1408,8 @@ function syncAdminPanelUI() {
   set("adminKIter", "adminKIterOut", c.kmeansMaxIter);
   set("adminStride", "adminStrideOut", c.sampleStride);
   set("adminIntensity", "adminIntensityOut", studio.admin.intensity);
+  const maha = $("adminMaha");
+  if (maha) maha.checked = c.useMahalanobis !== false;
 }
 
 function persistAdminConfig() {
@@ -1417,8 +1425,10 @@ function updateAdminStats() {
     stats.textContent = "";
     return;
   }
+  const mahaStatus = eng.useMahalanobis ? "✓ AKTİF (per-color σ)" : (eng.config.useMahalanobis ? "✗ eksik lab_std" : "○ kapalı");
   const lines = [
     `Görsel: ${eng.w}×${eng.h} (${(eng.w*eng.h/1e6).toFixed(2)}MP)`,
+    `Mahalanobis: ${mahaStatus}`,
     `Cluster: k=${eng.k} topM=${eng.config.topM}  Blur σ=${eng.config.blurSigma.toFixed(1)}px  Chroma×${eng.config.chromaWeight.toFixed(1)}`,
     `σ² katsayı=${eng.config.sigma2Mult.toFixed(2)}  std=[${eng.config.minScale},${eng.config.maxScale}]  shiftBlur=${eng.config.shiftBlurSigma.toFixed(1)}px`,
     `Smoothstep: [${eng.config.smoothLo.toFixed(2)}, ${eng.config.smoothHi.toFixed(2)}]`,

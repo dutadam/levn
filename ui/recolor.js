@@ -102,7 +102,14 @@ function deltaE(lab1, lab2) {
  * @param {number[][]} seeds  k adet başlangıç merkezi [[L,a,b], ...]
  * @returns {{centers:Float32Array, drift:number[]}}
  */
-function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0, maxDrift = 18 } = {}) {
+/**
+ * Seed edilmiş k-means: opsiyonel Mahalanobis mesafesi (her cluster kendi std'sine göre).
+ * @param {Float32Array} labs
+ * @param {number[][]} seeds  [[L,a,b], ...]
+ * @param {object} opts
+ * @param {number[][]} [opts.seedStds]  [[σL,σa,σb], ...] — palette'den plain halı std. null = isotropic.
+ */
+function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0, maxDrift = 18, seedStds = null } = {}) {
   const k = seeds.length;
   const centers = new Float32Array(k * 3);
   const initCenters = new Float32Array(k * 3);
@@ -119,6 +126,24 @@ function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0, maxDrift 
   const sums = new Float64Array(k * 3);
   const counts = new Uint32Array(k);
 
+  // Mahalanobis ters-σ² tabloları (her cluster için). Plain halı std'den gelir.
+  // Küçük std'yi clamp et (tek piksel = 0 olmasın).
+  const invVarL = new Float32Array(k);
+  const invVarA = new Float32Array(k);
+  const invVarB = new Float32Array(k);
+  const useMaha = !!seedStds;
+  if (useMaha) {
+    for (let j = 0; j < k; j++) {
+      const s = seedStds[j] || [3, 1, 1];
+      const sL = Math.max(1.5, s[0] || 3);
+      const sA = Math.max(0.8, s[1] || 1);
+      const sB = Math.max(0.8, s[2] || 1);
+      invVarL[j] = 1 / (sL * sL);
+      invVarA[j] = 1 / (sA * sA);
+      invVarB[j] = 1 / (sB * sB);
+    }
+  }
+
   for (let iter = 0; iter < maxIter; iter++) {
     let changed = 0;
     for (let i = 0; i < n; i++) {
@@ -128,8 +153,13 @@ function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0, maxDrift 
         const dL = L - centers[j * 3];
         const da = a - centers[j * 3 + 1];
         const db = b - centers[j * 3 + 2];
-        // Chroma-ağırlıklı mesafe: a,b eksenlerini chromaWeight kadar güçlendir
-        const d = dL * dL + chromaWeight * (da * da + db * db);
+        let d;
+        if (useMaha) {
+          // Mahalanobis: her eksen kendi σ²'siyle normalize
+          d = dL * dL * invVarL[j] + chromaWeight * (da * da * invVarA[j] + db * db * invVarB[j]);
+        } else {
+          d = dL * dL + chromaWeight * (da * da + db * db);
+        }
         if (d < bestD) { bestD = d; best = j; }
       }
       if (labels[i] !== best) { labels[i] = best; changed++; }
@@ -200,23 +230,26 @@ function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0, maxDrift 
 }
 
 // -------- Config ---------------------------------------------------------
+// Varsayılan değerler 6088-M gibi yakın-renk halılarda ve genel halılarda
+// iyi sonuç veren dengeli ayarlardır. Admin panelde değiştirilebilir.
 export const DEFAULT_CONFIG = {
   maxSide: 1536,          // Canvas downscale sınırı (yüksek = daha detay, daha yavaş)
-  sigma2Mult: 0.25,       // Soft assignment σ² katsayısı (minInterCenter²'ye göre)
-  sigma2Min: 25,          // Alt sınır (çok yakın cluster'lar için)
-  sigma2Max: 400,         // Üst sınır
-  minScale: 0.6,          // Histogram spec std clamp min
-  maxScale: 1.8,          // Histogram spec std clamp max
-  smoothLo: 0.0,          // smoothstep blend alt sınır (changedW için)
-  smoothHi: 0.55,         // smoothstep blend üst sınır
-  topM: 3,                // Piksel başına top-M cluster (soft blend için)
-  kmeansMaxIter: 10,      // K-means iterasyon sayısı (az = seed'e sadık, çok = data'ya adapt)
-  sampleStride: 3,        // K-means için piksel alt-örnekleme adımı
-  blurSigma: 2.0,         // Cluster atama için LAB blur sigma (doku gürültüsü filtresi)
-  chromaWeight: 2.5,      // a,b eksenlerinin L'ye göre göreli önemi (yakın renkleri ayır)
-  shiftBlurSigma: 1.5,    // Render sonrası shift haritasına blur (salt-pepper siler)
-  preserveUnchanged: 0.6, // Primary cluster değişmemiş VE weight > bu → piksel atla (bleed koruması)
-  maxKmeansDrift: 18,     // K-means merkezinin seed'den max LAB uzaklığı (swap önler). 0 = sınırsız.
+  sigma2Mult: 0.35,       // Soft assignment σ² katsayısı — 0.25-0.40 arası dengeli
+  sigma2Min: 25,
+  sigma2Max: 400,
+  minScale: 0.9,          // Histogram spec std clamp — dar (0.9-1.1) = güvenli, doku korunur
+  maxScale: 1.1,
+  smoothLo: 0.05,         // smoothstep blend
+  smoothHi: 0.45,
+  topM: 3,
+  kmeansMaxIter: 10,      // Az tut — seed'e sadık kalsın
+  sampleStride: 3,
+  blurSigma: 2.0,         // Cluster atama için LAB blur
+  chromaWeight: 3.5,      // Yakın renkleri chroma ile ayır (7141/5621/9811 için kritik)
+  shiftBlurSigma: 2.0,    // Render shift map blur (salt-pepper siler, organik geçiş)
+  preserveUnchanged: 0.75,// Sıkı koruma — değişmemiş renklere bleed olmaz
+  maxKmeansDrift: 6,      // Düşük — cluster swap matematiksel olarak imkânsız
+  useMahalanobis: true,   // ★ Her rengin plain halısındaki σ ile eşleşme (lab_std'dan)
 };
 
 /**
@@ -361,10 +394,16 @@ export class RecolorEngine {
 
     // Seed hazırla: her slot için palette LAB; yoksa k-means++ ile doldur
     const seeds = [];
+    const seedStds = []; // Plain halıdan öğrenilen per-axis std (Mahalanobis için)
     for (const code of codes) {
       const pal = this.palette[code];
-      if (pal && pal.lab) seeds.push(pal.lab.slice());
-      else seeds.push(null);
+      if (pal && pal.lab) {
+        seeds.push(pal.lab.slice());
+        seedStds.push(pal.lab_std ? pal.lab_std.slice() : null);
+      } else {
+        seeds.push(null);
+        seedStds.push(null);
+      }
     }
     let rng = mulberry32(42);
     for (let j = 0; j < seeds.length; j++) {
@@ -375,7 +414,11 @@ export class RecolorEngine {
         this.segLab[pi * 3 + 1],
         this.segLab[pi * 3 + 2],
       ];
+      seedStds[j] = null;
     }
+    // Eğer HERHANGİ biri std'siz ise Mahalanobis'i kapat (tutarsızlığı önle)
+    const hasAllStds = seedStds.every((s) => s && s.length >= 3);
+    const useMaha = this.config.useMahalanobis && hasAllStds;
 
     // Alt-örnekleme: BLUR'lu LAB'dan örnekle (cluster atama için)
     const sampledLabs = [];
@@ -393,21 +436,46 @@ export class RecolorEngine {
       maxIter: this.config.kmeansMaxIter,
       chromaWeight: chromaW,
       maxDrift: this.config.maxKmeansDrift,
+      seedStds: useMaha ? seedStds : null,
     });
+    // Mahalanobis için piksel başına inv-σ² tablolarını kaydet (soft assignment'ta kullanılır)
+    this.useMahalanobis = useMaha;
+    if (useMaha) {
+      this.invVarL = new Float32Array(seeds.length);
+      this.invVarA = new Float32Array(seeds.length);
+      this.invVarB = new Float32Array(seeds.length);
+      for (let j = 0; j < seeds.length; j++) {
+        const s = seedStds[j];
+        const sL = Math.max(1.5, s[0] || 3);
+        const sA = Math.max(0.8, s[1] || 1);
+        const sB = Math.max(0.8, s[2] || 1);
+        this.invVarL[j] = 1 / (sL * sL);
+        this.invVarA[j] = 1 / (sA * sA);
+        this.invVarB[j] = 1 / (sB * sB);
+      }
+    }
     this.k = seeds.length;
     this.slotScores = drift;
     this.clusterCounts = counts;
     const k = this.k;
     this.centers = centers;
 
-    // Adaptive sigma: minimum inter-CENTER mesafesine göre (chroma-ağırlıklı)
+    // Adaptive sigma: minimum inter-CENTER mesafesine göre (soft-assign metriğiyle aynı)
     let minInterCenter2 = Infinity;
     for (let i = 0; i < k; i++) {
       for (let j = i + 1; j < k; j++) {
         const dL = centers[i * 3] - centers[j * 3];
         const da = centers[i * 3 + 1] - centers[j * 3 + 1];
         const db = centers[i * 3 + 2] - centers[j * 3 + 2];
-        const d2 = dL * dL + chromaW * (da * da + db * db);
+        let d2;
+        if (useMaha) {
+          // i'ye göre Mahalanobis (asymetrik; symmetric için min alalım)
+          const d2i = dL*dL*this.invVarL[i] + chromaW*(da*da*this.invVarA[i] + db*db*this.invVarB[i]);
+          const d2j = dL*dL*this.invVarL[j] + chromaW*(da*da*this.invVarA[j] + db*db*this.invVarB[j]);
+          d2 = Math.min(d2i, d2j);
+        } else {
+          d2 = dL * dL + chromaW * (da * da + db * db);
+        }
         if (d2 < minInterCenter2) minInterCenter2 = d2;
       }
     }
@@ -428,7 +496,14 @@ export class RecolorEngine {
         const dL = L - centers[j * 3];
         const da = A - centers[j * 3 + 1];
         const db = B - centers[j * 3 + 2];
-        const d = dL * dL + chromaW * (da * da + db * db);
+        // ★ Mahalanobis: her cluster kendi σ'sine göre mesafe hesaplar
+        // → ince chroma farkları (7141 vs 9811) kendi σ_b'leriyle amplifiye olur
+        let d;
+        if (useMaha) {
+          d = dL * dL * this.invVarL[j] + chromaW * (da * da * this.invVarA[j] + db * db * this.invVarB[j]);
+        } else {
+          d = dL * dL + chromaW * (da * da + db * db);
+        }
         for (let m = 0; m < M; m++) {
           if (d < bestD[m]) {
             for (let s = M - 1; s > m; s--) { bestD[s] = bestD[s - 1]; bestJ[s] = bestJ[s - 1]; }
