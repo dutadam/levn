@@ -2,20 +2,8 @@
   "0711": {
     "alternatives": [],
     "name_tr": "TURUNCU",
-    "occurrence_count": 28,
+    "occurrence_count": 52,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "TURUNCU",
-        "product_id": "4547",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "TURUNCU",
-        "product_id": "4548",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "TURUNCU",
@@ -32,6 +20,12 @@
         "collection": "amorph",
         "name": "TURUNCU",
         "product_id": "4655",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "TURUNCU",
+        "product_id": "7218",
         "source": "title+sku_order"
       },
       {
@@ -63,9 +57,15 @@
         "name": "TURUNCU",
         "product_id": "7268",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "TURUNCU",
+        "product_id": "7262",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 28,
+    "top_frequency": 52,
     "verified": true
   },
   "0744": {
@@ -86,26 +86,8 @@
   "1031": {
     "alternatives": [],
     "name_tr": "SARI",
-    "occurrence_count": 41,
+    "occurrence_count": 62,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "SARI",
-        "product_id": "2969",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "SARI",
-        "product_id": "3508",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "SARI",
-        "product_id": "3458",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "SARI",
@@ -119,62 +101,62 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "SARI",
-        "product_id": "7286",
+        "product_id": "2263",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "SARI",
-        "product_id": "4541",
+        "product_id": "2347",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "SARI",
-        "product_id": "3622",
+        "product_id": "2321",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "SARI",
-        "product_id": "3327",
+        "product_id": "2299",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "SARI",
+        "product_id": "2209",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "SARI",
-        "product_id": "3353",
+        "product_id": "2333",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "SARI",
+        "product_id": "2584",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "SARI",
+        "product_id": "2281",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 41,
+    "top_frequency": 62,
     "verified": true
   },
   "1441": {
     "alternatives": [],
     "name_tr": "LACİVERT",
-    "occurrence_count": 74,
+    "occurrence_count": 124,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "LACİVERT",
-        "product_id": "2970",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "LACİVERT",
-        "product_id": "3507",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "LACİVERT",
-        "product_id": "3457",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "LACİVERT",
@@ -216,34 +198,34 @@
         "name": "LACİVERT",
         "product_id": "3587",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "amorph",
+        "name": "LACİVERT",
+        "product_id": "3585",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "LACİVERT",
+        "product_id": "3588",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "LACİVERT",
+        "product_id": "4689",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 74,
+    "top_frequency": 124,
     "verified": true
   },
   "1521": {
     "alternatives": [],
     "name_tr": "GOLD",
-    "occurrence_count": 55,
+    "occurrence_count": 83,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "GOLD",
-        "product_id": "2971",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "GOLD",
-        "product_id": "3506",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "GOLD",
-        "product_id": "3456",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "GOLD",
@@ -257,43 +239,61 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "GOLD",
-        "product_id": "7279",
+        "product_id": "2410",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "GOLD",
-        "product_id": "7280",
+        "product_id": "2318",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "GOLD",
-        "product_id": "4610",
+        "product_id": "2379",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "GOLD",
-        "product_id": "4542",
+        "product_id": "2382",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "GOLD",
-        "product_id": "4609",
+        "product_id": "2253",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "GOLD",
+        "product_id": "4536",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "GOLD",
+        "product_id": "2208",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "GOLD",
+        "product_id": "2528",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 55,
+    "top_frequency": 83,
     "verified": true
   },
   "1621": {
     "alternatives": [
       {
-        "count": 1,
+        "count": 2,
         "name": "KEMİK"
       },
       {
@@ -302,20 +302,8 @@
       }
     ],
     "name_tr": "AÇIK KREM",
-    "occurrence_count": 65,
+    "occurrence_count": 113,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "AÇIK KREM",
-        "product_id": "3505",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK KREM",
-        "product_id": "3455",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "AÇIK KREM",
@@ -353,19 +341,31 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "AÇIK KREM",
-        "product_id": "2722",
+        "product_id": "7407",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "AÇIK KREM",
-        "product_id": "2735",
+        "product_id": "2553",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KÖMÜR",
+        "product_id": "2595",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KREM",
+        "product_id": "2395",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 63,
+    "top_frequency": 110,
     "verified": true
   },
   "1734": {
@@ -386,26 +386,8 @@
   "1831": {
     "alternatives": [],
     "name_tr": "KİREMİT",
-    "occurrence_count": 93,
+    "occurrence_count": 162,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KİREMİT",
-        "product_id": "2972",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KİREMİT",
-        "product_id": "3504",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KİREMİT",
-        "product_id": "3454",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KİREMİT",
@@ -431,50 +413,55 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KİREMİT",
-        "product_id": "7286",
+        "product_id": "2373",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "KİREMİT",
+        "product_id": "2290",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KİREMİT",
-        "product_id": "4609",
+        "product_id": "2544",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KİREMİT",
-        "product_id": "7374",
+        "product_id": "2461",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KİREMİT",
+        "product_id": "2478",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KİREMİT",
+        "product_id": "2482",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 93,
+    "top_frequency": 162,
     "verified": true
   },
   "1841": {
-    "alternatives": [],
+    "alternatives": [
+      {
+        "count": 1,
+        "name": "AÇIK GRI"
+      }
+    ],
     "name_tr": "AÇIK GRİ",
-    "occurrence_count": 225,
+    "occurrence_count": 310,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "AÇIK GRİ",
-        "product_id": "2973",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK GRİ",
-        "product_id": "3503",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK GRİ",
-        "product_id": "3453",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "AÇIK GRİ",
@@ -516,9 +503,27 @@
         "name": "AÇIK GRİ",
         "product_id": "3587",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "amorph",
+        "name": "AÇIK GRİ",
+        "product_id": "3588",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "AÇIK GRİ",
+        "product_id": "3583",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "AÇIK GRİ",
+        "product_id": "3584",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 225,
+    "top_frequency": 309,
     "verified": true
   },
   "1904": {
@@ -540,34 +545,16 @@
     "alternatives": [
       {
         "count": 1,
-        "name": "BUZ MAVİSİ"
+        "name": "AÇIK KREM"
       },
       {
         "count": 1,
-        "name": "AÇIK KREM"
+        "name": "BUZ MAVİSİ"
       }
     ],
     "name_tr": "KÖMÜR",
-    "occurrence_count": 158,
+    "occurrence_count": 250,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KÖMÜR",
-        "product_id": "2974",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KÖMÜR",
-        "product_id": "3502",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KÖMÜR",
-        "product_id": "3452",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KÖMÜR",
@@ -607,11 +594,29 @@
       {
         "collection": "amorph",
         "name": "KÖMÜR",
+        "product_id": "3584",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KÖMÜR",
         "product_id": "7182",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KÖMÜR",
+        "product_id": "7179",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KÖMÜR",
+        "product_id": "3673",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 156,
+    "top_frequency": 248,
     "verified": true
   },
   "2129": {
@@ -637,26 +642,8 @@
       }
     ],
     "name_tr": "TURKUAZ",
-    "occurrence_count": 40,
+    "occurrence_count": 80,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "TURKUAZ",
-        "product_id": "2975",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "TURKUAZ",
-        "product_id": "3501",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "TURKUAZ",
-        "product_id": "3451",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "TURKUAZ",
@@ -670,37 +657,55 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "TURKUAZ",
-        "product_id": "3625",
+        "product_id": "5860",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "TURKUAZ",
-        "product_id": "4541",
+        "product_id": "2571",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "TURKUAZ",
-        "product_id": "3622",
+        "product_id": "2432",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "TURKUAZ",
-        "product_id": "3619",
+        "product_id": "5859",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
-        "name": "AÇIK GRİ",
-        "product_id": "3320",
+        "collection": "coral",
+        "name": "TURKUAZ",
+        "product_id": "2436",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "TURKUAZ",
+        "product_id": "2337",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "TURKUAZ",
+        "product_id": "2398",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "TURKUAZ",
+        "product_id": "2400",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 38,
+    "top_frequency": 78,
     "verified": true
   },
   "2295": {
@@ -736,55 +741,13 @@
   "2441": {
     "alternatives": [],
     "name_tr": "KOYU YEŞİL",
-    "occurrence_count": 27,
+    "occurrence_count": 41,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU YEŞİL",
-        "product_id": "2976",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU YEŞİL",
-        "product_id": "3500",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU YEŞİL",
-        "product_id": "3450",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU YEŞİL",
         "product_id": "4692",
         "source": "title+sku_order_partial"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU YEŞİL",
-        "product_id": "2723",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU YEŞİL",
-        "product_id": "2735",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU YEŞİL",
-        "product_id": "3325",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU YEŞİL",
-        "product_id": "3618",
-        "source": "title+sku_order"
       },
       {
         "collection": "coral",
@@ -797,9 +760,51 @@
         "name": "KOYU YEŞİL",
         "product_id": "2274",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2488",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2364",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2302",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2315",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2533",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2473",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU YEŞİL",
+        "product_id": "2225",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 27,
+    "top_frequency": 41,
     "verified": true
   },
   "2495": {
@@ -820,26 +825,8 @@
   "2541": {
     "alternatives": [],
     "name_tr": "YEŞİL",
-    "occurrence_count": 41,
+    "occurrence_count": 69,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "YEŞİL",
-        "product_id": "2977",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "YEŞİL",
-        "product_id": "3499",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "YEŞİL",
-        "product_id": "3449",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "YEŞİL",
@@ -847,50 +834,86 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "YEŞİL",
-        "product_id": "7287",
+        "product_id": "2270",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "YEŞİL",
-        "product_id": "7279",
+        "product_id": "2275",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "YEŞİL",
-        "product_id": "7236",
+        "product_id": "4569",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "YEŞİL",
-        "product_id": "7250",
+        "product_id": "2531",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "YEŞİL",
-        "product_id": "7267",
+        "product_id": "2338",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "YEŞİL",
-        "product_id": "3622",
+        "product_id": "2282",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "crystal",
+        "name": "YEŞİL",
+        "product_id": "2611",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "YEŞİL",
+        "product_id": "4591",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "YEŞİL",
+        "product_id": "7222",
+        "source": "title+sku_order_partial"
       }
     ],
-    "top_frequency": 41,
+    "top_frequency": 69,
     "verified": true
   },
   "2562": {
     "alternatives": [],
     "name_tr": "ŞEFTALİ",
-    "occurrence_count": 1,
+    "occurrence_count": 4,
     "sources": [
+      {
+        "collection": "ethnique",
+        "name": "ŞEFTALİ",
+        "product_id": "7205",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "ŞEFTALİ",
+        "product_id": "7196",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "ŞEFTALİ",
+        "product_id": "7348",
+        "source": "title+sku_order"
+      },
       {
         "collection": "cok-renkli-77",
         "name": "ŞEFTALİ",
@@ -898,32 +921,14 @@
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 1,
-    "verified": false
+    "top_frequency": 4,
+    "verified": true
   },
   "2721": {
     "alternatives": [],
     "name_tr": "BEJ",
-    "occurrence_count": 145,
+    "occurrence_count": 228,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "BEJ",
-        "product_id": "2978",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "BEJ",
-        "product_id": "3498",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "BEJ",
-        "product_id": "3448",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "BEJ",
@@ -965,22 +970,49 @@
         "name": "BEJ",
         "product_id": "3583",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "BEJ",
+        "product_id": "3671",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "BEJ",
+        "product_id": "3673",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "BEJ",
+        "product_id": "7180",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 145,
+    "top_frequency": 228,
     "verified": true
+  },
+  "2754": {
+    "alternatives": [],
+    "name_tr": "YEŞİL",
+    "occurrence_count": 1,
+    "sources": [
+      {
+        "collection": "pearl",
+        "name": "YEŞİL",
+        "product_id": "2932",
+        "source": "title+sku_shared_name"
+      }
+    ],
+    "top_frequency": 1,
+    "verified": false
   },
   "2818": {
     "alternatives": [],
     "name_tr": "MOKA",
-    "occurrence_count": 7,
+    "occurrence_count": 10,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "MOKA",
-        "product_id": "4648",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "MOKA",
@@ -992,6 +1024,18 @@
         "name": "MOKA",
         "product_id": "7178",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "ethnique",
+        "name": "MOKA",
+        "product_id": "7214",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "MOKA",
+        "product_id": "7217",
+        "source": "title+sku_order"
       },
       {
         "collection": "marquise",
@@ -1016,39 +1060,51 @@
         "name": "MOKA",
         "product_id": "7308",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "MOKA",
+        "product_id": "5870",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "plain",
+        "name": "MOKA",
+        "product_id": "4648",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 7,
+    "top_frequency": 10,
     "verified": true
   },
   "2929": {
     "alternatives": [],
     "name_tr": "ORMAN YEŞİLİ",
-    "occurrence_count": 15,
+    "occurrence_count": 34,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "ORMAN YEŞİLİ",
-        "product_id": "3580",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "ORMAN YEŞİLİ",
-        "product_id": "3497",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "ORMAN YEŞİLİ",
-        "product_id": "3447",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "ORMAN YEŞİLİ",
         "product_id": "4690",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "ethnique",
+        "name": "ORMAN YEŞİLİ",
+        "product_id": "3649",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "ORMAN YEŞİLİ",
+        "product_id": "3670",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "ORMAN YEŞİLİ",
+        "product_id": "7367",
+        "source": "title+sku_order"
       },
       {
         "collection": "marquise",
@@ -1081,38 +1137,20 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "cok-renkli-77",
+        "collection": "marrakesh",
         "name": "ORMAN YEŞİLİ",
-        "product_id": "7380",
+        "product_id": "2883",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 15,
+    "top_frequency": 34,
     "verified": true
   },
   "2941": {
     "alternatives": [],
     "name_tr": "ANTRASİT",
-    "occurrence_count": 45,
+    "occurrence_count": 99,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "ANTRASİT",
-        "product_id": "2979",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "ANTRASİT",
-        "product_id": "3496",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "ANTRASİT",
-        "product_id": "3446",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "ANTRASİT",
@@ -1126,37 +1164,55 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "ANTRASİT",
-        "product_id": "7236",
+        "product_id": "2374",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "ANTRASİT",
-        "product_id": "3532",
+        "product_id": "3561",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "ANTRASİT",
-        "product_id": "7297",
+        "product_id": "2495",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "ANTRASİT",
-        "product_id": "4611",
+        "product_id": "2520",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "ANTRASİT",
-        "product_id": "4616",
+        "product_id": "2379",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "ANTRASİT",
+        "product_id": "2322",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "ANTRASİT",
+        "product_id": "2327",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "ANTRASİT",
+        "product_id": "2253",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 45,
+    "top_frequency": 99,
     "verified": true
   },
   "3136": {
@@ -1192,38 +1248,8 @@
   "3427": {
     "alternatives": [],
     "name_tr": "KOYU KİREMİT",
-    "occurrence_count": 15,
+    "occurrence_count": 26,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU KİREMİT",
-        "product_id": "2980",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU KİREMİT",
-        "product_id": "3495",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU KİREMİT",
-        "product_id": "3445",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU KİREMİT",
-        "product_id": "4661",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU KİREMİT",
-        "product_id": "3623",
-        "source": "title+sku_order"
-      },
       {
         "collection": "coral",
         "name": "KOYU KİREMİT",
@@ -1243,6 +1269,12 @@
         "source": "title+sku_order"
       },
       {
+        "collection": "ethnique",
+        "name": "KOYU KİREMİT",
+        "product_id": "4579",
+        "source": "title+sku_order"
+      },
+      {
         "collection": "istanbul",
         "name": "KOYU KİREMİT",
         "product_id": "2653",
@@ -1253,9 +1285,33 @@
         "name": "KOYU KİREMİT",
         "product_id": "2654",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "KOYU KİREMİT",
+        "product_id": "2691",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "istanbul",
+        "name": "KOYU KİREMİT",
+        "product_id": "2652",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "KOYU KİREMİT",
+        "product_id": "2678",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "KOYU KİREMİT",
+        "product_id": "2704",
+        "source": "title+sku_order_partial"
       }
     ],
-    "top_frequency": 15,
+    "top_frequency": 26,
     "verified": true
   },
   "3604": {
@@ -1291,24 +1347,30 @@
   "3668": {
     "alternatives": [],
     "name_tr": "FUŞYA",
-    "occurrence_count": 6,
+    "occurrence_count": 16,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "coral",
         "name": "FUŞYA",
-        "product_id": "3515",
+        "product_id": "7366",
         "source": "title+sku_order"
       },
       {
-        "collection": "plain",
+        "collection": "ethnique",
         "name": "FUŞYA",
-        "product_id": "3494",
-        "source": "title+sku_shared_name"
+        "product_id": "3314",
+        "source": "title+sku_order"
       },
       {
-        "collection": "plain",
+        "collection": "ethnique",
         "name": "FUŞYA",
-        "product_id": "3444",
+        "product_id": "4592",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "FUŞYA",
+        "product_id": "3651",
         "source": "title+sku_order"
       },
       {
@@ -1324,13 +1386,31 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "coral",
+        "collection": "oriental",
         "name": "FUŞYA",
-        "product_id": "7366",
+        "product_id": "4657",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "FUŞYA",
+        "product_id": "3371",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "oriental",
+        "name": "FUŞYA",
+        "product_id": "4038",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "FUŞYA",
+        "product_id": "4039",
+        "source": "title+sku_order_partial"
       }
     ],
-    "top_frequency": 6,
+    "top_frequency": 16,
     "verified": true
   },
   "3905": {
@@ -1366,26 +1446,8 @@
   "4031": {
     "alternatives": [],
     "name_tr": "HARDAL",
-    "occurrence_count": 55,
+    "occurrence_count": 91,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "HARDAL",
-        "product_id": "2981",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "HARDAL",
-        "product_id": "3493",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "HARDAL",
-        "product_id": "3443",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "HARDAL",
@@ -1393,68 +1455,68 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "HARDAL",
-        "product_id": "7261",
+        "product_id": "2481",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "HARDAL",
-        "product_id": "7252",
+        "product_id": "2479",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "HARDAL",
-        "product_id": "7288",
+        "product_id": "2602",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "HARDAL",
-        "product_id": "7264",
+        "product_id": "2450",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "HARDAL",
-        "product_id": "7263",
+        "product_id": "2351",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "HARDAL",
-        "product_id": "7270",
+        "product_id": "2255",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HARDAL",
+        "product_id": "2558",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HARDAL",
+        "product_id": "2301",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HARDAL",
+        "product_id": "2207",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 55,
+    "top_frequency": 91,
     "verified": true
   },
   "4131": {
     "alternatives": [],
     "name_tr": "KAKAO",
-    "occurrence_count": 38,
+    "occurrence_count": 67,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KAKAO",
-        "product_id": "2982",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KAKAO",
-        "product_id": "3492",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KAKAO",
-        "product_id": "3442",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KAKAO",
@@ -1474,31 +1536,49 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KAKAO",
-        "product_id": "3626",
+        "product_id": "2375",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KAKAO",
-        "product_id": "7274",
+        "product_id": "2366",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KAKAO",
-        "product_id": "7263",
+        "product_id": "2428",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KAKAO",
-        "product_id": "7375",
+        "product_id": "2462",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KAKAO",
+        "product_id": "2522",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "KAKAO",
+        "product_id": "2602",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KAKAO",
+        "product_id": "2451",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 38,
+    "top_frequency": 67,
     "verified": true
   },
   "4153": {
@@ -1516,27 +1596,48 @@
     "top_frequency": 1,
     "verified": false
   },
+  "4171": {
+    "alternatives": [],
+    "name_tr": "SAKS MAVİSİ",
+    "occurrence_count": 1,
+    "sources": [
+      {
+        "collection": "pearl",
+        "name": "SAKS MAVİSİ",
+        "product_id": "2963",
+        "source": "title+sku_shared_name"
+      }
+    ],
+    "top_frequency": 1,
+    "verified": false
+  },
   "4247": {
     "alternatives": [],
     "name_tr": "LİLA",
-    "occurrence_count": 15,
+    "occurrence_count": 25,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "ethnique",
         "name": "LİLA",
-        "product_id": "2983",
+        "product_id": "3363",
         "source": "title+sku_order"
       },
       {
-        "collection": "plain",
+        "collection": "ethnique",
         "name": "LİLA",
-        "product_id": "3491",
+        "product_id": "3651",
         "source": "title+sku_order"
       },
       {
-        "collection": "plain",
+        "collection": "ethnique",
         "name": "LİLA",
-        "product_id": "3441",
+        "product_id": "7368",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "LİLA",
+        "product_id": "3323",
         "source": "title+sku_order"
       },
       {
@@ -1558,31 +1659,25 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "istanbul",
+        "collection": "oriental",
         "name": "LİLA",
-        "product_id": "3323",
+        "product_id": "3614",
         "source": "title+sku_order"
       },
       {
-        "collection": "shell",
+        "collection": "oriental",
         "name": "LİLA",
-        "product_id": "3103",
+        "product_id": "4545",
         "source": "title+sku_order"
       },
       {
-        "collection": "shell",
+        "collection": "oriental",
         "name": "LİLA",
-        "product_id": "3098",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "art-deco-56",
-        "name": "LİLA",
-        "product_id": "3323",
+        "product_id": "3724",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 15,
+    "top_frequency": 25,
     "verified": true
   },
   "4319": {
@@ -1603,48 +1698,12 @@
   "4331": {
     "alternatives": [],
     "name_tr": "KOYU MÜRDÜM",
-    "occurrence_count": 20,
+    "occurrence_count": 32,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU MÜRDÜM",
-        "product_id": "2984",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU MÜRDÜM",
-        "product_id": "3490",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU MÜRDÜM",
-        "product_id": "3440",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU MÜRDÜM",
         "product_id": "7184",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU MÜRDÜM",
-        "product_id": "4035",
-        "source": "title+sku_order_partial"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU MÜRDÜM",
-        "product_id": "4036",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU MÜRDÜM",
-        "product_id": "4625",
         "source": "title+sku_order"
       },
       {
@@ -1664,9 +1723,45 @@
         "name": "KOYU MÜRDÜM",
         "product_id": "2483",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU MÜRDÜM",
+        "product_id": "2503",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU MÜRDÜM",
+        "product_id": "2467",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU MÜRDÜM",
+        "product_id": "2529",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU MÜRDÜM",
+        "product_id": "2507",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU MÜRDÜM",
+        "product_id": "2517",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "KOYU MÜRDÜM",
+        "product_id": "4581",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 20,
+    "top_frequency": 32,
     "verified": true
   },
   "4395": {
@@ -1677,93 +1772,81 @@
       }
     ],
     "name_tr": "BAKIR",
-    "occurrence_count": 29,
+    "occurrence_count": 46,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "BAKIR",
-        "product_id": "2985",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "BAKIR",
-        "product_id": "3489",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "BAKIR",
-        "product_id": "3439",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "marquise",
-        "name": "BAKIR",
-        "product_id": "3325",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "BAKIR",
-        "product_id": "7242",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "BAKIR",
-        "product_id": "7253",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "BAKIR",
-        "product_id": "7264",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "BAKIR",
-        "product_id": "7377",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "BAKIR",
-        "product_id": "7293",
-        "source": "title+sku_order"
-      },
       {
         "collection": "coral",
         "name": "BAKIR",
         "product_id": "2505",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2498",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2412",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2573",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2277",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2603",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2238",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "BAKIR",
+        "product_id": "2432",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "BAKIR",
+        "product_id": "4590",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "BAKIR",
+        "product_id": "7199",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 28,
+    "top_frequency": 45,
     "verified": true
   },
   "4511": {
     "alternatives": [],
     "name_tr": "VİŞNE ÇÜRÜĞÜ",
-    "occurrence_count": 42,
+    "occurrence_count": 75,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "amorph",
         "name": "VİŞNE ÇÜRÜĞÜ",
-        "product_id": "2986",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "VİŞNE ÇÜRÜĞÜ",
-        "product_id": "3488",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "VİŞNE ÇÜRÜĞÜ",
-        "product_id": "3438",
+        "product_id": "7402",
         "source": "title+sku_order"
       },
       {
@@ -1803,13 +1886,25 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "VİŞNE ÇÜRÜĞÜ",
-        "product_id": "7280",
+        "product_id": "2587",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "VİŞNE ÇÜRÜĞÜ",
+        "product_id": "3351",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "VİŞNE ÇÜRÜĞÜ",
+        "product_id": "3648",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 42,
+    "top_frequency": 75,
     "verified": true
   },
   "4587": {
@@ -1830,26 +1925,8 @@
   "4618": {
     "alternatives": [],
     "name_tr": "MAVİ",
-    "occurrence_count": 61,
+    "occurrence_count": 101,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "MAVİ",
-        "product_id": "2987",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MAVİ",
-        "product_id": "3487",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "MAVİ",
-        "product_id": "3437",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "MAVİ",
@@ -1869,31 +1946,49 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MAVİ",
-        "product_id": "7282",
+        "product_id": "2376",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MAVİ",
-        "product_id": "4612",
+        "product_id": "2289",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MAVİ",
-        "product_id": "2721",
+        "product_id": "2413",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MAVİ",
-        "product_id": "3345",
+        "product_id": "2259",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MAVİ",
+        "product_id": "2588",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MAVİ",
+        "product_id": "2455",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MAVİ",
+        "product_id": "2328",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 61,
+    "top_frequency": 101,
     "verified": true
   },
   "4717": {
@@ -1919,26 +2014,8 @@
       }
     ],
     "name_tr": "FINDIK",
-    "occurrence_count": 80,
+    "occurrence_count": 123,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "FINDIK",
-        "product_id": "2988",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "FINDIK",
-        "product_id": "3486",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "FINDIK",
-        "product_id": "3436",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "FINDIK",
@@ -1972,17 +2049,35 @@
       {
         "collection": "amorph",
         "name": "FINDIK",
+        "product_id": "7403",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "FINDIK",
         "product_id": "7188",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "FINDIK",
-        "product_id": "7282",
+        "product_id": "3375",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "FINDIK",
+        "product_id": "2266",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "FINDIK",
+        "product_id": "2596",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 79,
+    "top_frequency": 122,
     "verified": true
   },
   "4860": {
@@ -2003,26 +2098,8 @@
   "4921": {
     "alternatives": [],
     "name_tr": "VİZON",
-    "occurrence_count": 45,
+    "occurrence_count": 59,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "VİZON",
-        "product_id": "2989",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "VİZON",
-        "product_id": "3485",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "VİZON",
-        "product_id": "3435",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "VİZON",
@@ -2036,37 +2113,55 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "VİZON",
-        "product_id": "7279",
+        "product_id": "2477",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "VİZON",
-        "product_id": "7245",
-        "source": "title+sku_order_partial"
-      },
-      {
-        "collection": "marquise",
-        "name": "VİZON",
-        "product_id": "7250",
+        "product_id": "2480",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "VİZON",
-        "product_id": "7302",
+        "product_id": "2482",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "VİZON",
-        "product_id": "7375",
-        "source": "title+sku_order_partial"
+        "product_id": "3690",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "VİZON",
+        "product_id": "2319",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "VİZON",
+        "product_id": "3692",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "VİZON",
+        "product_id": "2352",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "VİZON",
+        "product_id": "2577",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 45,
+    "top_frequency": 59,
     "verified": true
   },
   "4923": {
@@ -2087,29 +2182,21 @@
   "5051": {
     "alternatives": [
       {
-        "count": 81,
+        "count": 131,
         "name": "KEMİK"
       },
       {
         "count": 1,
         "name": "NİL YEŞİLİ"
+      },
+      {
+        "count": 1,
+        "name": "AÇIK KREM"
       }
     ],
     "name_tr": "EKRU",
-    "occurrence_count": 276,
+    "occurrence_count": 400,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KEMİK",
-        "product_id": "3484",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KEMİK",
-        "product_id": "3434",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "EKRU",
@@ -2142,6 +2229,12 @@
       },
       {
         "collection": "amorph",
+        "name": "EKRU",
+        "product_id": "7403",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
         "name": "KEMİK",
         "product_id": "7180",
         "source": "title+sku_order"
@@ -2149,42 +2242,45 @@
       {
         "collection": "amorph",
         "name": "KEMİK",
-        "product_id": "7181",
+        "product_id": "4560",
         "source": "title+sku_order"
       },
       {
         "collection": "amorph",
+        "name": "EKRU",
+        "product_id": "7188",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
         "name": "KEMİK",
-        "product_id": "4560",
+        "product_id": "2601",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 194,
+    "top_frequency": 267,
     "verified": true
+  },
+  "5297": {
+    "alternatives": [],
+    "name_tr": "HAKİ",
+    "occurrence_count": 1,
+    "sources": [
+      {
+        "collection": "oriental",
+        "name": "HAKİ",
+        "product_id": "4037",
+        "source": "title+sku_order"
+      }
+    ],
+    "top_frequency": 1,
+    "verified": false
   },
   "5431": {
     "alternatives": [],
     "name_tr": "MÜRDÜM",
-    "occurrence_count": 30,
+    "occurrence_count": 42,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "MÜRDÜM",
-        "product_id": "2990",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MÜRDÜM",
-        "product_id": "3483",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MÜRDÜM",
-        "product_id": "3433",
-        "source": "title+sku_shared_name"
-      },
       {
         "collection": "amorph",
         "name": "MÜRDÜM",
@@ -2192,90 +2288,72 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MÜRDÜM",
-        "product_id": "4015",
+        "product_id": "2499",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MÜRDÜM",
-        "product_id": "4017",
+        "product_id": "2389",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MÜRDÜM",
-        "product_id": "4016",
+        "product_id": "2433",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MÜRDÜM",
-        "product_id": "3344",
-        "source": "title+sku_order_partial"
-      },
-      {
-        "collection": "marquise",
-        "name": "MÜRDÜM",
-        "product_id": "2729",
+        "product_id": "2251",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "MÜRDÜM",
-        "product_id": "4624",
+        "product_id": "2587",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MÜRDÜM",
+        "product_id": "2358",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MÜRDÜM",
+        "product_id": "2316",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MÜRDÜM",
+        "product_id": "2529",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MÜRDÜM",
+        "product_id": "2343",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 30,
+    "top_frequency": 42,
     "verified": true
   },
   "5501": {
     "alternatives": [],
     "name_tr": "HAKİ",
-    "occurrence_count": 24,
+    "occurrence_count": 48,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "HAKİ",
-        "product_id": "2991",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "HAKİ",
-        "product_id": "3482",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "HAKİ",
-        "product_id": "3432",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "HAKİ",
         "product_id": "4558",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "HAKİ",
-        "product_id": "3532",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "HAKİ",
-        "product_id": "4540",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "HAKİ",
-        "product_id": "4544",
         "source": "title+sku_order"
       },
       {
@@ -2295,34 +2373,52 @@
         "name": "HAKİ",
         "product_id": "2258",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HAKİ",
+        "product_id": "3569",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HAKİ",
+        "product_id": "2216",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HAKİ",
+        "product_id": "2245",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HAKİ",
+        "product_id": "2575",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "HAKİ",
+        "product_id": "4570",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "HAKİ",
+        "product_id": "2222",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 24,
+    "top_frequency": 48,
     "verified": true
   },
   "5531": {
     "alternatives": [],
     "name_tr": "MOR",
-    "occurrence_count": 25,
+    "occurrence_count": 54,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "MOR",
-        "product_id": "2992",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MOR",
-        "product_id": "3481",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "MOR",
-        "product_id": "3431",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "MOR",
@@ -2333,12 +2429,6 @@
         "collection": "amorph",
         "name": "MOR",
         "product_id": "7388",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "MOR",
-        "product_id": "3326",
         "source": "title+sku_order"
       },
       {
@@ -2360,38 +2450,44 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "istanbul",
+        "collection": "ethnique",
         "name": "MOR",
-        "product_id": "2672",
+        "product_id": "3660",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "MOR",
+        "product_id": "3379",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "MOR",
+        "product_id": "3312",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "MOR",
+        "product_id": "3653",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "MOR",
+        "product_id": "3701",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 25,
+    "top_frequency": 54,
     "verified": true
   },
   "5621": {
     "alternatives": [],
     "name_tr": "KREM",
-    "occurrence_count": 99,
+    "occurrence_count": 156,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KREM",
-        "product_id": "2993",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KREM",
-        "product_id": "3480",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KREM",
-        "product_id": "3430",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KREM",
@@ -2411,56 +2507,56 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KREM",
-        "product_id": "7286",
+        "product_id": "2369",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KREM",
-        "product_id": "7287",
+        "product_id": "2582",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KREM",
-        "product_id": "3541",
-        "source": "title+sku_order_partial"
+        "product_id": "2495",
+        "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KREM",
-        "product_id": "2734",
-        "source": "title+sku_order_partial"
+        "product_id": "2494",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KREM",
+        "product_id": "2579",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KREM",
+        "product_id": "2501",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KREM",
+        "product_id": "2502",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 99,
+    "top_frequency": 156,
     "verified": true
   },
   "5688": {
     "alternatives": [],
     "name_tr": "AÇIK MERCAN",
-    "occurrence_count": 11,
+    "occurrence_count": 29,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "AÇIK MERCAN",
-        "product_id": "3510",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK MERCAN",
-        "product_id": "3479",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK MERCAN",
-        "product_id": "3429",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "AÇIK MERCAN",
@@ -2474,60 +2570,66 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "AÇIK MERCAN",
-        "product_id": "7249",
+        "product_id": "3314",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "AÇIK MERCAN",
-        "product_id": "3328",
+        "product_id": "3646",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "AÇIK MERCAN",
-        "product_id": "3623",
+        "product_id": "3656",
         "source": "title+sku_order"
       },
       {
-        "collection": "monochrome",
+        "collection": "ethnique",
         "name": "AÇIK MERCAN",
-        "product_id": "4596",
+        "product_id": "3650",
         "source": "title+sku_order"
       },
       {
-        "collection": "cok-renkli-77",
+        "collection": "ethnique",
         "name": "AÇIK MERCAN",
-        "product_id": "7386",
+        "product_id": "4047",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "AÇIK MERCAN",
+        "product_id": "3652",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "AÇIK MERCAN",
+        "product_id": "4005",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "AÇIK MERCAN",
+        "product_id": "3552",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 11,
+    "top_frequency": 29,
     "verified": true
   },
   "5711": {
     "alternatives": [],
     "name_tr": "KIRMIZI",
-    "occurrence_count": 49,
+    "occurrence_count": 99,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "amorph",
         "name": "KIRMIZI",
-        "product_id": "2994",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "KIRMIZI",
-        "product_id": "3478",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KIRMIZI",
-        "product_id": "3428",
+        "product_id": "7402",
         "source": "title+sku_order"
       },
       {
@@ -2549,56 +2651,50 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KIRMIZI",
-        "product_id": "7370",
+        "product_id": "2377",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KIRMIZI",
-        "product_id": "2724",
+        "product_id": "2368",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KIRMIZI",
-        "product_id": "3627",
+        "product_id": "2464",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KIRMIZI",
-        "product_id": "7255",
+        "product_id": "2500",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KIRMIZI",
+        "product_id": "2501",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KIRMIZI",
+        "product_id": "2350",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 49,
+    "top_frequency": 99,
     "verified": true
   },
   "5820": {
     "alternatives": [],
     "name_tr": "KOYU BEJ",
-    "occurrence_count": 66,
+    "occurrence_count": 106,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU BEJ",
-        "product_id": "2995",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU BEJ",
-        "product_id": "3477",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU BEJ",
-        "product_id": "3427",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU BEJ",
@@ -2614,13 +2710,13 @@
       {
         "collection": "amorph",
         "name": "KOYU BEJ",
-        "product_id": "7182",
+        "product_id": "3584",
         "source": "title+sku_order"
       },
       {
         "collection": "amorph",
         "name": "KOYU BEJ",
-        "product_id": "3584",
+        "product_id": "7182",
         "source": "title+sku_order"
       },
       {
@@ -2638,11 +2734,29 @@
       {
         "collection": "amorph",
         "name": "KOYU BEJ",
+        "product_id": "7401",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KOYU BEJ",
         "product_id": "7188",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU BEJ",
+        "product_id": "2375",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU BEJ",
+        "product_id": "2370",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 66,
+    "top_frequency": 106,
     "verified": true
   },
   "5841": {
@@ -2653,26 +2767,8 @@
       }
     ],
     "name_tr": "GRİ",
-    "occurrence_count": 115,
+    "occurrence_count": 239,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "GRİ",
-        "product_id": "2996",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "GRİ",
-        "product_id": "3476",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "GRİ",
-        "product_id": "3426",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "GRİ",
@@ -2712,36 +2808,36 @@
       {
         "collection": "amorph",
         "name": "GRİ",
+        "product_id": "3584",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "GRİ",
         "product_id": "7182",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "GRİ",
+        "product_id": "3673",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "GRİ",
+        "product_id": "7180",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 114,
+    "top_frequency": 238,
     "verified": true
   },
   "5901": {
     "alternatives": [],
     "name_tr": "PETROL",
-    "occurrence_count": 39,
+    "occurrence_count": 58,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "PETROL",
-        "product_id": "2997",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "PETROL",
-        "product_id": "3475",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "PETROL",
-        "product_id": "3425",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "PETROL",
@@ -2755,62 +2851,62 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PETROL",
-        "product_id": "7282",
+        "product_id": "2502",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PETROL",
-        "product_id": "3345",
+        "product_id": "2412",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PETROL",
-        "product_id": "3626",
+        "product_id": "2413",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PETROL",
-        "product_id": "3621",
+        "product_id": "3695",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PETROL",
-        "product_id": "7268",
+        "product_id": "2549",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "PETROL",
+        "product_id": "2217",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "PETROL",
+        "product_id": "2360",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "PETROL",
+        "product_id": "2339",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 39,
+    "top_frequency": 58,
     "verified": true
   },
   "6121": {
     "alternatives": [],
     "name_tr": "KOYU LACİVERT",
-    "occurrence_count": 57,
+    "occurrence_count": 91,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU LACİVERT",
-        "product_id": "2998",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU LACİVERT",
-        "product_id": "3474",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU LACİVERT",
-        "product_id": "3511",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU LACİVERT",
@@ -2836,50 +2932,50 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU LACİVERT",
-        "product_id": "7284",
+        "product_id": "2555",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU LACİVERT",
-        "product_id": "7283",
+        "product_id": "2548",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU LACİVERT",
-        "product_id": "4610",
+        "product_id": "2570",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "ethnique",
+        "name": "KOYU LACİVERT",
+        "product_id": "3647",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "KOYU LACİVERT",
+        "product_id": "4007",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "KOYU LACİVERT",
+        "product_id": "4008",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 57,
+    "top_frequency": 91,
     "verified": true
   },
   "6441": {
     "alternatives": [],
     "name_tr": "CAM GÖBEĞİ",
-    "occurrence_count": 29,
+    "occurrence_count": 46,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "CAM GÖBEĞİ",
-        "product_id": "4663",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "CAM GÖBEĞİ",
-        "product_id": "4549",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "CAM GÖBEĞİ",
-        "product_id": "4550",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "CAM GÖBEĞİ",
@@ -2917,38 +3013,38 @@
         "source": "title+sku_order"
       },
       {
+        "collection": "ethnique",
+        "name": "CAM GÖBEĞİ",
+        "product_id": "3701",
+        "source": "title+sku_order"
+      },
+      {
         "collection": "marquise",
         "name": "CAM GÖBEĞİ",
         "product_id": "7284",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "CAM GÖBEĞİ",
+        "product_id": "7241",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "CAM GÖBEĞİ",
+        "product_id": "7288",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 29,
+    "top_frequency": 46,
     "verified": true
   },
   "6451": {
     "alternatives": [],
     "name_tr": "MERCAN",
-    "occurrence_count": 14,
+    "occurrence_count": 16,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "MERCAN",
-        "product_id": "3514",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MERCAN",
-        "product_id": "3509",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MERCAN",
-        "product_id": "3424",
-        "source": "title+sku_shared_name"
-      },
       {
         "collection": "amorph",
         "name": "MERCAN",
@@ -2990,38 +3086,56 @@
         "name": "MERCAN",
         "product_id": "2740",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "MERCAN",
+        "product_id": "5868",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "pearl",
+        "name": "MERCAN",
+        "product_id": "3403",
+        "source": "title+sku_shared_name"
+      },
+      {
+        "collection": "plain",
+        "name": "MERCAN",
+        "product_id": "3514",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 14,
+    "top_frequency": 16,
     "verified": true
   },
   "6568": {
     "alternatives": [],
     "name_tr": "MACENTA",
-    "occurrence_count": 20,
+    "occurrence_count": 37,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "amorph",
         "name": "MACENTA",
-        "product_id": "3513",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MACENTA",
-        "product_id": "3473",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "MACENTA",
-        "product_id": "3423",
+        "product_id": "7402",
         "source": "title+sku_order"
       },
       {
         "collection": "amorph",
         "name": "MACENTA",
         "product_id": "7388",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "MACENTA",
+        "product_id": "7401",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "MACENTA",
+        "product_id": "7366",
         "source": "title+sku_order"
       },
       {
@@ -3061,7 +3175,7 @@
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 20,
+    "top_frequency": 37,
     "verified": true
   },
   "6596": {
@@ -3082,24 +3196,12 @@
   "6701": {
     "alternatives": [],
     "name_tr": "PEMBE",
-    "occurrence_count": 21,
+    "occurrence_count": 45,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "amorph",
         "name": "PEMBE",
-        "product_id": "2999",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "PEMBE",
-        "product_id": "3472",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "PEMBE",
-        "product_id": "3422",
+        "product_id": "7402",
         "source": "title+sku_order"
       },
       {
@@ -3112,12 +3214,6 @@
         "collection": "amorph",
         "name": "PEMBE",
         "product_id": "3585",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "PEMBE",
-        "product_id": "7246",
         "source": "title+sku_order"
       },
       {
@@ -3143,9 +3239,27 @@
         "name": "PEMBE",
         "product_id": "2543",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "crystal",
+        "name": "PEMBE",
+        "product_id": "2623",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "PEMBE",
+        "product_id": "3663",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "PEMBE",
+        "product_id": "3363",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 21,
+    "top_frequency": 45,
     "verified": true
   },
   "6702": {
@@ -3157,12 +3271,6 @@
         "collection": "amorph",
         "name": "KOYU BORDO",
         "product_id": "7363",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KOYU BORDO",
-        "product_id": "7237",
         "source": "title+sku_order"
       },
       {
@@ -3178,6 +3286,12 @@
         "source": "title+sku_order"
       },
       {
+        "collection": "marquise",
+        "name": "KOYU BORDO",
+        "product_id": "7237",
+        "source": "title+sku_order"
+      },
+      {
         "collection": "cok-renkli-77",
         "name": "KOYU BORDO",
         "product_id": "7363",
@@ -3190,8 +3304,38 @@
   "6729": {
     "alternatives": [],
     "name_tr": "ÇİMEN YEŞİLİ",
-    "occurrence_count": 8,
+    "occurrence_count": 11,
     "sources": [
+      {
+        "collection": "istanbul",
+        "name": "ÇİMEN YEŞİLİ",
+        "product_id": "2705",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "ÇİMEN YEŞİLİ",
+        "product_id": "3622",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "ÇİMEN YEŞİLİ",
+        "product_id": "7384",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "oriental",
+        "name": "ÇİMEN YEŞİLİ",
+        "product_id": "4640",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "pearl",
+        "name": "ÇİMEN YEŞİLİ",
+        "product_id": "2957",
+        "source": "title+sku_order"
+      },
       {
         "collection": "plain",
         "name": "ÇİMEN YEŞİLİ",
@@ -3202,18 +3346,6 @@
         "collection": "plain",
         "name": "ÇİMEN YEŞİLİ",
         "product_id": "3421",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "ÇİMEN YEŞİLİ",
-        "product_id": "3622",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "istanbul",
-        "name": "ÇİMEN YEŞİLİ",
-        "product_id": "2705",
         "source": "title+sku_order"
       },
       {
@@ -3233,15 +3365,9 @@
         "name": "ÇİMEN YEŞİLİ",
         "product_id": "3622",
         "source": "title+sku_order"
-      },
-      {
-        "collection": "cok-renkli-77",
-        "name": "ÇİMEN YEŞİLİ",
-        "product_id": "4640",
-        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 8,
+    "top_frequency": 11,
     "verified": true
   },
   "6744": {
@@ -3277,20 +3403,8 @@
   "6859": {
     "alternatives": [],
     "name_tr": "TAŞ",
-    "occurrence_count": 50,
+    "occurrence_count": 83,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "TAŞ",
-        "product_id": "4669",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "TAŞ",
-        "product_id": "4671",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "TAŞ",
@@ -3334,13 +3448,25 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "TAŞ",
-        "product_id": "7281",
+        "product_id": "3570",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "TAŞ",
+        "product_id": "3563",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "crystal",
+        "name": "TAŞ",
+        "product_id": "3560",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 50,
+    "top_frequency": 83,
     "verified": true
   },
   "6868": {
@@ -3361,95 +3487,77 @@
   "6921": {
     "alternatives": [],
     "name_tr": "AÇIK KAHVE",
-    "occurrence_count": 40,
+    "occurrence_count": 51,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "AÇIK KAHVE",
-        "product_id": "3000",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK KAHVE",
-        "product_id": "3470",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "AÇIK KAHVE",
-        "product_id": "3420",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "AÇIK KAHVE",
-        "product_id": "2725",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "AÇIK KAHVE",
-        "product_id": "7252",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "AÇIK KAHVE",
-        "product_id": "7274",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "AÇIK KAHVE",
-        "product_id": "7375",
-        "source": "title+sku_order_partial"
-      },
-      {
-        "collection": "marquise",
-        "name": "AÇIK KAHVE",
-        "product_id": "7377",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "AÇIK KAHVE",
-        "product_id": "7372",
-        "source": "title+sku_order"
-      },
       {
         "collection": "coral",
         "name": "AÇIK KAHVE",
         "product_id": "2525",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2522",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2523",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2414",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2319",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2390",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2270",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2385",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2323",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "AÇIK KAHVE",
+        "product_id": "2466",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 40,
+    "top_frequency": 51,
     "verified": true
   },
   "6941": {
     "alternatives": [],
     "name_tr": "KOYU GRİ",
-    "occurrence_count": 168,
+    "occurrence_count": 252,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU GRİ",
-        "product_id": "3001",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU GRİ",
-        "product_id": "3469",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU GRİ",
-        "product_id": "3419",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU GRİ",
@@ -3491,9 +3599,27 @@
         "name": "KOYU GRİ",
         "product_id": "3586",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KOYU GRİ",
+        "product_id": "3583",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KOYU GRİ",
+        "product_id": "3584",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KOYU GRİ",
+        "product_id": "7182",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 168,
+    "top_frequency": 252,
     "verified": true
   },
   "6974": {
@@ -3511,6 +3637,21 @@
     "top_frequency": 1,
     "verified": false
   },
+  "7032": {
+    "alternatives": [],
+    "name_tr": "MERCAN",
+    "occurrence_count": 1,
+    "sources": [
+      {
+        "collection": "pearl",
+        "name": "MERCAN",
+        "product_id": "3403",
+        "source": "title+sku_shared_name"
+      }
+    ],
+    "top_frequency": 1,
+    "verified": false
+  },
   "7141": {
     "alternatives": [
       {
@@ -3519,26 +3660,8 @@
       }
     ],
     "name_tr": "BUZ MAVİSİ",
-    "occurrence_count": 53,
+    "occurrence_count": 90,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "BUZ MAVİSİ",
-        "product_id": "3002",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "BUZ MAVİSİ",
-        "product_id": "3468",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "BUZ MAVİSİ",
-        "product_id": "3418",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "BUZ MAVİSİ",
@@ -3570,44 +3693,44 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "BUZ MAVİSİ",
-        "product_id": "7284",
+        "product_id": "2555",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "BUZ MAVİSİ",
-        "product_id": "7283",
+        "product_id": "2272",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BUZ MAVİSİ",
+        "product_id": "2503",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BUZ MAVİSİ",
+        "product_id": "2580",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "BUZ MAVİSİ",
+        "product_id": "3697",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 52,
+    "top_frequency": 89,
     "verified": true
   },
   "7741": {
     "alternatives": [],
     "name_tr": "KİVİ",
-    "occurrence_count": 22,
+    "occurrence_count": 37,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KİVİ",
-        "product_id": "3003",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KİVİ",
-        "product_id": "3467",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KİVİ",
-        "product_id": "3417",
-        "source": "title+sku_shared_name"
-      },
       {
         "collection": "amorph",
         "name": "KİVİ",
@@ -3633,50 +3756,50 @@
         "source": "title+sku_order"
       },
       {
+        "collection": "coral",
+        "name": "KİVİ",
+        "product_id": "2406",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "crystal",
+        "name": "KİVİ",
+        "product_id": "2626",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "KİVİ",
+        "product_id": "3645",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "KİVİ",
+        "product_id": "2658",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "KİVİ",
+        "product_id": "2697",
+        "source": "title+sku_order"
+      },
+      {
         "collection": "marquise",
         "name": "KİVİ",
         "product_id": "7268",
         "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KİVİ",
-        "product_id": "3353",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "KİVİ",
-        "product_id": "3536",
-        "source": "title+sku_order_partial"
       }
     ],
-    "top_frequency": 22,
+    "top_frequency": 37,
     "verified": true
   },
   "8173": {
     "alternatives": [],
     "name_tr": "KOYU VİZON",
-    "occurrence_count": 39,
+    "occurrence_count": 57,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU VİZON",
-        "product_id": "3004",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU VİZON",
-        "product_id": "3466",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU VİZON",
-        "product_id": "3416",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU VİZON",
@@ -3696,31 +3819,49 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU VİZON",
-        "product_id": "3325",
+        "product_id": "2372",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU VİZON",
-        "product_id": "7304",
+        "product_id": "2572",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU VİZON",
+        "product_id": "3570",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU VİZON",
-        "product_id": "7306",
+        "product_id": "2266",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU VİZON",
-        "product_id": "7305",
+        "product_id": "2573",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU VİZON",
+        "product_id": "2571",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU VİZON",
+        "product_id": "2306",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 39,
+    "top_frequency": 57,
     "verified": true
   },
   "8333": {
@@ -3741,32 +3882,8 @@
   "8427": {
     "alternatives": [],
     "name_tr": "SAKS MAVİSİ",
-    "occurrence_count": 17,
+    "occurrence_count": 25,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "SAKS MAVİSİ",
-        "product_id": "3005",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "SAKS MAVİSİ",
-        "product_id": "3465",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "SAKS MAVİSİ",
-        "product_id": "3415",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "marquise",
-        "name": "SAKS MAVİSİ",
-        "product_id": "7300",
-        "source": "title+sku_order"
-      },
       {
         "collection": "coral",
         "name": "SAKS MAVİSİ",
@@ -3802,38 +3919,56 @@
         "name": "SAKS MAVİSİ",
         "product_id": "2677",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "istanbul",
+        "name": "SAKS MAVİSİ",
+        "product_id": "2689",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "SAKS MAVİSİ",
+        "product_id": "7300",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "marrakesh",
+        "name": "SAKS MAVİSİ",
+        "product_id": "2753",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "marrakesh",
+        "name": "SAKS MAVİSİ",
+        "product_id": "2769",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 17,
+    "top_frequency": 25,
     "verified": true
   },
   "8431": {
     "alternatives": [],
     "name_tr": "GÜL KURUSU",
-    "occurrence_count": 17,
+    "occurrence_count": 25,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "GÜL KURUSU",
-        "product_id": "3006",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "GÜL KURUSU",
-        "product_id": "3464",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "GÜL KURUSU",
-        "product_id": "3414",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "GÜL KURUSU",
         "product_id": "3671",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "GÜL KURUSU",
+        "product_id": "2534",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "GÜL KURUSU",
+        "product_id": "2232",
         "source": "title+sku_order"
       },
       {
@@ -3871,34 +4006,22 @@
         "name": "GÜL KURUSU",
         "product_id": "3320",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "marrakesh",
+        "name": "GÜL KURUSU",
+        "product_id": "2772",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 17,
+    "top_frequency": 25,
     "verified": true
   },
   "8441": {
     "alternatives": [],
     "name_tr": "KOYU TURKUAZ",
-    "occurrence_count": 43,
+    "occurrence_count": 68,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU TURKUAZ",
-        "product_id": "3007",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU TURKUAZ",
-        "product_id": "3463",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU TURKUAZ",
-        "product_id": "3413",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "KOYU TURKUAZ",
@@ -3924,25 +4047,43 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU TURKUAZ",
-        "product_id": "7280",
+        "product_id": "2484",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU TURKUAZ",
-        "product_id": "7373",
+        "product_id": "2485",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU TURKUAZ",
+        "product_id": "2523",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "KOYU TURKUAZ",
-        "product_id": "7237",
+        "product_id": "2411",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU TURKUAZ",
+        "product_id": "2386",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "KOYU TURKUAZ",
+        "product_id": "2331",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 43,
+    "top_frequency": 68,
     "verified": true
   },
   "8557": {
@@ -3983,26 +4124,8 @@
       }
     ],
     "name_tr": "ZEYTİN YEŞİLİ",
-    "occurrence_count": 20,
+    "occurrence_count": 30,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "ZEYTİN YEŞİLİ",
-        "product_id": "3512",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "ZEYTİN YEŞİLİ",
-        "product_id": "3462",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "ZEYTİN YEŞİLİ",
-        "product_id": "3412",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "ZEYTİN YEŞİLİ",
@@ -4013,6 +4136,12 @@
         "collection": "amorph",
         "name": "ZEYTİN YEŞİLİ",
         "product_id": "4558",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "ZEYTİN YEŞİLİ",
+        "product_id": "3650",
         "source": "title+sku_order"
       },
       {
@@ -4044,9 +4173,21 @@
         "name": "ZEYTİN YEŞİLİ",
         "product_id": "4015",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "ZEYTİN YEŞİLİ",
+        "product_id": "4017",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "marquise",
+        "name": "ZEYTİN YEŞİLİ",
+        "product_id": "4016",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 19,
+    "top_frequency": 29,
     "verified": true
   },
   "9000": {
@@ -4121,30 +4262,18 @@
   "9379": {
     "alternatives": [],
     "name_tr": "KOYU KAHVE",
-    "occurrence_count": 52,
+    "occurrence_count": 90,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "KOYU KAHVE",
-        "product_id": "4668",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU KAHVE",
-        "product_id": "4670",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "KOYU KAHVE",
-        "product_id": "4672",
-        "source": "title+sku_shared_name"
-      },
       {
         "collection": "amorph",
         "name": "KOYU KAHVE",
         "product_id": "4563",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "KOYU KAHVE",
+        "product_id": "7402",
         "source": "title+sku_order"
       },
       {
@@ -4182,34 +4311,28 @@
         "name": "KOYU KAHVE",
         "product_id": "4557",
         "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "amorph",
+        "name": "KOYU KAHVE",
+        "product_id": "4568",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "ethnique",
+        "name": "KOYU KAHVE",
+        "product_id": "3640",
+        "source": "title+sku_order"
       }
     ],
-    "top_frequency": 52,
+    "top_frequency": 90,
     "verified": true
   },
   "9500": {
     "alternatives": [],
     "name_tr": "SİYAH",
-    "occurrence_count": 134,
+    "occurrence_count": 213,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "SİYAH",
-        "product_id": "3008",
-        "source": "title+sku_shared_name"
-      },
-      {
-        "collection": "plain",
-        "name": "SİYAH",
-        "product_id": "3461",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "SİYAH",
-        "product_id": "3411",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "SİYAH",
@@ -4243,17 +4366,35 @@
       {
         "collection": "amorph",
         "name": "SİYAH",
+        "product_id": "3584",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "SİYAH",
         "product_id": "7182",
         "source": "title+sku_order"
       },
       {
         "collection": "amorph",
         "name": "SİYAH",
-        "product_id": "3584",
+        "product_id": "7179",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "amorph",
+        "name": "SİYAH",
+        "product_id": "7180",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "SİYAH",
+        "product_id": "2601",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 134,
+    "top_frequency": 213,
     "verified": true
   },
   "9726": {
@@ -4283,26 +4424,8 @@
       }
     ],
     "name_tr": "NİL YEŞİLİ",
-    "occurrence_count": 39,
+    "occurrence_count": 66,
     "sources": [
-      {
-        "collection": "plain",
-        "name": "NİL YEŞİLİ",
-        "product_id": "3009",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "NİL YEŞİLİ",
-        "product_id": "3460",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "NİL YEŞİLİ",
-        "product_id": "3410",
-        "source": "title+sku_order"
-      },
       {
         "collection": "amorph",
         "name": "NİL YEŞİLİ",
@@ -4334,42 +4457,48 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "NİL YEŞİLİ",
-        "product_id": "7287",
+        "product_id": "3690",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
-        "name": "KEMİK",
-        "product_id": "3316",
+        "collection": "coral",
+        "name": "NİL YEŞİLİ",
+        "product_id": "2381",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "NİL YEŞİLİ",
+        "product_id": "3697",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "NİL YEŞİLİ",
+        "product_id": "2472",
+        "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "NİL YEŞİLİ",
+        "product_id": "2247",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 37,
+    "top_frequency": 64,
     "verified": true
   },
   "9831": {
     "alternatives": [],
     "name_tr": "PAS",
-    "occurrence_count": 55,
+    "occurrence_count": 109,
     "sources": [
       {
-        "collection": "plain",
+        "collection": "amorph",
         "name": "PAS",
-        "product_id": "3010",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "PAS",
-        "product_id": "3459",
-        "source": "title+sku_order"
-      },
-      {
-        "collection": "plain",
-        "name": "PAS",
-        "product_id": "3409",
+        "product_id": "7402",
         "source": "title+sku_order"
       },
       {
@@ -4385,43 +4514,55 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "amorph",
         "name": "PAS",
-        "product_id": "7286",
+        "product_id": "7401",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PAS",
-        "product_id": "4610",
+        "product_id": "2291",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PAS",
-        "product_id": "4542",
+        "product_id": "2544",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PAS",
-        "product_id": "4609",
+        "product_id": "2576",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "coral",
         "name": "PAS",
-        "product_id": "2722",
+        "product_id": "2535",
+        "source": "title+sku_order_partial"
+      },
+      {
+        "collection": "coral",
+        "name": "PAS",
+        "product_id": "2567",
         "source": "title+sku_order"
+      },
+      {
+        "collection": "coral",
+        "name": "PAS",
+        "product_id": "4570",
+        "source": "title+sku_order_partial"
       }
     ],
-    "top_frequency": 55,
+    "top_frequency": 109,
     "verified": true
   },
   "999": {
     "alternatives": [],
     "name_tr": "BEYAZ",
-    "occurrence_count": 44,
+    "occurrence_count": 60,
     "sources": [
       {
         "collection": "amorph",
@@ -4454,37 +4595,37 @@
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "BEYAZ",
-        "product_id": "7284",
+        "product_id": "7209",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "BEYAZ",
-        "product_id": "7283",
+        "product_id": "7228",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "BEYAZ",
-        "product_id": "7285",
+        "product_id": "7215",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "BEYAZ",
-        "product_id": "7286",
+        "product_id": "7213",
         "source": "title+sku_order"
       },
       {
-        "collection": "marquise",
+        "collection": "ethnique",
         "name": "BEYAZ",
-        "product_id": "7287",
+        "product_id": "7216",
         "source": "title+sku_order"
       }
     ],
-    "top_frequency": 44,
+    "top_frequency": 60,
     "verified": true
   }
 }

@@ -22,6 +22,8 @@ venv/
 # Proje-özel cache/artefakt
 artifacts/.tmp/
 scripts/.cache/
+# Halı thumbnail cache (extract_missing_palette.py için) — yeniden üretilebilir
+assets/rug_cache/
 
 # Scraper / otomasyon çıktıları (büyük + yeniden üretilebilir)
 # Sadece yayında kullanılanlar repo'da:

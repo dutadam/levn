@@ -1,215 +1,6 @@
 [
   {
     "type": "shared_name_multi_code",
-    "product_id": "3503",
-    "title": "PLAIN AÇIK GRİ (C) HALI",
-    "sku": "2025-C-1841-8557",
-    "codes_unique": [
-      "1841",
-      "8557"
-    ],
-    "name": "AÇIK GRİ"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "2979",
-    "title": "PLAIN ANTRASİT (A) HALI",
-    "sku": "2025-A-2941-4923",
-    "codes_unique": [
-      "2941",
-      "4923"
-    ],
-    "name": "ANTRASİT"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "2985",
-    "title": "PLAIN BAKIR (A) HALI",
-    "sku": "2025-A-4395-9726",
-    "codes_unique": [
-      "4395",
-      "9726"
-    ],
-    "name": "BAKIR"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3439",
-    "title": "PLAIN BAKIR (M) HALI",
-    "sku": "2025-M-4395-6974",
-    "codes_unique": [
-      "4395",
-      "6974"
-    ],
-    "name": "BAKIR"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3494",
-    "title": "PLAIN FUŞYA (C) HALI",
-    "sku": "2025-C-3668-3289",
-    "codes_unique": [
-      "3668",
-      "3289"
-    ],
-    "name": "FUŞYA"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3493",
-    "title": "PLAIN HARDAL (C) HALI",
-    "sku": "2025-C-4031-0744",
-    "codes_unique": [
-      "4031",
-      "0744"
-    ],
-    "name": "HARDAL"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "2994",
-    "title": "PLAIN KIRMIZI (A) HALI",
-    "sku": "2025-A-5711-2295",
-    "codes_unique": [
-      "5711",
-      "2295"
-    ],
-    "name": "KIRMIZI"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3417",
-    "title": "PLAIN KİVİ (M) HALI",
-    "sku": "2025-M-7741-3905",
-    "codes_unique": [
-      "7741",
-      "3905"
-    ],
-    "name": "KİVİ"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "4672",
-    "title": "PLAIN KOYU KAHVE (M) HALI",
-    "sku": "2025-M-9379-1904",
-    "codes_unique": [
-      "9379",
-      "1904"
-    ],
-    "name": "KOYU KAHVE"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3463",
-    "title": "PLAIN KOYU TURKUAZ (C) HALI",
-    "sku": "2025-C-8441-3631",
-    "codes_unique": [
-      "8441",
-      "3631"
-    ],
-    "name": "KOYU TURKUAZ"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3487",
-    "title": "PLAIN MAVİ (C) HALI",
-    "sku": "2025-C-4618-8641",
-    "codes_unique": [
-      "4618",
-      "8641"
-    ],
-    "name": "MAVİ"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3424",
-    "title": "PLAIN MERCAN (M) HALI",
-    "sku": "2025-M-6451-8333",
-    "codes_unique": [
-      "6451",
-      "8333"
-    ],
-    "name": "MERCAN"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3481",
-    "title": "PLAIN MOR (C) HALI",
-    "sku": "2025-C-5531-4587",
-    "codes_unique": [
-      "5531",
-      "4587"
-    ],
-    "name": "MOR"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3433",
-    "title": "PLAIN MÜRDÜM (M) HALI",
-    "sku": "2025-M-5431-6596",
-    "codes_unique": [
-      "5431",
-      "6596"
-    ],
-    "name": "MÜRDÜM"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "2997",
-    "title": "PLAIN PETROL (A) HALI",
-    "sku": "2025-A-5901-6849",
-    "codes_unique": [
-      "5901",
-      "6849"
-    ],
-    "name": "PETROL"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3508",
-    "title": "PLAIN SARI (C) HALI",
-    "sku": "2025-C-1031-4717",
-    "codes_unique": [
-      "1031",
-      "4717"
-    ],
-    "name": "SARI"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3008",
-    "title": "PLAIN SİYAH (A) HALI",
-    "sku": "2025-A-9500-1734",
-    "codes_unique": [
-      "9500",
-      "1734"
-    ],
-    "name": "SİYAH"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "2989",
-    "title": "PLAIN VİZON (A) HALI",
-    "sku": "2025-A-4921-2495",
-    "codes_unique": [
-      "4921",
-      "2495"
-    ],
-    "name": "VİZON"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "3499",
-    "title": "PLAIN YEŞİL (C) HALI",
-    "sku": "2025-C-2541-6744",
-    "codes_unique": [
-      "2541",
-      "6744"
-    ],
-    "name": "YEŞİL"
-  },
-  {
-    "type": "shared_name_multi_code",
     "product_id": "4561",
     "title": "BLISS BEJ HALI",
     "sku": "6093-M-2721-2721-2721-2721-6868",
@@ -266,124 +57,6 @@
     "sku": "6120-C-1621-5820-2929-5820-4518",
     "accent_code": "4518",
     "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "7281",
-    "title": "AURORA EKRU - EKRU - EKRU - EKRU - TAŞ HALI",
-    "sku": "6114-E-5051-5051-5051-5051-6859-7343",
-    "accent_code": "7343",
-    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "3541",
-    "title": "BLAZE KREM - KOYU GRİ - KÖMÜR HALI",
-    "sku": "5036-C-5621-6941-1941-7647",
-    "accent_code": "7647",
-    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "2734",
-    "title": "BLOOM KÖMÜR - KREM - KEMİK HALI",
-    "sku": "5041-M-1941-5621-5051-4690",
-    "accent_code": "4690",
-    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "7245",
-    "title": "CRACK VİZON - NİL YEŞİLİ - BEJ HALI",
-    "sku": "5114-M-4921-9811-2721-6641",
-    "accent_code": "6641",
-    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "3344",
-    "title": "HORIZON EKRU - MÜRDÜM - KÖMÜR HALI",
-    "sku": "5054-E-5051-5431-1941-4572",
-    "accent_code": "4572",
-    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "4035",
-    "title": "HORIZON KOYU TURKUAZ - KOYU MÜRDÜM - MACENTA HALI",
-    "sku": "5054-A-8441-4331-6568-6225",
-    "accent_code": "6225",
-    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "7375",
-    "title": "LUSH VİZON - KOYU BEJ - KAKAO - EKRU - AÇIK KAHVE - KAKAO HALI",
-    "sku": "6052-E-4921-5820-4131-5051-6921-4131-4067",
-    "accent_code": "4067",
-    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "7299",
-    "title": "LUVIA KOYU GRİ - KEMİK - GRİ - SİYAH - NİL YEŞİLİ - AÇIK GRİ HALI",
-    "sku": "6186-M-6941-5051-5841-9500-9811-1841-2093",
-    "accent_code": "2093",
-    "reason": "7 kod, 6 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "3720",
-    "title": "MEDALLION BEJ - AÇIK GRİ - KOYU GRİ - BUZ MAVİSİ - GRİ HALI",
-    "sku": "5070-M-2721-1841-6941-7141-5841-0810",
-    "accent_code": "0810",
-    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "2728",
-    "title": "NOVA KÖMÜR - KOYU GRİ - KEMİK HALI",
-    "sku": "5038-M-1941-6941-5051-7538",
-    "accent_code": "7538",
-    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "3537",
-    "title": "SERENITY AÇIK GRİ - BEJ - KOYU GRİ - KOYU BEJ - AÇIK GRİ - BUZ MAVİSİ HALI",
-    "sku": "6031-C-1841-2721-6941-5820-1941-7141",
-    "accent_code": "7141",
-    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "unnamed_accent",
-    "product_id": "3536",
-    "title": "SERENITY AÇIK GRİ - KİVİ - YEŞİL - LACİVERT - VİŞNE ÇÜRÜĞÜ - KİREMİT HALI",
-    "sku": "6031-C-1841-7741-2541-1441-4511-1831-6213",
-    "accent_code": "6213",
-    "reason": "7 kod, 6 ad — son kod vurgu rengi olarak işaretlendi"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "4606",
-    "title": "SERENITY AÇIK GRİ HALI",
-    "sku": "6031-M-1841-1841-1841-1841-1841-1841-2129",
-    "codes_unique": [
-      "1841",
-      "2129"
-    ],
-    "name": "AÇIK GRİ"
-  },
-  {
-    "type": "shared_name_multi_code",
-    "product_id": "4605",
-    "title": "SERENITY EKRU HALI",
-    "sku": "6031-E-5051-5051-5051-5051-5051-5051-3136",
-    "codes_unique": [
-      "5051",
-      "3136"
-    ],
-    "name": "EKRU"
   },
   {
     "type": "unnamed_accent",
@@ -640,6 +313,81 @@
     "name": "MAVİ"
   },
   {
+    "type": "sku_parse_fail",
+    "product_id": "7234",
+    "title": "CAESAR BEYAZ - AÇIK KREM HALI",
+    "sku_raw": "",
+    "img_alt": "CAESAR BEYAZ - AÇIK KREM HALI"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "4588",
+    "title": "CAESAR TAŞ - EKRU HALI",
+    "sku": "8025-E-6859-5051-0479",
+    "accent_code": "0479",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "sku_parse_fail",
+    "product_id": "7233",
+    "title": "CAESAR TAŞ - EKRU HALI",
+    "sku_raw": "",
+    "img_alt": "CAESAR TAŞ - EKRU HALI"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7195",
+    "title": "FLEUR VİZON - KREM - NİL YEŞİLİ HALI",
+    "sku": "5068-M-4921-5621-9811-2225",
+    "accent_code": "2225",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "sku_parse_fail",
+    "product_id": "7232",
+    "title": "HERITAGE GOLD - EKRU HALI",
+    "sku_raw": "",
+    "img_alt": "HERITAGE GOLD - EKRU HALI"
+  },
+  {
+    "type": "sku_parse_fail",
+    "product_id": "7200",
+    "title": "MAYA CAM GÖBEĞİ - KOYU KAHVE - KİVİ HALI",
+    "sku_raw": "",
+    "img_alt": "MAYA CAM GÖBEĞİ - KOYU KAHVE - KİVİ HALI"
+  },
+  {
+    "type": "sku_parse_fail",
+    "product_id": "7201",
+    "title": "MAYA KİVİ - KOYU KAHVE - CAM GÖBEĞİ HALI",
+    "sku_raw": "",
+    "img_alt": "MAYA KİVİ - KOYU KAHVE - CAM GÖBEĞİ HALI"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3741",
+    "title": "MAYA KOYU KAHVE - SİYAH - EKRU HALI",
+    "sku": "5071-E-9379-9500-5051-3729",
+    "accent_code": "3729",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7222",
+    "title": "SCRIPT YEŞİL - BEJ HALI",
+    "sku": "8055-M-2541-2721-4381",
+    "accent_code": "4381",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7226",
+    "title": "SPECK KOYU GRİ - AÇIK GRİ HALI",
+    "sku": "8058-M-6941-1841-4521",
+    "accent_code": "4521",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
     "type": "unnamed_accent",
     "product_id": "2691",
     "title": "CARNIVAL KOYU KİREMİT - TURKUAZ - HARDAL - KREM HALI",
@@ -688,6 +436,228 @@
     "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
   },
   {
+    "type": "unnamed_accent",
+    "product_id": "7281",
+    "title": "AURORA EKRU - EKRU - EKRU - EKRU - TAŞ HALI",
+    "sku": "6114-E-5051-5051-5051-5051-6859-7343",
+    "accent_code": "7343",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3541",
+    "title": "BLAZE KREM - KOYU GRİ - KÖMÜR HALI",
+    "sku": "5036-C-5621-6941-1941-7647",
+    "accent_code": "7647",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2734",
+    "title": "BLOOM KÖMÜR - KREM - KEMİK HALI",
+    "sku": "5041-M-1941-5621-5051-4690",
+    "accent_code": "4690",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7245",
+    "title": "CRACK VİZON - NİL YEŞİLİ - BEJ HALI",
+    "sku": "5114-M-4921-9811-2721-6641",
+    "accent_code": "6641",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3344",
+    "title": "HORIZON EKRU - MÜRDÜM - KÖMÜR HALI",
+    "sku": "5054-E-5051-5431-1941-4572",
+    "accent_code": "4572",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "4035",
+    "title": "HORIZON KOYU TURKUAZ - KOYU MÜRDÜM - MACENTA HALI",
+    "sku": "5054-A-8441-4331-6568-6225",
+    "accent_code": "6225",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7375",
+    "title": "LUSH VİZON - KOYU BEJ - KAKAO - EKRU - AÇIK KAHVE - KAKAO HALI",
+    "sku": "6052-E-4921-5820-4131-5051-6921-4131-4067",
+    "accent_code": "4067",
+    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7299",
+    "title": "LUVIA KOYU GRİ - KEMİK - GRİ - SİYAH - NİL YEŞİLİ - AÇIK GRİ HALI",
+    "sku": "6186-M-6941-5051-5841-9500-9811-1841-2093",
+    "accent_code": "2093",
+    "reason": "7 kod, 6 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3720",
+    "title": "MEDALLION BEJ - AÇIK GRİ - KOYU GRİ - BUZ MAVİSİ - GRİ HALI",
+    "sku": "5070-M-2721-1841-6941-7141-5841-0810",
+    "accent_code": "0810",
+    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2728",
+    "title": "NOVA KÖMÜR - KOYU GRİ - KEMİK HALI",
+    "sku": "5038-M-1941-6941-5051-7538",
+    "accent_code": "7538",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7405",
+    "title": "RETRO BEYAZ - KOYU GRİ - HARDAL - SİYAH HALI",
+    "sku": "6183-M-999-6941-4031-9500-4291",
+    "accent_code": "4291",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3537",
+    "title": "SERENITY AÇIK GRİ - BEJ - KOYU GRİ - KOYU BEJ - AÇIK GRİ - BUZ MAVİSİ HALI",
+    "sku": "6031-C-1841-2721-6941-5820-1941-7141",
+    "accent_code": "7141",
+    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3536",
+    "title": "SERENITY AÇIK GRİ - KİVİ - YEŞİL - LACİVERT - VİŞNE ÇÜRÜĞÜ - KİREMİT HALI",
+    "sku": "6031-C-1841-7741-2541-1441-4511-1831-6213",
+    "accent_code": "6213",
+    "reason": "7 kod, 6 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "4606",
+    "title": "SERENITY AÇIK GRİ HALI",
+    "sku": "6031-M-1841-1841-1841-1841-1841-1841-2129",
+    "codes_unique": [
+      "1841",
+      "2129"
+    ],
+    "name": "AÇIK GRİ"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "4605",
+    "title": "SERENITY EKRU HALI",
+    "sku": "6031-E-5051-5051-5051-5051-5051-5051-3136",
+    "codes_unique": [
+      "5051",
+      "3136"
+    ],
+    "name": "EKRU"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2835",
+    "title": "BROOKLYN BEJ - EKRU - AÇIK GRİ HALI",
+    "sku": "11959-E-2721-5051-1841-0678",
+    "accent_code": "0678",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2833",
+    "title": "BROOKLYN KÖMÜR - KREM - KOYU GRİ HALI",
+    "sku": "11959-A-1941-5621-6941-6427",
+    "accent_code": "6427",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2884",
+    "title": "CHARM KÖMÜR - KOYU VİZON - KEMİK HALI",
+    "sku": "5011-C-1941-8173-5051-0760",
+    "accent_code": "0760",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2778",
+    "title": "DUSSELDORF SİYAH - KÖMÜR - HAKİ HALI",
+    "sku": "134-A-9500-1941-5501-1873",
+    "accent_code": "1873",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2819",
+    "title": "HANNOVER AÇIK GRİ - KÖMÜR - MÜRDÜM HALI",
+    "sku": "11945-A-1841-1941-5431-4483",
+    "accent_code": "4483",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2820",
+    "title": "HANNOVER EKRU - KÖMÜR - MÜRDÜM HALI",
+    "sku": "11945-E-5051-1941-5431-8909",
+    "accent_code": "8909",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2802",
+    "title": "LAGUNA AÇIK GRİ - HARDAL - KOYU GRİ HALI",
+    "sku": "11936-A-1841-4031-6941-5589",
+    "accent_code": "5589",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2760",
+    "title": "MADRID GRİ - ANTRASİT - KÖMÜR HALI",
+    "sku": "112-A-5841-2941-1941-8466",
+    "accent_code": "8466",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2843",
+    "title": "MANHATTAN GRİ - KAKAO - KİREMİT HALI",
+    "sku": "11960-A-5841-4131-1831-9750",
+    "accent_code": "9750",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2829",
+    "title": "SALAMANCA SİYAH - GRİ - AÇIK GRİ HALI",
+    "sku": "11948-A-9500-5841-1841-0855",
+    "accent_code": "0855",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2767",
+    "title": "TOLEDO KÖMÜR - MAVİ - AÇIK KREM HALI",
+    "sku": "115-A-1941-4618-1621-2023",
+    "accent_code": "2023",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "2788",
+    "title": "ZONE SİYAH - KIRMIZI - AÇIK GRİ HALI",
+    "sku": "3442-A-9500-5711-1841-0326",
+    "accent_code": "0326",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
     "type": "shared_name_multi_code",
     "product_id": "2909",
     "title": "CHECKERS EKRU HALI",
@@ -730,6 +700,392 @@
       "4319"
     ],
     "name": "BEJ"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3364",
+    "title": "CITADEL MAVİ - KOYU LACİVERT - KIRMIZI - BEJ HALI",
+    "sku": "3664-C-4618-6121-5711-2721-6037",
+    "accent_code": "6037",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3599",
+    "title": "DAHLIA EKRU - KOYU BEJ - BEJ - AÇIK GRİ HALI",
+    "sku": "6046-E-5051-5820-2721-1841-4218",
+    "accent_code": "4218",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "7323",
+    "title": "FORTRESS ERA KÖMÜR - CAM GÖBEĞİ - KIRMIZI - KÖMÜR - TURUNCU - SARI HALI",
+    "sku": "6035-M-1941-6441-5711-1941-0711-1031-6464",
+    "accent_code": "6464",
+    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3519",
+    "title": "GRANDEUR AÇIK KREM - AÇIK MERCAN - KIRMIZI - SİYAH HALI",
+    "sku": "6039-C-1621-5688-5711-9500-3717",
+    "accent_code": "3717",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3371",
+    "title": "MAJESTY FUŞYA - PETROL - KİREMİT - BUZ MAVİSİ - YEŞİL HALI",
+    "sku": "6032-C-3668-5901-1831-7141-2541-1014",
+    "accent_code": "1014",
+    "reason": "6 kod, 5 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "4647",
+    "title": "MONARCH ERA LACİVERT - CAM GÖBEĞİ - KOYU LACİVERT - KOYU KAHVE HALI",
+    "sku": "6091-C-1441-6441-6121-9379-3934",
+    "accent_code": "3934",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3612",
+    "title": "MONARCH ERA LACİVERT - TURKUAZ - LİLA - KİVİ HALI",
+    "sku": "6029-C-1441-2241-4247-7741-9986",
+    "accent_code": "9986",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3337",
+    "title": "MONARCH ERA MOR - PAS - PEMBE - TURKUAZ HALI",
+    "sku": "6029-C-5531-9831-6701-2241-4625",
+    "accent_code": "4625",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "4632",
+    "title": "PALACE HARDAL - TURKUAZ - MACENTA - VİŞNE ÇÜRÜĞÜ HALI",
+    "sku": "6089-C-4031-2241-6568-4511-4218",
+    "accent_code": "4218",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "5875",
+    "title": "SIRENA TURKUAZ - MAVİ - ZEYTİN YEŞİLİ - SİYAH HALI",
+    "sku": "6144-C-2241-4618-8741-9500-4375",
+    "accent_code": "4375",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3334",
+    "title": "SPLENDOR ERA KEMİK - HARDAL - KIRMIZI - TURKUAZ HALI",
+    "sku": "6027-C-5051-4031-5711-2241-4676",
+    "accent_code": "4676",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3602",
+    "title": "SPLENDOR ERA TAŞ - AÇIK MERCAN - KOYU YEŞİL - NİL YEŞİLİ HALI",
+    "sku": "6027-M-6859-5688-2441-9811-5477",
+    "accent_code": "5477",
+    "reason": "5 kod, 4 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "4039",
+    "title": "VIOLETTA FUŞYA - LİLA - TURUNCU HALI",
+    "sku": "5067-C-3668-4247-0711-5554",
+    "accent_code": "5554",
+    "reason": "4 kod, 3 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "4629",
+    "title": "VIVIENNE SARI - KOYU KAHVE - CAM GÖBEĞİ - TURUNCU - ORMAN YEŞİLİ - PAS HALI",
+    "sku": "6069-C-1031-9379-6441-0711-2929-9831-2715",
+    "accent_code": "2715",
+    "reason": "7 kod, 6 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3403",
+    "title": "PEARL MERCAN HALI",
+    "sku": "2024-E-6451-7032",
+    "codes_unique": [
+      "6451",
+      "7032"
+    ],
+    "name": "MERCAN"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2963",
+    "title": "PEARL SAKS MAVİSİ HALI",
+    "sku": "2024-E-8427-4171",
+    "codes_unique": [
+      "8427",
+      "4171"
+    ],
+    "name": "SAKS MAVİSİ"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2932",
+    "title": "PEARL YEŞİL HALI",
+    "sku": "2024-E-2541-2754",
+    "codes_unique": [
+      "2541",
+      "2754"
+    ],
+    "name": "YEŞİL"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3503",
+    "title": "PLAIN AÇIK GRİ (C) HALI",
+    "sku": "2025-C-1841-8557",
+    "codes_unique": [
+      "1841",
+      "8557"
+    ],
+    "name": "AÇIK GRİ"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2979",
+    "title": "PLAIN ANTRASİT (A) HALI",
+    "sku": "2025-A-2941-4923",
+    "codes_unique": [
+      "2941",
+      "4923"
+    ],
+    "name": "ANTRASİT"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2985",
+    "title": "PLAIN BAKIR (A) HALI",
+    "sku": "2025-A-4395-9726",
+    "codes_unique": [
+      "4395",
+      "9726"
+    ],
+    "name": "BAKIR"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3439",
+    "title": "PLAIN BAKIR (M) HALI",
+    "sku": "2025-M-4395-6974",
+    "codes_unique": [
+      "4395",
+      "6974"
+    ],
+    "name": "BAKIR"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3494",
+    "title": "PLAIN FUŞYA (C) HALI",
+    "sku": "2025-C-3668-3289",
+    "codes_unique": [
+      "3668",
+      "3289"
+    ],
+    "name": "FUŞYA"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3493",
+    "title": "PLAIN HARDAL (C) HALI",
+    "sku": "2025-C-4031-0744",
+    "codes_unique": [
+      "4031",
+      "0744"
+    ],
+    "name": "HARDAL"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2994",
+    "title": "PLAIN KIRMIZI (A) HALI",
+    "sku": "2025-A-5711-2295",
+    "codes_unique": [
+      "5711",
+      "2295"
+    ],
+    "name": "KIRMIZI"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3417",
+    "title": "PLAIN KİVİ (M) HALI",
+    "sku": "2025-M-7741-3905",
+    "codes_unique": [
+      "7741",
+      "3905"
+    ],
+    "name": "KİVİ"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "4672",
+    "title": "PLAIN KOYU KAHVE (M) HALI",
+    "sku": "2025-M-9379-1904",
+    "codes_unique": [
+      "9379",
+      "1904"
+    ],
+    "name": "KOYU KAHVE"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3463",
+    "title": "PLAIN KOYU TURKUAZ (C) HALI",
+    "sku": "2025-C-8441-3631",
+    "codes_unique": [
+      "8441",
+      "3631"
+    ],
+    "name": "KOYU TURKUAZ"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3487",
+    "title": "PLAIN MAVİ (C) HALI",
+    "sku": "2025-C-4618-8641",
+    "codes_unique": [
+      "4618",
+      "8641"
+    ],
+    "name": "MAVİ"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3424",
+    "title": "PLAIN MERCAN (M) HALI",
+    "sku": "2025-M-6451-8333",
+    "codes_unique": [
+      "6451",
+      "8333"
+    ],
+    "name": "MERCAN"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3481",
+    "title": "PLAIN MOR (C) HALI",
+    "sku": "2025-C-5531-4587",
+    "codes_unique": [
+      "5531",
+      "4587"
+    ],
+    "name": "MOR"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3433",
+    "title": "PLAIN MÜRDÜM (M) HALI",
+    "sku": "2025-M-5431-6596",
+    "codes_unique": [
+      "5431",
+      "6596"
+    ],
+    "name": "MÜRDÜM"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2997",
+    "title": "PLAIN PETROL (A) HALI",
+    "sku": "2025-A-5901-6849",
+    "codes_unique": [
+      "5901",
+      "6849"
+    ],
+    "name": "PETROL"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3508",
+    "title": "PLAIN SARI (C) HALI",
+    "sku": "2025-C-1031-4717",
+    "codes_unique": [
+      "1031",
+      "4717"
+    ],
+    "name": "SARI"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3008",
+    "title": "PLAIN SİYAH (A) HALI",
+    "sku": "2025-A-9500-1734",
+    "codes_unique": [
+      "9500",
+      "1734"
+    ],
+    "name": "SİYAH"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "2989",
+    "title": "PLAIN VİZON (A) HALI",
+    "sku": "2025-A-4921-2495",
+    "codes_unique": [
+      "4921",
+      "2495"
+    ],
+    "name": "VİZON"
+  },
+  {
+    "type": "shared_name_multi_code",
+    "product_id": "3499",
+    "title": "PLAIN YEŞİL (C) HALI",
+    "sku": "2025-C-2541-6744",
+    "codes_unique": [
+      "2541",
+      "6744"
+    ],
+    "name": "YEŞİL"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3017",
+    "title": "GARDENIA BUZ MAVİSİ - MAVİ HALI",
+    "sku": "3610-C-7141-4618-6381",
+    "accent_code": "6381",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3357",
+    "title": "SHIMMER AÇIK MERCAN - MAVİ HALI",
+    "sku": "3656-M-5688-4618-8983",
+    "accent_code": "8983",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3011",
+    "title": "TIFFANY KİREMİT - KIRMIZI HALI",
+    "sku": "3606-C-1831-5711-1126",
+    "accent_code": "1126",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3766",
+    "title": "TREASURE SİYAH - AÇIK GRİ HALI",
+    "sku": "3677-A-9500-1841-6825",
+    "accent_code": "6825",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
   },
   {
     "type": "unnamed_accent",
@@ -785,6 +1141,102 @@
     "title": "TRAIL SİYAH - EKRU HALI",
     "sku": "3666-E-9500-5051-4759",
     "accent_code": "4759",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3285",
+    "title": "ANCIENT KOYU VİZON - GRİ HALI",
+    "sku": "3176-A-8173-5841-0713",
+    "accent_code": "0713",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3251",
+    "title": "CAESAR KOYU VİZON - NİL YEŞİLİ HALI",
+    "sku": "3160-A-8173-9811-4177",
+    "accent_code": "4177",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3229",
+    "title": "CLASSY ANTRASİT - HAKİ HALI",
+    "sku": "3146-A-2941-5501-4083",
+    "accent_code": "4083",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3226",
+    "title": "CLASSY KÖMÜR - BEJ HALI",
+    "sku": "3146-A-1941-2721-9922",
+    "accent_code": "9922",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3225",
+    "title": "FLUX KÖMÜR - BEJ HALI",
+    "sku": "3145-A-1941-2721-6997",
+    "accent_code": "6997",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3138",
+    "title": "HERITAGE AÇIK KREM - FINDIK HALI",
+    "sku": "3101-A-1621-4724-8929",
+    "accent_code": "8929",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3182",
+    "title": "HORIZON KİVİ - KOYU BEJ HALI",
+    "sku": "3124-A-7741-5820-4621",
+    "accent_code": "4621",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3151",
+    "title": "MEDALLION GRİ - YEŞİL HALI",
+    "sku": "3104-A-5841-2541-0725",
+    "accent_code": "0725",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3255",
+    "title": "RISE BEJ - KOYU GRİ HALI",
+    "sku": "3166-A-2721-6941-6164",
+    "accent_code": "6164",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3273",
+    "title": "SPLASH GRİ - KIRMIZI HALI",
+    "sku": "3171-A-5841-5711-6758",
+    "accent_code": "6758",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3193",
+    "title": "SURFACE MAVİ - BAKIR HALI",
+    "sku": "3132-A-4618-4395-8057",
+    "accent_code": "8057",
+    "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
+  },
+  {
+    "type": "unnamed_accent",
+    "product_id": "3145",
+    "title": "TILE SİYAH - KIRMIZI HALI",
+    "sku": "3102-A-9500-5711-9054",
+    "accent_code": "9054",
     "reason": "3 kod, 2 ad — son kod vurgu rengi olarak işaretlendi"
   },
   {
@@ -861,49 +1313,9 @@
   },
   {
     "type": "name_conflict",
-    "code": "1621",
-    "top_name": "AÇIK KREM",
-    "top_count": 63,
-    "alternatives": [
-      {
-        "name": "KEMİK",
-        "count": 1
-      },
-      {
-        "name": "KÖMÜR",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "type": "name_conflict",
-    "code": "4395",
-    "top_name": "BAKIR",
-    "top_count": 28,
-    "alternatives": [
-      {
-        "name": "FINDIK",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "type": "name_conflict",
-    "code": "7141",
-    "top_name": "BUZ MAVİSİ",
-    "top_count": 52,
-    "alternatives": [
-      {
-        "name": "GRİ",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "type": "name_conflict",
     "code": "4724",
     "top_name": "FINDIK",
-    "top_count": 79,
+    "top_count": 122,
     "alternatives": [
       {
         "name": "BAKIR",
@@ -913,40 +1325,16 @@
   },
   {
     "type": "name_conflict",
-    "code": "5841",
-    "top_name": "GRİ",
-    "top_count": 114,
-    "alternatives": [
-      {
-        "name": "BUZ MAVİSİ",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "type": "name_conflict",
     "code": "5051",
     "top_name": "EKRU",
-    "top_count": 194,
+    "top_count": 267,
     "alternatives": [
       {
         "name": "KEMİK",
-        "count": 81
+        "count": 131
       },
       {
         "name": "NİL YEŞİLİ",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "type": "name_conflict",
-    "code": "1941",
-    "top_name": "KÖMÜR",
-    "top_count": 156,
-    "alternatives": [
-      {
-        "name": "BUZ MAVİSİ",
         "count": 1
       },
       {
@@ -957,9 +1345,61 @@
   },
   {
     "type": "name_conflict",
+    "code": "1841",
+    "top_name": "AÇIK GRİ",
+    "top_count": 309,
+    "alternatives": [
+      {
+        "name": "AÇIK GRI",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "type": "name_conflict",
+    "code": "5841",
+    "top_name": "GRİ",
+    "top_count": 238,
+    "alternatives": [
+      {
+        "name": "BUZ MAVİSİ",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "type": "name_conflict",
+    "code": "1941",
+    "top_name": "KÖMÜR",
+    "top_count": 248,
+    "alternatives": [
+      {
+        "name": "AÇIK KREM",
+        "count": 1
+      },
+      {
+        "name": "BUZ MAVİSİ",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "type": "name_conflict",
+    "code": "8741",
+    "top_name": "ZEYTİN YEŞİLİ",
+    "top_count": 29,
+    "alternatives": [
+      {
+        "name": "AÇIK GRİ",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "type": "name_conflict",
     "code": "9811",
     "top_name": "NİL YEŞİLİ",
-    "top_count": 37,
+    "top_count": 64,
     "alternatives": [
       {
         "name": "KEMİK",
@@ -973,9 +1413,25 @@
   },
   {
     "type": "name_conflict",
+    "code": "1621",
+    "top_name": "AÇIK KREM",
+    "top_count": 110,
+    "alternatives": [
+      {
+        "name": "KEMİK",
+        "count": 2
+      },
+      {
+        "name": "KÖMÜR",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "type": "name_conflict",
     "code": "2241",
     "top_name": "TURKUAZ",
-    "top_count": 38,
+    "top_count": 78,
     "alternatives": [
       {
         "name": "AÇIK GRİ",
@@ -985,12 +1441,24 @@
   },
   {
     "type": "name_conflict",
-    "code": "8741",
-    "top_name": "ZEYTİN YEŞİLİ",
-    "top_count": 19,
+    "code": "7141",
+    "top_name": "BUZ MAVİSİ",
+    "top_count": 89,
     "alternatives": [
       {
-        "name": "AÇIK GRİ",
+        "name": "GRİ",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "type": "name_conflict",
+    "code": "4395",
+    "top_name": "BAKIR",
+    "top_count": 45,
+    "alternatives": [
+      {
+        "name": "FINDIK",
         "count": 1
       }
     ]
