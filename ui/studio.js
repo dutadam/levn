@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=16";
-import { openPalette } from "./palette.js?v=16";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=16";
+} from "./shared.js?v=17";
+import { openPalette } from "./palette.js?v=17";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=17";
 
 const studio = {
   // Picker (rug list)
@@ -943,6 +943,7 @@ function initAdminPanel() {
     ["adminChroma", "adminChromaOut", "chromaWeight", parseFloat],
     ["adminShiftBlur", "adminShiftBlurOut", "shiftBlurSigma", parseFloat],
     ["adminPreserve", "adminPreserveOut", "preserveUnchanged", parseFloat],
+    ["adminDrift", "adminDriftOut", "maxKmeansDrift", parseInt],
     ["adminSmoothLo", "adminSmoothLoOut", "smoothLo", parseFloat],
     ["adminSmoothHi", "adminSmoothHiOut", "smoothHi", parseFloat],
     ["adminMinScale", "adminMinScaleOut", "minScale", parseFloat],
@@ -1032,6 +1033,7 @@ const OPT_BOUNDS = {
   maxScale:         [1.0,  2.5],
   kmeansMaxIter:    [3,    25],
   preserveUnchanged:[0.35, 0.85], // Yüksek = diğer renkler daha çok korunur
+  maxKmeansDrift:   [6,    30],   // Düşük = slot semantiği sağlam, swap yok
 };
 
 function initOptimizerUI() {
@@ -1241,6 +1243,7 @@ function sampleWide() {
     maxScale:         uniform(...OPT_BOUNDS.maxScale),
     kmeansMaxIter:    uniformInt(...OPT_BOUNDS.kmeansMaxIter),
     preserveUnchanged:uniform(...OPT_BOUNDS.preserveUnchanged),
+    maxKmeansDrift:   uniformInt(...OPT_BOUNDS.maxKmeansDrift),
   };
 }
 
@@ -1265,6 +1268,7 @@ function sampleNarrow(best, narrow) {
     maxScale:         clamp(best.maxScale       + g(...b.maxScale),       ...b.maxScale),
     kmeansMaxIter:    clamp(Math.round(best.kmeansMaxIter + g(...b.kmeansMaxIter)), ...b.kmeansMaxIter),
     preserveUnchanged:clamp((best.preserveUnchanged ?? 0.6) + g(...b.preserveUnchanged), ...b.preserveUnchanged),
+    maxKmeansDrift:   clamp(Math.round((best.maxKmeansDrift ?? 18) + g(...b.maxKmeansDrift)), ...b.maxKmeansDrift),
   };
 }
 
@@ -1389,6 +1393,7 @@ function syncAdminPanelUI() {
   set("adminChroma", "adminChromaOut", c.chromaWeight);
   set("adminShiftBlur", "adminShiftBlurOut", c.shiftBlurSigma);
   set("adminPreserve", "adminPreserveOut", c.preserveUnchanged ?? 0.6);
+  set("adminDrift", "adminDriftOut", c.maxKmeansDrift ?? 18);
   set("adminSmoothLo", "adminSmoothLoOut", c.smoothLo);
   set("adminSmoothHi", "adminSmoothHiOut", c.smoothHi);
   set("adminMinScale", "adminMinScaleOut", c.minScale);

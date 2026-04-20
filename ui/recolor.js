@@ -102,7 +102,7 @@ function deltaE(lab1, lab2) {
  * @param {number[][]} seeds  k adet başlangıç merkezi [[L,a,b], ...]
  * @returns {{centers:Float32Array, drift:number[]}}
  */
-function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0 } = {}) {
+function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0, maxDrift = 18 } = {}) {
   const k = seeds.length;
   const centers = new Float32Array(k * 3);
   const initCenters = new Float32Array(k * 3);
@@ -147,11 +147,43 @@ function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0 } = {}) {
     }
     for (let j = 0; j < k; j++) {
       if (counts[j] > 0) {
-        centers[j * 3] = sums[j * 3] / counts[j];
-        centers[j * 3 + 1] = sums[j * 3 + 1] / counts[j];
-        centers[j * 3 + 2] = sums[j * 3 + 2] / counts[j];
+        let nL = sums[j * 3] / counts[j];
+        let nA = sums[j * 3 + 1] / counts[j];
+        let nB = sums[j * 3 + 2] / counts[j];
+        // ★ DRIFT CLAMP: merkez seed'den maxDrift (LAB) uzağa gitmesin.
+        // Bu, 7141↔9811 gibi yakın renk swaplarını engeller (slot semantiği korunur).
+        if (maxDrift > 0) {
+          const sL = initCenters[j * 3], sA = initCenters[j * 3 + 1], sB = initCenters[j * 3 + 2];
+          const d = Math.sqrt((nL - sL) ** 2 + (nA - sA) ** 2 + (nB - sB) ** 2);
+          if (d > maxDrift) {
+            const frac = maxDrift / d;
+            nL = sL + (nL - sL) * frac;
+            nA = sA + (nA - sA) * frac;
+            nB = sB + (nB - sB) * frac;
+          }
+        }
+        centers[j * 3] = nL;
+        centers[j * 3 + 1] = nA;
+        centers[j * 3 + 2] = nB;
       }
-      // Eğer kümeye hiç piksel düşmediyse merkezi seed'de bırak — drift sonsuz olmasın
+    }
+  }
+
+  // Son güvence: swap detection — hâlâ bir merkez "yanlış seed'e daha yakın" ise seed'e sıfırla
+  for (let j = 0; j < k; j++) {
+    const cL = centers[j * 3], cA = centers[j * 3 + 1], cB = centers[j * 3 + 2];
+    let bestSeed = j;
+    let bestDist = Infinity;
+    for (let kk = 0; kk < k; kk++) {
+      const sL = initCenters[kk * 3], sA = initCenters[kk * 3 + 1], sB = initCenters[kk * 3 + 2];
+      const d = (cL - sL) ** 2 + (cA - sA) ** 2 + (cB - sB) ** 2;
+      if (d < bestDist) { bestDist = d; bestSeed = kk; }
+    }
+    if (bestSeed !== j) {
+      // Bu merkez başka seed'e daha yakın → swap olmuş. Seed'e resetle.
+      centers[j * 3] = initCenters[j * 3];
+      centers[j * 3 + 1] = initCenters[j * 3 + 1];
+      centers[j * 3 + 2] = initCenters[j * 3 + 2];
     }
   }
 
@@ -184,6 +216,7 @@ export const DEFAULT_CONFIG = {
   chromaWeight: 2.5,      // a,b eksenlerinin L'ye göre göreli önemi (yakın renkleri ayır)
   shiftBlurSigma: 1.5,    // Render sonrası shift haritasına blur (salt-pepper siler)
   preserveUnchanged: 0.6, // Primary cluster değişmemiş VE weight > bu → piksel atla (bleed koruması)
+  maxKmeansDrift: 18,     // K-means merkezinin seed'den max LAB uzaklığı (swap önler). 0 = sınırsız.
 };
 
 /**
@@ -359,6 +392,7 @@ export class RecolorEngine {
     const { centers, drift, counts } = seededKMeans(labs, seeds, {
       maxIter: this.config.kmeansMaxIter,
       chromaWeight: chromaW,
+      maxDrift: this.config.maxKmeansDrift,
     });
     this.k = seeds.length;
     this.slotScores = drift;
