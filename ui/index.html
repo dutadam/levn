@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
   <header class="topbar">
@@ -284,6 +284,11 @@
         <small>Render sonu shift haritasına blur — salt-pepper yırtılmaları siler</small>
       </div>
       <div class="admin-field">
+        <label>Değişmemişi koru (eşik): <output id="adminPreserveOut">0.60</output></label>
+        <input type="range" id="adminPreserve" min="0" max="1" step="0.02" value="0.60">
+        <small>Primary cluster değişmedi VE weight > bu eşik → piksel atla. Yüksek = sıkı koruma (diğer renkler bleed olmaz)</small>
+      </div>
+      <div class="admin-field">
         <label>Smoothstep alt: <output id="adminSmoothLoOut">0.00</output></label>
         <input type="range" id="adminSmoothLo" min="0" max="0.3" step="0.01" value="0.00">
       </div>
@@ -358,6 +363,6 @@
   </aside>
   <button class="admin-toggle" id="adminToggle" hidden type="button" aria-label="Admin paneli aç/kapat">⚙ Admin</button>
 
-  <script type="module" src="app.js?v=15"></script>
+  <script type="module" src="app.js?v=16"></script>
 </body>
 </html>

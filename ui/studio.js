@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=15";
-import { openPalette } from "./palette.js?v=15";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=15";
+} from "./shared.js?v=16";
+import { openPalette } from "./palette.js?v=16";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=16";
 
 const studio = {
   // Picker (rug list)
@@ -942,6 +942,7 @@ function initAdminPanel() {
     ["adminBlur", "adminBlurOut", "blurSigma", parseFloat],
     ["adminChroma", "adminChromaOut", "chromaWeight", parseFloat],
     ["adminShiftBlur", "adminShiftBlurOut", "shiftBlurSigma", parseFloat],
+    ["adminPreserve", "adminPreserveOut", "preserveUnchanged", parseFloat],
     ["adminSmoothLo", "adminSmoothLoOut", "smoothLo", parseFloat],
     ["adminSmoothHi", "adminSmoothHiOut", "smoothHi", parseFloat],
     ["adminMinScale", "adminMinScaleOut", "minScale", parseFloat],
@@ -1021,15 +1022,16 @@ function initAdminPanel() {
 
 // Parametre arama uzayı (WIDE aralıklar)
 const OPT_BOUNDS = {
-  sigma2Mult:    [0.10, 0.70],
-  blurSigma:     [0.0,  5.0],
-  chromaWeight:  [0.5,  6.0],
-  shiftBlurSigma:[0.0,  4.0],
-  smoothLo:      [0.0,  0.20],
-  smoothHi:      [0.25, 0.90],
-  minScale:      [0.4,  1.0],
-  maxScale:      [1.0,  2.5],
-  kmeansMaxIter: [3,    25],
+  sigma2Mult:       [0.10, 0.70],
+  blurSigma:        [0.0,  5.0],
+  chromaWeight:     [0.5,  6.0],
+  shiftBlurSigma:   [0.0,  4.0],
+  smoothLo:         [0.0,  0.20],
+  smoothHi:         [0.25, 0.90],
+  minScale:         [0.4,  1.0],
+  maxScale:         [1.0,  2.5],
+  kmeansMaxIter:    [3,    25],
+  preserveUnchanged:[0.35, 0.85], // Yüksek = diğer renkler daha çok korunur
 };
 
 function initOptimizerUI() {
@@ -1063,6 +1065,28 @@ function initOptimizerUI() {
     studio.admin.opt.targetW = tw;
     studio.admin.opt.targetH = th;
     studio.admin.opt.targetImgURL = url;
+
+    // ★ Source LAB'ı da cache'le (engine.renderOriginal() → downsample → LAB)
+    // Bu, "değişmemiş bölgelerde source'tan sapma" penalty'si için gerekli
+    const eng = studio.recolor.engine;
+    if (eng && eng.w) {
+      const srcCanv = document.createElement("canvas");
+      srcCanv.width = eng.w; srcCanv.height = eng.h;
+      srcCanv.getContext("2d").putImageData(eng.renderOriginal(), 0, 0);
+      const smallSrc = document.createElement("canvas");
+      smallSrc.width = tw; smallSrc.height = th;
+      const ssctx = smallSrc.getContext("2d");
+      ssctx.imageSmoothingQuality = "high";
+      ssctx.drawImage(srcCanv, 0, 0, tw, th);
+      const sdata = ssctx.getImageData(0, 0, tw, th).data;
+      const srcLab = new Float32Array(tw * th * 3);
+      for (let i = 0; i < tw * th; i++) {
+        const [L, a, b] = rgbToLab(sdata[i*4], sdata[i*4+1], sdata[i*4+2]);
+        srcLab[i*3] = L; srcLab[i*3+1] = a; srcLab[i*3+2] = b;
+      }
+      studio.admin.opt.sourceLab = srcLab;
+    }
+
     $("adminTargetImg").src = url;
     $("adminTargetPreview").hidden = false;
     $("adminOptimize").disabled = !studio.recolor.engine;
@@ -1146,25 +1170,47 @@ function cropLetterboxCanvas(img) {
   return out;
 }
 
-/** Engine'in son render'ını hedefle karşılaştır — mean ΔE (LAB). */
+/** Engine'in son render'ını hedefle karşılaştır — ağırlıklı ΔE (LAB).
+ *
+ * DÜAL LOSS:
+ *   - "Değişmemiş bölgeler" (target ≈ source): render'ın source'tan sapması 2.5× penalize
+ *     → robot "bleed" ile unchanged pikselleri hareket ettirmeye cesaret edemez
+ *   - "Değişmiş bölgeler" (target ≠ source): render'ın target'a yakınlığı ödüllendirilir
+ *
+ * Bu, "bu renk okey ama diğerleri etkilenmesin" probleminin çözümüdür.
+ */
 function evaluateCurrentRender(eng) {
-  const { targetLab, targetW, targetH } = studio.admin.opt;
+  const { targetLab, sourceLab, targetW, targetH } = studio.admin.opt;
   if (!targetLab) return Infinity;
-  // Engine'in _srcCanvas'ını 256 wide downsample
   const cmp = document.createElement("canvas");
   cmp.width = targetW; cmp.height = targetH;
   const cctx = cmp.getContext("2d");
   cctx.imageSmoothingQuality = "medium";
   cctx.drawImage(eng._srcCanvas, 0, 0, targetW, targetH);
   const rgb = cctx.getImageData(0, 0, targetW, targetH).data;
+
+  const UNCHANGED_THRESH = 4.0;   // δE(target, source) < bu → değişmemiş bölge
+  const PRESERVE_WEIGHT = 2.5;    // Değişmemiş bölgelerde deviation penalty çarpanı
   let sum = 0, cnt = 0;
   for (let i = 0; i < targetW * targetH; i++) {
     const [L, a, b] = rgbToLab(rgb[i*4], rgb[i*4+1], rgb[i*4+2]);
-    const dL = L - targetLab[i*3];
-    const da = a - targetLab[i*3+1];
-    const db = b - targetLab[i*3+2];
-    sum += Math.sqrt(dL*dL + da*da + db*db);
-    cnt++;
+    const tL = targetLab[i*3], tA = targetLab[i*3+1], tB = targetLab[i*3+2];
+
+    if (sourceLab) {
+      const sL = sourceLab[i*3], sA = sourceLab[i*3+1], sB = sourceLab[i*3+2];
+      const dTS = Math.sqrt((tL-sL)**2 + (tA-sA)**2 + (tB-sB)**2);
+      if (dTS < UNCHANGED_THRESH) {
+        // Değişmemiş bölge: render source'a yakın kalmalı
+        const dRS = Math.sqrt((L-sL)**2 + (a-sA)**2 + (b-sB)**2);
+        sum += PRESERVE_WEIGHT * dRS;
+        cnt += PRESERVE_WEIGHT;
+        continue;
+      }
+    }
+    // Değişmiş bölge: render target'a yakın olmalı
+    const dRT = Math.sqrt((L-tL)**2 + (a-tA)**2 + (b-tB)**2);
+    sum += dRT;
+    cnt += 1;
   }
   return sum / Math.max(1, cnt);
 }
@@ -1185,15 +1231,16 @@ function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
 /** Phase 1: uniform wide sample. */
 function sampleWide() {
   return {
-    sigma2Mult:     uniform(...OPT_BOUNDS.sigma2Mult),
-    blurSigma:      uniform(...OPT_BOUNDS.blurSigma),
-    chromaWeight:   uniform(...OPT_BOUNDS.chromaWeight),
-    shiftBlurSigma: uniform(...OPT_BOUNDS.shiftBlurSigma),
-    smoothLo:       uniform(...OPT_BOUNDS.smoothLo),
-    smoothHi:       uniform(...OPT_BOUNDS.smoothHi),
-    minScale:       uniform(...OPT_BOUNDS.minScale),
-    maxScale:       uniform(...OPT_BOUNDS.maxScale),
-    kmeansMaxIter:  uniformInt(...OPT_BOUNDS.kmeansMaxIter),
+    sigma2Mult:       uniform(...OPT_BOUNDS.sigma2Mult),
+    blurSigma:        uniform(...OPT_BOUNDS.blurSigma),
+    chromaWeight:     uniform(...OPT_BOUNDS.chromaWeight),
+    shiftBlurSigma:   uniform(...OPT_BOUNDS.shiftBlurSigma),
+    smoothLo:         uniform(...OPT_BOUNDS.smoothLo),
+    smoothHi:         uniform(...OPT_BOUNDS.smoothHi),
+    minScale:         uniform(...OPT_BOUNDS.minScale),
+    maxScale:         uniform(...OPT_BOUNDS.maxScale),
+    kmeansMaxIter:    uniformInt(...OPT_BOUNDS.kmeansMaxIter),
+    preserveUnchanged:uniform(...OPT_BOUNDS.preserveUnchanged),
   };
 }
 
@@ -1208,15 +1255,16 @@ function sampleNarrow(best, narrow) {
   };
   const b = OPT_BOUNDS;
   return {
-    sigma2Mult:     clamp(best.sigma2Mult     + g(...b.sigma2Mult),     ...b.sigma2Mult),
-    blurSigma:      clamp(best.blurSigma      + g(...b.blurSigma),      ...b.blurSigma),
-    chromaWeight:   clamp(best.chromaWeight   + g(...b.chromaWeight),   ...b.chromaWeight),
-    shiftBlurSigma: clamp(best.shiftBlurSigma + g(...b.shiftBlurSigma), ...b.shiftBlurSigma),
-    smoothLo:       clamp(best.smoothLo       + g(...b.smoothLo),       ...b.smoothLo),
-    smoothHi:       clamp(best.smoothHi       + g(...b.smoothHi),       ...b.smoothHi),
-    minScale:       clamp(best.minScale       + g(...b.minScale),       ...b.minScale),
-    maxScale:       clamp(best.maxScale       + g(...b.maxScale),       ...b.maxScale),
-    kmeansMaxIter:  clamp(Math.round(best.kmeansMaxIter + g(...b.kmeansMaxIter)), ...b.kmeansMaxIter),
+    sigma2Mult:       clamp(best.sigma2Mult     + g(...b.sigma2Mult),     ...b.sigma2Mult),
+    blurSigma:        clamp(best.blurSigma      + g(...b.blurSigma),      ...b.blurSigma),
+    chromaWeight:     clamp(best.chromaWeight   + g(...b.chromaWeight),   ...b.chromaWeight),
+    shiftBlurSigma:   clamp(best.shiftBlurSigma + g(...b.shiftBlurSigma), ...b.shiftBlurSigma),
+    smoothLo:         clamp(best.smoothLo       + g(...b.smoothLo),       ...b.smoothLo),
+    smoothHi:         clamp(best.smoothHi       + g(...b.smoothHi),       ...b.smoothHi),
+    minScale:         clamp(best.minScale       + g(...b.minScale),       ...b.minScale),
+    maxScale:         clamp(best.maxScale       + g(...b.maxScale),       ...b.maxScale),
+    kmeansMaxIter:    clamp(Math.round(best.kmeansMaxIter + g(...b.kmeansMaxIter)), ...b.kmeansMaxIter),
+    preserveUnchanged:clamp((best.preserveUnchanged ?? 0.6) + g(...b.preserveUnchanged), ...b.preserveUnchanged),
   };
 }
 
@@ -1340,6 +1388,7 @@ function syncAdminPanelUI() {
   set("adminBlur", "adminBlurOut", c.blurSigma);
   set("adminChroma", "adminChromaOut", c.chromaWeight);
   set("adminShiftBlur", "adminShiftBlurOut", c.shiftBlurSigma);
+  set("adminPreserve", "adminPreserveOut", c.preserveUnchanged ?? 0.6);
   set("adminSmoothLo", "adminSmoothLoOut", c.smoothLo);
   set("adminSmoothHi", "adminSmoothHiOut", c.smoothHi);
   set("adminMinScale", "adminMinScaleOut", c.minScale);

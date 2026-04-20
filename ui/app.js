@@ -1,9 +1,9 @@
 /* Levn — orchestrator. Data yükler, modülleri başlatır, tab switching yönetir. */
 
-import { loadAll } from "./shared.js?v=15";
-import { initFinder } from "./finder.js?v=15";
-import { initStudio, openRugInStudio } from "./studio.js?v=15";
-import { initPalette } from "./palette.js?v=15";
+import { loadAll } from "./shared.js?v=16";
+import { initFinder } from "./finder.js?v=16";
+import { initStudio, openRugInStudio } from "./studio.js?v=16";
+import { initPalette } from "./palette.js?v=16";
 
 function $(id) { return document.getElementById(id); }
 

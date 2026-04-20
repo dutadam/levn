@@ -183,6 +183,7 @@ export const DEFAULT_CONFIG = {
   blurSigma: 2.0,         // Cluster atama için LAB blur sigma (doku gürültüsü filtresi)
   chromaWeight: 2.5,      // a,b eksenlerinin L'ye göre göreli önemi (yakın renkleri ayır)
   shiftBlurSigma: 1.5,    // Render sonrası shift haritasına blur (salt-pepper siler)
+  preserveUnchanged: 0.6, // Primary cluster değişmemiş VE weight > bu → piksel atla (bleed koruması)
 };
 
 /**
@@ -559,7 +560,14 @@ export class RecolorEngine {
     // Aşama 2: Shift map'i Gaussian blur ile yumuşat (piksel gürültüsü siler).
     // Aşama 3: Shift map'i orijinal LAB'a uygula → doku korunur + organik geçiş.
     const shiftMap = new Float32Array(n * 3);
+    const preserveThresh = this.config.preserveUnchanged;
     for (let i = 0; i < n; i++) {
+      // ★ Hard-lock: primary cluster değişmedi VE weight > preserveThresh ise SKIP
+      // Bu, "5621 (nil) cluster'a ait pixel'in 7141 → 8741 shift'inden etkilenmesini" engeller
+      const primaryJ = this.labelsM[i * M];
+      const primaryW = this.weightsM[i * M];
+      if (!changed[primaryJ] && primaryW > preserveThresh) continue;
+
       const L = this.origLab[i * 3];
       const A = this.origLab[i * 3 + 1];
       const B = this.origLab[i * 3 + 2];
