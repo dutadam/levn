@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
   <header class="topbar">
@@ -269,6 +269,21 @@
         <small>Küçük = sert cluster, tam doygunluk. Büyük = yumuşak, bleed riski</small>
       </div>
       <div class="admin-field">
+        <label>Segmentasyon blur σ: <output id="adminBlurOut">2.00</output> px</label>
+        <input type="range" id="adminBlur" min="0" max="6" step="0.25" value="2.0">
+        <small>Cluster ataması için LAB blur — fiber gürültüsü cluster'ı bozmasın (doku etkilenmez)</small>
+      </div>
+      <div class="admin-field">
+        <label>Chroma ağırlığı (a,b önemi): <output id="adminChromaOut">2.50</output>×</label>
+        <input type="range" id="adminChroma" min="0.5" max="6.0" step="0.1" value="2.5">
+        <small>Yüksek = yakın L'li farklı chroma renkleri daha iyi ayırır (nil vs krem vs buz)</small>
+      </div>
+      <div class="admin-field">
+        <label>Shift map blur σ: <output id="adminShiftBlurOut">1.50</output> px</label>
+        <input type="range" id="adminShiftBlur" min="0" max="5" step="0.25" value="1.5">
+        <small>Render sonu shift haritasına blur — salt-pepper yırtılmaları siler</small>
+      </div>
+      <div class="admin-field">
         <label>Smoothstep alt: <output id="adminSmoothLoOut">0.00</output></label>
         <input type="range" id="adminSmoothLo" min="0" max="0.3" step="0.01" value="0.00">
       </div>
@@ -320,6 +335,6 @@
   </aside>
   <button class="admin-toggle" id="adminToggle" hidden type="button" aria-label="Admin paneli aç/kapat">⚙ Admin</button>
 
-  <script type="module" src="app.js?v=13"></script>
+  <script type="module" src="app.js?v=14"></script>
 </body>
 </html>

@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=13";
-import { openPalette } from "./palette.js?v=13";
-import { RecolorEngine, DEFAULT_CONFIG } from "./recolor.js?v=13";
+} from "./shared.js?v=14";
+import { openPalette } from "./palette.js?v=14";
+import { RecolorEngine, DEFAULT_CONFIG } from "./recolor.js?v=14";
 
 const studio = {
   // Picker (rug list)
@@ -930,6 +930,9 @@ function initAdminPanel() {
   const fields = [
     ["adminMaxSide", "adminMaxSideOut", "maxSide", parseInt],
     ["adminSigma", "adminSigmaOut", "sigma2Mult", parseFloat],
+    ["adminBlur", "adminBlurOut", "blurSigma", parseFloat],
+    ["adminChroma", "adminChromaOut", "chromaWeight", parseFloat],
+    ["adminShiftBlur", "adminShiftBlurOut", "shiftBlurSigma", parseFloat],
     ["adminSmoothLo", "adminSmoothLoOut", "smoothLo", parseFloat],
     ["adminSmoothHi", "adminSmoothHiOut", "smoothHi", parseFloat],
     ["adminMinScale", "adminMinScaleOut", "minScale", parseFloat],
@@ -1023,6 +1026,9 @@ function syncAdminPanelUI() {
   };
   set("adminMaxSide", "adminMaxSideOut", c.maxSide);
   set("adminSigma", "adminSigmaOut", c.sigma2Mult);
+  set("adminBlur", "adminBlurOut", c.blurSigma);
+  set("adminChroma", "adminChromaOut", c.chromaWeight);
+  set("adminShiftBlur", "adminShiftBlurOut", c.shiftBlurSigma);
   set("adminSmoothLo", "adminSmoothLoOut", c.smoothLo);
   set("adminSmoothHi", "adminSmoothHiOut", c.smoothHi);
   set("adminMinScale", "adminMinScaleOut", c.minScale);
@@ -1048,10 +1054,10 @@ function updateAdminStats() {
   }
   const lines = [
     `Görsel: ${eng.w}×${eng.h} (${(eng.w*eng.h/1e6).toFixed(2)}MP)`,
-    `Cluster sayısı: k=${eng.k}  topM=${eng.config.topM}`,
-    `σ² katsayı: ${eng.config.sigma2Mult.toFixed(2)}  minScale=${eng.config.minScale} maxScale=${eng.config.maxScale}`,
+    `Cluster: k=${eng.k} topM=${eng.config.topM}  Blur σ=${eng.config.blurSigma.toFixed(1)}px  Chroma×${eng.config.chromaWeight.toFixed(1)}`,
+    `σ² katsayı=${eng.config.sigma2Mult.toFixed(2)}  std=[${eng.config.minScale},${eng.config.maxScale}]  shiftBlur=${eng.config.shiftBlurSigma.toFixed(1)}px`,
     `Smoothstep: [${eng.config.smoothLo.toFixed(2)}, ${eng.config.smoothHi.toFixed(2)}]`,
-    `K-means iter: ${eng.config.kmeansMaxIter}  stride=${eng.config.sampleStride}`,
+    `K-means iter=${eng.config.kmeansMaxIter}  stride=${eng.config.sampleStride}`,
     ``,
     `Slot Drift (δE seed→center):`,
   ];

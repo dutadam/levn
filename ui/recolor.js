@@ -102,7 +102,7 @@ function deltaE(lab1, lab2) {
  * @param {number[][]} seeds  k adet başlangıç merkezi [[L,a,b], ...]
  * @returns {{centers:Float32Array, drift:number[]}}
  */
-function seededKMeans(labs, seeds, { maxIter = 12 } = {}) {
+function seededKMeans(labs, seeds, { maxIter = 12, chromaWeight = 1.0 } = {}) {
   const k = seeds.length;
   const centers = new Float32Array(k * 3);
   const initCenters = new Float32Array(k * 3);
@@ -128,7 +128,8 @@ function seededKMeans(labs, seeds, { maxIter = 12 } = {}) {
         const dL = L - centers[j * 3];
         const da = a - centers[j * 3 + 1];
         const db = b - centers[j * 3 + 2];
-        const d = dL * dL + da * da + db * db;
+        // Chroma-ağırlıklı mesafe: a,b eksenlerini chromaWeight kadar güçlendir
+        const d = dL * dL + chromaWeight * (da * da + db * db);
         if (d < bestD) { bestD = d; best = j; }
       }
       if (labels[i] !== best) { labels[i] = best; changed++; }
@@ -179,7 +180,73 @@ export const DEFAULT_CONFIG = {
   topM: 3,                // Piksel başına top-M cluster (soft blend için)
   kmeansMaxIter: 10,      // K-means iterasyon sayısı (az = seed'e sadık, çok = data'ya adapt)
   sampleStride: 3,        // K-means için piksel alt-örnekleme adımı
+  blurSigma: 2.0,         // Cluster atama için LAB blur sigma (doku gürültüsü filtresi)
+  chromaWeight: 2.5,      // a,b eksenlerinin L'ye göre göreli önemi (yakın renkleri ayır)
+  shiftBlurSigma: 1.5,    // Render sonrası shift haritasına blur (salt-pepper siler)
 };
+
+/**
+ * Ayrılabilir (separable) 1D Gaussian blur — LAB float dizisi (n*3) üstünde.
+ * Doku seviyesi pikselden piksele gürültüyü bastırır, cluster membership'i
+ * yumuşatır.
+ */
+function gaussianBlurLab(lab, w, h, sigma) {
+  if (sigma <= 0.01) return new Float32Array(lab); // no-op copy
+  const n = w * h;
+  const out = new Float32Array(lab.length);
+  const temp = new Float32Array(lab.length);
+  const radius = Math.max(1, Math.ceil(sigma * 2.5));
+  const ksize = radius * 2 + 1;
+  const kernel = new Float32Array(ksize);
+  let ksum = 0;
+  for (let i = -radius; i <= radius; i++) {
+    const v = Math.exp(-(i * i) / (2 * sigma * sigma));
+    kernel[i + radius] = v;
+    ksum += v;
+  }
+  for (let i = 0; i < ksize; i++) kernel[i] /= ksum;
+
+  // Horizontal pass → temp
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let sL = 0, sa = 0, sb = 0;
+      for (let k = -radius; k <= radius; k++) {
+        let xk = x + k;
+        if (xk < 0) xk = 0; else if (xk >= w) xk = w - 1;
+        const idx = (y * w + xk) * 3;
+        const kv = kernel[k + radius];
+        sL += kv * lab[idx];
+        sa += kv * lab[idx + 1];
+        sb += kv * lab[idx + 2];
+      }
+      const oi = (y * w + x) * 3;
+      temp[oi] = sL; temp[oi + 1] = sa; temp[oi + 2] = sb;
+    }
+  }
+  // Vertical pass → out
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let sL = 0, sa = 0, sb = 0;
+      for (let k = -radius; k <= radius; k++) {
+        let yk = y + k;
+        if (yk < 0) yk = 0; else if (yk >= h) yk = h - 1;
+        const idx = (yk * w + x) * 3;
+        const kv = kernel[k + radius];
+        sL += kv * temp[idx];
+        sa += kv * temp[idx + 1];
+        sb += kv * temp[idx + 2];
+      }
+      const oi = (y * w + x) * 3;
+      out[oi] = sL; out[oi + 1] = sa; out[oi + 2] = sb;
+    }
+  }
+  return out;
+}
+
+/** Separable Gaussian blur — 3 kanallı float array (n*3). Shift haritası blur için. */
+function gaussianBlur3(arr, w, h, sigma) {
+  return gaussianBlurLab(arr, w, h, sigma);
+}
 
 // -------- RecolorEngine ---------------------------------------------------
 export class RecolorEngine {
@@ -252,81 +319,81 @@ export class RecolorEngine {
     const sampleStride = opts.sampleStride ?? this.config.sampleStride;
     if (!this.origPixels) throw new Error("loadImage çağrılmadı");
     const n = this.w * this.h;
+    const chromaW = this.config.chromaWeight;
+
+    // ★ Cluster atama için LAB'ı önce blur et — fiber dokusu/JPEG gürültüsü
+    // cluster'ı bozmasın. Shift hesabı hâlâ origLab'dan (doku korunsun).
+    this.segLab = gaussianBlurLab(this.origLab, this.w, this.h, this.config.blurSigma);
 
     // Seed hazırla: her slot için palette LAB; yoksa k-means++ ile doldur
     const seeds = [];
     for (const code of codes) {
       const pal = this.palette[code];
       if (pal && pal.lab) seeds.push(pal.lab.slice());
-      else seeds.push(null); // fallback
+      else seeds.push(null);
     }
-    // Null seed'leri rastgele piksel ile doldur (deterministic seed=42)
     let rng = mulberry32(42);
     for (let j = 0; j < seeds.length; j++) {
       if (seeds[j]) continue;
       const pi = Math.floor(rng() * n);
       seeds[j] = [
-        this.origLab[pi * 3],
-        this.origLab[pi * 3 + 1],
-        this.origLab[pi * 3 + 2],
+        this.segLab[pi * 3],
+        this.segLab[pi * 3 + 1],
+        this.segLab[pi * 3 + 2],
       ];
     }
 
-    // Alt-örnekleme: k-means drift skoru için (assignment'a ETKİSİ YOK)
+    // Alt-örnekleme: BLUR'lu LAB'dan örnekle (cluster atama için)
     const sampledLabs = [];
     for (let i = 0; i < n; i += sampleStride) {
       const a = this.origPixels[i * 4 + 3];
       if (a < 32) continue;
       sampledLabs.push(
-        this.origLab[i * 3],
-        this.origLab[i * 3 + 1],
-        this.origLab[i * 3 + 2],
+        this.segLab[i * 3],
+        this.segLab[i * 3 + 1],
+        this.segLab[i * 3 + 2],
       );
     }
     const labs = Float32Array.from(sampledLabs);
-    const { centers, drift, counts } = seededKMeans(labs, seeds, { maxIter: this.config.kmeansMaxIter });
+    const { centers, drift, counts } = seededKMeans(labs, seeds, {
+      maxIter: this.config.kmeansMaxIter,
+      chromaWeight: chromaW,
+    });
     this.k = seeds.length;
     this.slotScores = drift;
     this.clusterCounts = counts;
-
-    // ★ K-means center'lar ile assignment yap (seeds sadece başlangıç).
-    // K-means center'lar halıdaki gerçek piksel dağılımını yansıtır; palette
-    // seeds çok farklı düşebilir (swatch ≠ halı dokusu). Render formülünde
-    // shift = target_LAB - cluster_center_LAB kullanılır.
     const k = this.k;
     this.centers = centers;
 
-    // Adaptive sigma: minimum inter-CENTER mesafesine göre.
+    // Adaptive sigma: minimum inter-CENTER mesafesine göre (chroma-ağırlıklı)
     let minInterCenter2 = Infinity;
     for (let i = 0; i < k; i++) {
       for (let j = i + 1; j < k; j++) {
         const dL = centers[i * 3] - centers[j * 3];
         const da = centers[i * 3 + 1] - centers[j * 3 + 1];
         const db = centers[i * 3 + 2] - centers[j * 3 + 2];
-        const d2 = dL * dL + da * da + db * db;
+        const d2 = dL * dL + chromaW * (da * da + db * db);
         if (d2 < minInterCenter2) minInterCenter2 = d2;
       }
     }
-    // sigma² config'ten (varsayılan 0.25) — küçük = sert cluster sınırı / tam doygunluk,
-    // büyük = yumuşak geçiş / cluster arası bleed.
     const sigma2 = Math.max(this.config.sigma2Min, Math.min(this.config.sigma2Max,
       minInterCenter2 * this.config.sigma2Mult));
 
-    // Tam piksel soft-assignment: TOP-M cluster + Gaussian ağırlıklar (alpha matting).
+    // Tam piksel soft-assignment: BLUR'lu LAB'dan → komşu pikseller benzer weight alır
     const M = Math.min(this.config.topM, k);
     this.topM = M;
     this.labelsM = new Uint8Array(n * M);
     this.weightsM = new Float32Array(n * M);
     for (let i = 0; i < n; i++) {
-      const L = this.origLab[i * 3], A = this.origLab[i * 3 + 1], B = this.origLab[i * 3 + 2];
-      // Mini insertion sort ile top-M bul — k-means centers'a göre
+      // ★ Blur'lu LAB üstünden assign (smooth membership, no per-pixel noise)
+      const L = this.segLab[i * 3], A = this.segLab[i * 3 + 1], B = this.segLab[i * 3 + 2];
       const bestD = new Float32Array(M); bestD.fill(Infinity);
       const bestJ = new Int32Array(M);
       for (let j = 0; j < k; j++) {
         const dL = L - centers[j * 3];
         const da = A - centers[j * 3 + 1];
         const db = B - centers[j * 3 + 2];
-        const d = dL * dL + da * da + db * db;
+        const d = dL * dL + chromaW * (da * da + db * db);
         for (let m = 0; m < M; m++) {
           if (d < bestD[m]) {
             for (let s = M - 1; s > m; s--) { bestD[s] = bestD[s - 1]; bestJ[s] = bestJ[s - 1]; }
@@ -335,7 +402,6 @@ export class RecolorEngine {
           }
         }
       }
-      // Gaussian weights — adaptive sigma
       let wSum = 0;
       const ws = new Float32Array(M);
       for (let m = 0; m < M; m++) {
@@ -488,19 +554,15 @@ export class RecolorEngine {
     const SMOOTH_LO = this.config.smoothLo;
     const SMOOTH_HI = this.config.smoothHi;
 
+    // ★ İKİ AŞAMALI RENDER ★
+    // Aşama 1: Her piksel için (shiftL, shiftA, shiftB) vektörünü hesapla.
+    // Aşama 2: Shift map'i Gaussian blur ile yumuşat (piksel gürültüsü siler).
+    // Aşama 3: Shift map'i orijinal LAB'a uygula → doku korunur + organik geçiş.
+    const shiftMap = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
       const L = this.origLab[i * 3];
       const A = this.origLab[i * 3 + 1];
       const B = this.origLab[i * 3 + 2];
-
-      // Soft-blend: normalize (doygunluk koru) + smoothstep (sınırda sert kenar yok).
-      //
-      // changedW = değişen cluster'lara ait toplam weight (0..1).
-      // shift = sum(w_j * delta_j) / changedW → deep pixel: tam shift, sınır: tam shift ama...
-      // ...smoothstep(changedW) ile çarpılır → changedW küçükse yavaşça sıfıra iner.
-      //
-      // Sonuç: merkez pixel (changedW≈0.96) → ~tam doygunluk, sınır (changedW≈0.2) → ~%40 shift.
-      // Büyük ΔL için sert halka artefaktı ortadan kalkar.
       let shiftL = 0, shiftA = 0, shiftB = 0;
       let changedW = 0;
       for (let m = 0; m < M; m++) {
@@ -526,13 +588,32 @@ export class RecolorEngine {
         changedW += w;
       }
       if (changedW < 0.01) continue;
-
-      // Normalize → doygunluk koru; smoothstep → sınırda yumuşak geçiş (sert halka yok)
+      // Normalize → doygunluk koru; smoothstep → sınırda yumuşak geçiş
       const blend = smoothstep(SMOOTH_LO, SMOOTH_HI, changedW);
       const normFactor = blend / changedW;
-      const newL = L + shiftL * normFactor * intensity;
-      const newA = A + shiftA * normFactor * intensity;
-      const newB = B + shiftB * normFactor * intensity;
+      shiftMap[i * 3]     = shiftL * normFactor * intensity;
+      shiftMap[i * 3 + 1] = shiftA * normFactor * intensity;
+      shiftMap[i * 3 + 2] = shiftB * normFactor * intensity;
+    }
+
+    // Aşama 2: Shift map'e blur uygula — salt-pepper speckle ölür, organik geçiş olur
+    const blurredShift = this.config.shiftBlurSigma > 0.01
+      ? gaussianBlur3(shiftMap, this.w, this.h, this.config.shiftBlurSigma)
+      : shiftMap;
+
+    // Aşama 3: Blur'lu shift'i orijinal LAB'a ekle (doku korunur)
+    for (let i = 0; i < n; i++) {
+      const sL = blurredShift[i * 3];
+      const sA = blurredShift[i * 3 + 1];
+      const sB = blurredShift[i * 3 + 2];
+      // Hiç shift yoksa pikseli atla (orig pixel zaten out'ta)
+      if (sL === 0 && sA === 0 && sB === 0) continue;
+      const L = this.origLab[i * 3];
+      const A = this.origLab[i * 3 + 1];
+      const B = this.origLab[i * 3 + 2];
+      const newL = L + sL;
+      const newA = A + sA;
+      const newB = B + sB;
 
       const [nr, ng, nb] = labToRgb(newL, newA, newB);
       out[i * 4] = nr;
