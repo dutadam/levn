@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
   <header class="topbar">
@@ -251,130 +251,6 @@
   <!-- ============ PRINT SHEET (sadece print modunda görünür) ============ -->
   <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
 
-  <!-- ============ ADMIN PANEL (?admin=1 veya Alt+A ile aktif) ============ -->
-  <aside class="admin-panel" id="adminPanel" hidden aria-label="Ayar paneli">
-    <div class="admin-header">
-      <h3>Render Ayarları <span class="admin-sub">6088-M test için</span></h3>
-      <button class="admin-close" id="adminClose" type="button" aria-label="Kapat">✕</button>
-    </div>
-    <div class="admin-body">
-      <div class="admin-field">
-        <label>Çözünürlük (maxSide): <output id="adminMaxSideOut">1536</output> px</label>
-        <input type="range" id="adminMaxSide" min="512" max="3072" step="128" value="1536">
-        <small>Yüksek = daha detay, daha yavaş segment/render</small>
-      </div>
-      <div class="admin-field">
-        <label>σ² çarpanı (soft cluster): <output id="adminSigmaOut">0.25</output></label>
-        <input type="range" id="adminSigma" min="0.10" max="0.70" step="0.01" value="0.25">
-        <small>Küçük = sert cluster, tam doygunluk. Büyük = yumuşak, bleed riski</small>
-      </div>
-      <div class="admin-field">
-        <label>Segmentasyon blur σ: <output id="adminBlurOut">2.00</output> px</label>
-        <input type="range" id="adminBlur" min="0" max="6" step="0.25" value="2.0">
-        <small>Cluster ataması için LAB blur — fiber gürültüsü cluster'ı bozmasın (doku etkilenmez)</small>
-      </div>
-      <div class="admin-field">
-        <label>Chroma ağırlığı (a,b önemi): <output id="adminChromaOut">2.50</output>×</label>
-        <input type="range" id="adminChroma" min="0.5" max="6.0" step="0.1" value="2.5">
-        <small>Yüksek = yakın L'li farklı chroma renkleri daha iyi ayırır (nil vs krem vs buz)</small>
-      </div>
-      <div class="admin-field">
-        <label>Shift map blur σ: <output id="adminShiftBlurOut">1.50</output> px</label>
-        <input type="range" id="adminShiftBlur" min="0" max="5" step="0.25" value="1.5">
-        <small>Render sonu shift haritasına blur — salt-pepper yırtılmaları siler</small>
-      </div>
-      <div class="admin-field">
-        <label>Değişmemişi koru (eşik): <output id="adminPreserveOut">0.60</output></label>
-        <input type="range" id="adminPreserve" min="0" max="1" step="0.02" value="0.60">
-        <small>Primary cluster değişmedi VE weight > bu eşik → piksel atla. Yüksek = sıkı koruma (diğer renkler bleed olmaz)</small>
-      </div>
-      <div class="admin-field">
-        <label>K-means drift sınırı: <output id="adminDriftOut">18</output> ΔE</label>
-        <input type="range" id="adminDrift" min="4" max="40" step="1" value="18">
-        <small>Cluster merkezleri seed'den max bu kadar uzaklaşabilir. Küçük = slot semantiği sağlam (7141↔9811 swap olmaz). Büyük = daha fazla data-adapt</small>
-      </div>
-      <div class="admin-field">
-        <label style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="adminMaha" checked>
-          Mahalanobis mesafe (her renk kendi plain halısındaki σ ile eşleşir)
-        </label>
-        <small>Kapalıysa klasik Öklid + chromaWeight. Açıksa palette lab_std kullanılır → daha doğru cluster'lama</small>
-      </div>
-      <div class="admin-field">
-        <label>Smoothstep alt: <output id="adminSmoothLoOut">0.00</output></label>
-        <input type="range" id="adminSmoothLo" min="0" max="0.3" step="0.01" value="0.00">
-      </div>
-      <div class="admin-field">
-        <label>Smoothstep üst: <output id="adminSmoothHiOut">0.55</output></label>
-        <input type="range" id="adminSmoothHi" min="0.2" max="0.95" step="0.01" value="0.55">
-        <small>Düşük = geniş shift alanı, yüksek = dar ve keskin</small>
-      </div>
-      <div class="admin-field admin-row">
-        <div>
-          <label>Std min: <output id="adminMinScaleOut">0.6</output></label>
-          <input type="range" id="adminMinScale" min="0.3" max="1.0" step="0.05" value="0.6">
-        </div>
-        <div>
-          <label>Std max: <output id="adminMaxScaleOut">1.8</output></label>
-          <input type="range" id="adminMaxScale" min="1.0" max="3.0" step="0.05" value="1.8">
-        </div>
-      </div>
-      <div class="admin-field admin-row">
-        <div>
-          <label>Top-M: <output id="adminTopMOut">3</output></label>
-          <input type="range" id="adminTopM" min="2" max="5" step="1" value="3">
-        </div>
-        <div>
-          <label>K-means iter: <output id="adminKIterOut">10</output></label>
-          <input type="range" id="adminKIter" min="2" max="30" step="1" value="10">
-        </div>
-      </div>
-      <div class="admin-field admin-row">
-        <div>
-          <label>Stride: <output id="adminStrideOut">3</output></label>
-          <input type="range" id="adminStride" min="1" max="6" step="1" value="3">
-        </div>
-        <div>
-          <label>Intensity: <output id="adminIntensityOut">1.00</output></label>
-          <input type="range" id="adminIntensity" min="0.5" max="1.3" step="0.05" value="1.00">
-        </div>
-      </div>
-      <div class="admin-actions">
-        <button class="btn-primary" id="adminApply" type="button">Re-Segment + Render</button>
-        <button class="btn-ghost" id="adminRenderOnly" type="button">Sadece Render</button>
-        <button class="btn-ghost" id="adminReset" type="button">Varsayılan</button>
-      </div>
-      <div class="admin-stats" id="adminStats"></div>
-      <div class="admin-copy">
-        <button class="btn-ghost" id="adminCopyCfg" type="button">Ayarları JSON kopyala</button>
-      </div>
-
-      <!-- ==== OPTIMIZER ROBOT ==== -->
-      <div class="admin-optimizer">
-        <h4>🤖 Otomatik Optimize</h4>
-        <small>Hedef görseli yükle → robot wide aralıkta parametre dener, en yakın sonucu bulur</small>
-        <div class="admin-opt-row">
-          <label>Hedef:</label>
-          <input type="file" id="adminTargetFile" accept="image/*">
-        </div>
-        <div class="admin-opt-preview" id="adminTargetPreview" hidden>
-          <img id="adminTargetImg" alt="target">
-          <button class="btn-ghost" id="adminTargetClear" type="button">×</button>
-        </div>
-        <div class="admin-opt-row">
-          <label>Iter: <input type="number" id="adminOptBudget" value="40" min="8" max="200"></label>
-          <label><input type="checkbox" id="adminOptFast" checked> Hızlı mod (düşük çözünürlük)</label>
-        </div>
-        <div class="admin-opt-row">
-          <button class="btn-primary" id="adminOptimize" type="button" disabled>Optimize Başlat</button>
-          <button class="btn-ghost" id="adminOptStop" type="button" hidden>Durdur</button>
-        </div>
-        <div class="admin-opt-progress" id="adminOptProgress"></div>
-      </div>
-    </div>
-  </aside>
-  <button class="admin-toggle" id="adminToggle" hidden type="button" aria-label="Admin paneli aç/kapat">⚙ Admin</button>
-
-  <script type="module" src="app.js?v=18"></script>
+  <script type="module" src="app.js?v=19"></script>
 </body>
 </html>
