@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=10";
-import { openPalette } from "./palette.js?v=10";
-import { RecolorEngine } from "./recolor.js?v=10";
+} from "./shared.js?v=13";
+import { openPalette } from "./palette.js?v=13";
+import { RecolorEngine, DEFAULT_CONFIG } from "./recolor.js?v=13";
 
 const studio = {
   // Picker (rug list)
@@ -41,6 +41,13 @@ const studio = {
   // Görsel görüntüleme UI state
   view: {
     fsOpen: false,
+  },
+
+  // Admin panel (test amaçlı parametre tuning; ?admin=1 ile açılır)
+  admin: {
+    enabled: false,
+    config: { ...DEFAULT_CONFIG },
+    intensity: 1.0,
   },
 };
 
@@ -215,7 +222,7 @@ async function initRecolorFor(rug) {
   }
 
   try {
-    const eng = new RecolorEngine(state.palette);
+    const eng = new RecolorEngine(state.palette, studio.admin.config);
     studio.recolor.engine = eng;
     await eng.loadImage(rug.img_url);
     // Sırada başka halı seçildi mi? Bu yarışı kaybettiysek çık.
@@ -241,7 +248,7 @@ function applyRecolor() {
   if (!engine || !ready) return;
   // Güncel workingCodes ile engine slot'larını eşitle
   studio.workingCodes.forEach((code, i) => engine.setSlot(i, code));
-  const imgData = engine.render({ intensity: 1.0 });
+  const imgData = engine.render({ intensity: studio.admin.intensity });
   const canvas = ensureCanvas();
   if (!canvas) return;
   canvas.width = engine.w;
@@ -350,7 +357,7 @@ function openFullscreen() {
   if (engine && ready) {
     fsCanvas.width = engine.w;
     fsCanvas.height = engine.h;
-    const data = engine.render({ intensity: 1.0 });
+    const data = engine.render({ intensity: studio.admin.intensity });
     engine.drawTo(fsCanvas, data);
   } else {
     // Recolor yoksa orijinal görseli canvas'a da çiz
@@ -667,7 +674,7 @@ function buildPrintHTML() {
     try {
       // Güncel render'ı garanti et: slot'ları eşitle, _srcCanvas'a yaz, dataURL al.
       work.forEach((code, i) => engine.setSlot(i, code));
-      const data = modified ? engine.render({ intensity: 0.9 }) : engine.renderOriginal();
+      const data = modified ? engine.render({ intensity: studio.admin.intensity }) : engine.renderOriginal();
       // drawTo yan etki olarak _srcCanvas'a putImageData yapıyor → toDataURL fresh.
       const tmp = document.createElement("canvas");
       tmp.width = engine.w; tmp.height = engine.h;
@@ -882,7 +889,185 @@ export function initStudio() {
     });
   }
   document.addEventListener("keydown", (e) => {
-    if (!studio.view.fsOpen) return;
-    if (e.key === "Escape") closeFullscreen();
+    if (studio.view.fsOpen && e.key === "Escape") closeFullscreen();
+    // Alt+A → admin paneli toggle
+    if (e.altKey && (e.key === "a" || e.key === "A")) {
+      e.preventDefault();
+      toggleAdminPanel();
+    }
   });
+
+  initAdminPanel();
+}
+
+/* ============ ADMIN PANEL ============ */
+
+function initAdminPanel() {
+  const params = new URLSearchParams(location.search);
+  const urlAdmin = params.get("admin") === "1";
+  const stored = localStorage.getItem("levn_admin_enabled");
+  studio.admin.enabled = urlAdmin || stored === "1";
+
+  // localStorage'tan kayıtlı config yükle (varsa) — admin aktif olmasa da config kalıcı
+  try {
+    const savedCfg = localStorage.getItem("levn_admin_config");
+    if (savedCfg) {
+      const parsed = JSON.parse(savedCfg);
+      studio.admin.config = { ...DEFAULT_CONFIG, ...parsed };
+      if (typeof parsed.intensity === "number") studio.admin.intensity = parsed.intensity;
+    }
+  } catch (e) { /* ignore */ }
+
+  if (studio.admin.enabled) {
+    localStorage.setItem("levn_admin_enabled", "1");
+    const toggle = $("adminToggle");
+    if (toggle) toggle.hidden = false;
+  }
+
+  syncAdminPanelUI();
+
+  // Listeners
+  const fields = [
+    ["adminMaxSide", "adminMaxSideOut", "maxSide", parseInt],
+    ["adminSigma", "adminSigmaOut", "sigma2Mult", parseFloat],
+    ["adminSmoothLo", "adminSmoothLoOut", "smoothLo", parseFloat],
+    ["adminSmoothHi", "adminSmoothHiOut", "smoothHi", parseFloat],
+    ["adminMinScale", "adminMinScaleOut", "minScale", parseFloat],
+    ["adminMaxScale", "adminMaxScaleOut", "maxScale", parseFloat],
+    ["adminTopM", "adminTopMOut", "topM", parseInt],
+    ["adminKIter", "adminKIterOut", "kmeansMaxIter", parseInt],
+    ["adminStride", "adminStrideOut", "sampleStride", parseInt],
+  ];
+  for (const [inp, out, key, parse] of fields) {
+    const el = $(inp);
+    if (!el) continue;
+    el.addEventListener("input", () => {
+      const v = parse(el.value);
+      studio.admin.config[key] = v;
+      $(out).textContent = Number.isInteger(v) ? v : v.toFixed(2);
+    });
+  }
+  const intens = $("adminIntensity");
+  if (intens) {
+    intens.addEventListener("input", () => {
+      studio.admin.intensity = parseFloat(intens.value);
+      $("adminIntensityOut").textContent = studio.admin.intensity.toFixed(2);
+    });
+  }
+
+  $("adminClose")?.addEventListener("click", () => panel.hidden = true);
+  $("adminToggle")?.addEventListener("click", toggleAdminPanel);
+
+  $("adminApply")?.addEventListener("click", async () => {
+    const eng = studio.recolor.engine;
+    if (!eng) return;
+    // maxSide değiştiyse loadImage'ı tekrar çalıştırmak gerek → tam init
+    const needReload = eng.maxSide !== studio.admin.config.maxSide;
+    eng.setConfig(studio.admin.config);
+    if (needReload && studio.currentRug) {
+      showRecolorSpinner(true);
+      try {
+        await eng.loadImage(studio.currentRug.img_url);
+        eng.segment((studio.currentRug.sku_parsed && studio.currentRug.sku_parsed.codes) || []);
+        studio.workingCodes.forEach((code, i) => eng.setSlot(i, code));
+      } finally { showRecolorSpinner(false); }
+    } else {
+      eng.resegment();
+    }
+    applyRecolor();
+    updateAdminStats();
+    persistAdminConfig();
+  });
+  $("adminRenderOnly")?.addEventListener("click", () => {
+    const eng = studio.recolor.engine;
+    if (!eng) return;
+    eng.setConfig(studio.admin.config);
+    applyRecolor();
+    updateAdminStats();
+    persistAdminConfig();
+  });
+  $("adminReset")?.addEventListener("click", () => {
+    studio.admin.config = { ...DEFAULT_CONFIG };
+    studio.admin.intensity = 1.0;
+    syncAdminPanelUI();
+    persistAdminConfig();
+  });
+  $("adminCopyCfg")?.addEventListener("click", () => {
+    const cfg = { ...studio.admin.config, intensity: studio.admin.intensity };
+    navigator.clipboard.writeText(JSON.stringify(cfg, null, 2));
+    const btn = $("adminCopyCfg");
+    const orig = btn.textContent;
+    btn.textContent = "✓ Kopyalandı";
+    setTimeout(() => btn.textContent = orig, 1400);
+  });
+}
+
+function toggleAdminPanel() {
+  const panel = $("adminPanel");
+  if (!panel) return;
+  if (!studio.admin.enabled) {
+    studio.admin.enabled = true;
+    localStorage.setItem("levn_admin_enabled", "1");
+    const toggle = $("adminToggle");
+    if (toggle) toggle.hidden = false;
+  }
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) updateAdminStats();
+}
+
+function syncAdminPanelUI() {
+  const c = studio.admin.config;
+  const set = (id, out, v) => {
+    const el = $(id); if (el) el.value = v;
+    const outEl = $(out); if (outEl) outEl.textContent = Number.isInteger(v) ? v : Number(v).toFixed(2);
+  };
+  set("adminMaxSide", "adminMaxSideOut", c.maxSide);
+  set("adminSigma", "adminSigmaOut", c.sigma2Mult);
+  set("adminSmoothLo", "adminSmoothLoOut", c.smoothLo);
+  set("adminSmoothHi", "adminSmoothHiOut", c.smoothHi);
+  set("adminMinScale", "adminMinScaleOut", c.minScale);
+  set("adminMaxScale", "adminMaxScaleOut", c.maxScale);
+  set("adminTopM", "adminTopMOut", c.topM);
+  set("adminKIter", "adminKIterOut", c.kmeansMaxIter);
+  set("adminStride", "adminStrideOut", c.sampleStride);
+  set("adminIntensity", "adminIntensityOut", studio.admin.intensity);
+}
+
+function persistAdminConfig() {
+  const cfg = { ...studio.admin.config, intensity: studio.admin.intensity };
+  localStorage.setItem("levn_admin_config", JSON.stringify(cfg));
+}
+
+function updateAdminStats() {
+  const stats = $("adminStats");
+  if (!stats) return;
+  const eng = studio.recolor.engine;
+  if (!eng || !eng.slotOriginalCodes) {
+    stats.textContent = "";
+    return;
+  }
+  const lines = [
+    `Görsel: ${eng.w}×${eng.h} (${(eng.w*eng.h/1e6).toFixed(2)}MP)`,
+    `Cluster sayısı: k=${eng.k}  topM=${eng.config.topM}`,
+    `σ² katsayı: ${eng.config.sigma2Mult.toFixed(2)}  minScale=${eng.config.minScale} maxScale=${eng.config.maxScale}`,
+    `Smoothstep: [${eng.config.smoothLo.toFixed(2)}, ${eng.config.smoothHi.toFixed(2)}]`,
+    `K-means iter: ${eng.config.kmeansMaxIter}  stride=${eng.config.sampleStride}`,
+    ``,
+    `Slot Drift (δE seed→center):`,
+  ];
+  (eng.slotScores || []).forEach((d, i) => {
+    const code = eng.slotOriginalCodes[i];
+    const cur = eng.slotTargetCodes[i];
+    const arrow = (cur && cur !== code) ? ` → ${cur}` : "";
+    const flag = d > 45 ? " ⚠ YÜKSEK" : d > 25 ? " ⚠" : "";
+    lines.push(`  [${i}] ${code}${arrow}  δE=${d.toFixed(1)}${flag}`);
+  });
+  if (eng.clusterCountsPixel) {
+    lines.push(``, `Cluster piksel sayıları:`);
+    eng.clusterCountsPixel.forEach((c, i) => {
+      const pct = ((c / (eng.w*eng.h)) * 100).toFixed(1);
+      lines.push(`  [${i}] ${c.toLocaleString()} (${pct}%)`);
+    });
+  }
+  stats.textContent = lines.join("\n");
 }

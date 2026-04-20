@@ -43,20 +43,47 @@ function rgbToLab(r, g, b) {
   return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
 }
 function labToRgb(L, a, b) {
-  const fy = (L + 16) / 116;
-  const fx = a / 500 + fy;
-  const fz = fy - b / 200;
-  const finv = (t) => {
+  // Gamut-safe: LAB clamp + chroma pullback (sRGB dışı noktaları renk bütünlüğü koruyarak iç sınıra çek)
+  L = L < 0 ? 0 : L > 100 ? 100 : L;
+  // İlk deneme
+  let rl, gl, bl;
+  let lo = 0, hi = 1, iter = 0;
+  // sRGB gamut'u binary search ile bul: mevcut (a,b) → 0..1 ölçeğinde kaç oranı iç kalıyor?
+  while (iter++ < 8) {
+    const mid = (lo + hi) / 2;
+    const aT = a * mid, bT = b * mid;
+    const fy = (L + 16) / 116;
+    const fx = aT / 500 + fy;
+    const fz = fy - bT / 200;
+    const finv = (t) => {
+      const t3 = t * t * t;
+      return t3 > 0.008856 ? t3 : (t - 16 / 116) / 7.787;
+    };
+    const x = finv(fx) * 0.95047;
+    const y = finv(fy) * 1.0;
+    const z = finv(fz) * 1.08883;
+    rl = x * 3.2404542 + y * -1.5371385 + z * -0.4985314;
+    gl = x * -0.9692660 + y * 1.8760108 + z * 0.0415560;
+    bl = x * 0.0556434 + y * -0.2040259 + z * 1.0572252;
+    const inGamut = rl >= -0.001 && rl <= 1.001 && gl >= -0.001 && gl <= 1.001 && bl >= -0.001 && bl <= 1.001;
+    if (inGamut) lo = mid; else hi = mid;
+  }
+  // Son pass: lo oranıyla hesapla (garantili iç gamut)
+  const aFinal = a * lo, bFinal = b * lo;
+  const fy2 = (L + 16) / 116;
+  const fx2 = aFinal / 500 + fy2;
+  const fz2 = fy2 - bFinal / 200;
+  const finv2 = (t) => {
     const t3 = t * t * t;
     return t3 > 0.008856 ? t3 : (t - 16 / 116) / 7.787;
   };
-  const x = finv(fx) * 0.95047;
-  const y = finv(fy) * 1.0;
-  const z = finv(fz) * 1.08883;
-  const rl = x * 3.2404542 + y * -1.5371385 + z * -0.4985314;
-  const gl = x * -0.9692660 + y * 1.8760108 + z * 0.0415560;
-  const bl = x * 0.0556434 + y * -0.2040259 + z * 1.0572252;
-  return [linearToSrgb(rl), linearToSrgb(gl), linearToSrgb(bl)];
+  const x2 = finv2(fx2) * 0.95047;
+  const y2 = finv2(fy2) * 1.0;
+  const z2 = finv2(fz2) * 1.08883;
+  const rlF = x2 * 3.2404542 + y2 * -1.5371385 + z2 * -0.4985314;
+  const glF = x2 * -0.9692660 + y2 * 1.8760108 + z2 * 0.0415560;
+  const blF = x2 * 0.0556434 + y2 * -0.2040259 + z2 * 1.0572252;
+  return [linearToSrgb(rlF), linearToSrgb(glF), linearToSrgb(blF)];
 }
 function deltaE(lab1, lab2) {
   const dL = lab1[0] - lab2[0];
@@ -139,30 +166,51 @@ function seededKMeans(labs, seeds, { maxIter = 12 } = {}) {
   return { centers, drift, counts: Array.from(counts) };
 }
 
+// -------- Config ---------------------------------------------------------
+export const DEFAULT_CONFIG = {
+  maxSide: 1536,          // Canvas downscale sınırı (yüksek = daha detay, daha yavaş)
+  sigma2Mult: 0.25,       // Soft assignment σ² katsayısı (minInterCenter²'ye göre)
+  sigma2Min: 25,          // Alt sınır (çok yakın cluster'lar için)
+  sigma2Max: 400,         // Üst sınır
+  minScale: 0.6,          // Histogram spec std clamp min
+  maxScale: 1.8,          // Histogram spec std clamp max
+  smoothLo: 0.0,          // smoothstep blend alt sınır (changedW için)
+  smoothHi: 0.55,         // smoothstep blend üst sınır
+  topM: 3,                // Piksel başına top-M cluster (soft blend için)
+  kmeansMaxIter: 10,      // K-means iterasyon sayısı (az = seed'e sadık, çok = data'ya adapt)
+  sampleStride: 3,        // K-means için piksel alt-örnekleme adımı
+};
+
 // -------- RecolorEngine ---------------------------------------------------
 export class RecolorEngine {
   /**
    * @param {Object<string,{rgb:number[], lab:number[]}>} palette
+   * @param {Partial<typeof DEFAULT_CONFIG>} [config]
    */
-  constructor(palette) {
+  constructor(palette, config = {}) {
     this.palette = palette || {};
+    this.config = { ...DEFAULT_CONFIG, ...config };
     this.img = null;
     this.w = 0; this.h = 0;
-    this.origPixels = null;       // Uint8ClampedArray RGBA
-    this.origLab = null;           // Float32Array n*3 LAB (hızlı erişim)
+    this.origPixels = null;
+    this.origLab = null;
     this.k = 0;
-    this.centers = null;           // Float32Array k*3 (orig küme merkezleri)
-    this.slotTargetLab = [];       // slot idx → hedef LAB
+    this.centers = null;
+    this.slotTargetLab = [];
     this.slotTargetCodes = [];
-    // Soft assignment: her piksel için top-2 cluster + primary weight
-    this.label1 = null;            // Uint8Array primary cluster
-    this.label2 = null;            // Uint8Array secondary cluster
-    this.weight1 = null;            // Float32Array primary weight [0..1]
-    this.slotScores = [];          // drift/küme-başı metrik
+    this.label1 = null;
+    this.label2 = null;
+    this.weight1 = null;
+    this.slotScores = [];
     this.clusterCounts = [];
-    this.maxSide = 1024;
+    this.maxSide = this.config.maxSide;
     this._srcCanvas = null;
     this._srcCtx = null;
+  }
+
+  setConfig(partial) {
+    this.config = { ...this.config, ...partial };
+    this.maxSide = this.config.maxSide;
   }
 
   async loadImage(url) {
@@ -200,7 +248,8 @@ export class RecolorEngine {
    * Seed edilmiş segmentasyon. codes[i] = slot i'nin orijinal renk kodu.
    * Palette'te olmayan kodlar için fallback seed üretilir.
    */
-  segment(codes, { sampleStride = 3 } = {}) {
+  segment(codes, opts = {}) {
+    const sampleStride = opts.sampleStride ?? this.config.sampleStride;
     if (!this.origPixels) throw new Error("loadImage çağrılmadı");
     const n = this.w * this.h;
 
@@ -235,7 +284,7 @@ export class RecolorEngine {
       );
     }
     const labs = Float32Array.from(sampledLabs);
-    const { centers, drift, counts } = seededKMeans(labs, seeds, { maxIter: 10 });
+    const { centers, drift, counts } = seededKMeans(labs, seeds, { maxIter: this.config.kmeansMaxIter });
     this.k = seeds.length;
     this.slotScores = drift;
     this.clusterCounts = counts;
@@ -258,12 +307,13 @@ export class RecolorEngine {
         if (d2 < minInterCenter2) minInterCenter2 = d2;
       }
     }
-    // sigma² ölçeği: minDist²'nin 1/4'ü → cluster merkezinde secondary weight exp(-4)≈0.018
-    // → primary weight ≈ 0.96 (tam doygunluk). Sınır piksellerinde exp(-1)≈0.37 (yumuşak geçiş).
-    const sigma2 = Math.max(25, Math.min(400, minInterCenter2 * 0.25));
+    // sigma² config'ten (varsayılan 0.25) — küçük = sert cluster sınırı / tam doygunluk,
+    // büyük = yumuşak geçiş / cluster arası bleed.
+    const sigma2 = Math.max(this.config.sigma2Min, Math.min(this.config.sigma2Max,
+      minInterCenter2 * this.config.sigma2Mult));
 
     // Tam piksel soft-assignment: TOP-M cluster + Gaussian ağırlıklar (alpha matting).
-    const M = Math.min(3, k);
+    const M = Math.min(this.config.topM, k);
     this.topM = M;
     this.labelsM = new Uint8Array(n * M);
     this.weightsM = new Float32Array(n * M);
@@ -360,6 +410,17 @@ export class RecolorEngine {
     };
   }
 
+  /** Aynı resmi tekrar segmente et (config değişince kullanılır). workingCodes korunur. */
+  resegment() {
+    if (!this.slotOriginalCodes) return null;
+    const currentTargets = this.slotTargetCodes.slice();
+    const origCodes = this.slotOriginalCodes.slice();
+    const result = this.segment(origCodes);
+    // Seg sonrası hedefleri geri yükle (slot-by-slot)
+    currentTargets.forEach((code, i) => this.setSlot(i, code));
+    return result;
+  }
+
   setSlot(slotIdx, newCode) {
     if (slotIdx < 0 || slotIdx >= this.slotTargetCodes.length) return;
     this.slotTargetCodes[slotIdx] = newCode;
@@ -421,8 +482,11 @@ export class RecolorEngine {
     for (let j = 0; j < k; j++) if (changed[j]) { anyChanged = true; break; }
     if (!anyChanged) return new ImageData(out, this.w, this.h);
 
-    // Std ölçek clamp'leri: çok büyük/küçük amplifikasyonları engelle
-    const MIN_SCALE = 0.6, MAX_SCALE = 1.8;
+    // Std ölçek clamp'leri: config'ten
+    const MIN_SCALE = this.config.minScale;
+    const MAX_SCALE = this.config.maxScale;
+    const SMOOTH_LO = this.config.smoothLo;
+    const SMOOTH_HI = this.config.smoothHi;
 
     for (let i = 0; i < n; i++) {
       const L = this.origLab[i * 3];
@@ -464,7 +528,7 @@ export class RecolorEngine {
       if (changedW < 0.01) continue;
 
       // Normalize → doygunluk koru; smoothstep → sınırda yumuşak geçiş (sert halka yok)
-      const blend = smoothstep(0.0, 0.55, changedW);
+      const blend = smoothstep(SMOOTH_LO, SMOOTH_HI, changedW);
       const normFactor = blend / changedW;
       const newL = L + shiftL * normFactor * intensity;
       const newA = A + shiftA * normFactor * intensity;
