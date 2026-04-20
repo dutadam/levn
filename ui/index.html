@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
   <header class="topbar">
@@ -331,10 +331,33 @@
       <div class="admin-copy">
         <button class="btn-ghost" id="adminCopyCfg" type="button">Ayarları JSON kopyala</button>
       </div>
+
+      <!-- ==== OPTIMIZER ROBOT ==== -->
+      <div class="admin-optimizer">
+        <h4>🤖 Otomatik Optimize</h4>
+        <small>Hedef görseli yükle → robot wide aralıkta parametre dener, en yakın sonucu bulur</small>
+        <div class="admin-opt-row">
+          <label>Hedef:</label>
+          <input type="file" id="adminTargetFile" accept="image/*">
+        </div>
+        <div class="admin-opt-preview" id="adminTargetPreview" hidden>
+          <img id="adminTargetImg" alt="target">
+          <button class="btn-ghost" id="adminTargetClear" type="button">×</button>
+        </div>
+        <div class="admin-opt-row">
+          <label>Iter: <input type="number" id="adminOptBudget" value="40" min="8" max="200"></label>
+          <label><input type="checkbox" id="adminOptFast" checked> Hızlı mod (düşük çözünürlük)</label>
+        </div>
+        <div class="admin-opt-row">
+          <button class="btn-primary" id="adminOptimize" type="button" disabled>Optimize Başlat</button>
+          <button class="btn-ghost" id="adminOptStop" type="button" hidden>Durdur</button>
+        </div>
+        <div class="admin-opt-progress" id="adminOptProgress"></div>
+      </div>
     </div>
   </aside>
   <button class="admin-toggle" id="adminToggle" hidden type="button" aria-label="Admin paneli aç/kapat">⚙ Admin</button>
 
-  <script type="module" src="app.js?v=14"></script>
+  <script type="module" src="app.js?v=15"></script>
 </body>
 </html>

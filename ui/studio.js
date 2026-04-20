@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=14";
-import { openPalette } from "./palette.js?v=14";
-import { RecolorEngine, DEFAULT_CONFIG } from "./recolor.js?v=14";
+} from "./shared.js?v=15";
+import { openPalette } from "./palette.js?v=15";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=15";
 
 const studio = {
   // Picker (rug list)
@@ -48,6 +48,15 @@ const studio = {
     enabled: false,
     config: { ...DEFAULT_CONFIG },
     intensity: 1.0,
+    // Optimizer robot state
+    opt: {
+      running: false,
+      stop: false,
+      targetLab: null,     // Float32Array n*3 — cached LAB target, downsampled
+      targetW: 0,
+      targetH: 0,
+      targetImgURL: null,
+    },
   },
 };
 
@@ -1003,7 +1012,309 @@ function initAdminPanel() {
     btn.textContent = "✓ Kopyalandı";
     setTimeout(() => btn.textContent = orig, 1400);
   });
+
+  // Optimizer setup
+  initOptimizerUI();
 }
+
+/* ============ OPTIMIZER ROBOT ============ */
+
+// Parametre arama uzayı (WIDE aralıklar)
+const OPT_BOUNDS = {
+  sigma2Mult:    [0.10, 0.70],
+  blurSigma:     [0.0,  5.0],
+  chromaWeight:  [0.5,  6.0],
+  shiftBlurSigma:[0.0,  4.0],
+  smoothLo:      [0.0,  0.20],
+  smoothHi:      [0.25, 0.90],
+  minScale:      [0.4,  1.0],
+  maxScale:      [1.0,  2.5],
+  kmeansMaxIter: [3,    25],
+};
+
+function initOptimizerUI() {
+  const fileInput = $("adminTargetFile");
+  const clearBtn = $("adminTargetClear");
+  const optBtn = $("adminOptimize");
+  const stopBtn = $("adminOptStop");
+  if (!fileInput) return;
+
+  fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const img = await loadImgAsync(url);
+    const cropped = cropLetterboxCanvas(img);
+    // Downsample to 256 wide for fast comparison
+    const tw = 256;
+    const th = Math.max(32, Math.round(256 * cropped.height / cropped.width));
+    const small = document.createElement("canvas");
+    small.width = tw; small.height = th;
+    const sctx = small.getContext("2d");
+    sctx.imageSmoothingQuality = "high";
+    sctx.drawImage(cropped, 0, 0, tw, th);
+    const data = sctx.getImageData(0, 0, tw, th).data;
+    const lab = new Float32Array(tw * th * 3);
+    for (let i = 0; i < tw * th; i++) {
+      const [L, a, b] = rgbToLab(data[i*4], data[i*4+1], data[i*4+2]);
+      lab[i*3] = L; lab[i*3+1] = a; lab[i*3+2] = b;
+    }
+    studio.admin.opt.targetLab = lab;
+    studio.admin.opt.targetW = tw;
+    studio.admin.opt.targetH = th;
+    studio.admin.opt.targetImgURL = url;
+    $("adminTargetImg").src = url;
+    $("adminTargetPreview").hidden = false;
+    $("adminOptimize").disabled = !studio.recolor.engine;
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    studio.admin.opt.targetLab = null;
+    $("adminTargetPreview").hidden = true;
+    fileInput.value = "";
+    $("adminOptimize").disabled = true;
+  });
+
+  optBtn?.addEventListener("click", runOptimizer);
+  stopBtn?.addEventListener("click", () => {
+    studio.admin.opt.stop = true;
+  });
+}
+
+function loadImgAsync(url) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = url;
+  });
+}
+
+/** Siyah letterbox bantlarını kırp — çoğu ürün fotoğrafında bu var. */
+function cropLetterboxCanvas(img) {
+  const c = document.createElement("canvas");
+  c.width = img.naturalWidth || img.width;
+  c.height = img.naturalHeight || img.height;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, c.width, c.height).data;
+  const isDark = (i) => (data[i] + data[i+1] + data[i+2]) < 90;
+
+  // Top
+  let top = 0;
+  for (let y = 0; y < c.height; y++) {
+    let hasContent = false;
+    for (let x = 0; x < c.width; x += Math.max(1, Math.floor(c.width / 64))) {
+      if (!isDark((y * c.width + x) * 4)) { hasContent = true; break; }
+    }
+    if (hasContent) { top = y; break; }
+  }
+  // Bottom
+  let bottom = c.height - 1;
+  for (let y = c.height - 1; y > top; y--) {
+    let hasContent = false;
+    for (let x = 0; x < c.width; x += Math.max(1, Math.floor(c.width / 64))) {
+      if (!isDark((y * c.width + x) * 4)) { hasContent = true; break; }
+    }
+    if (hasContent) { bottom = y; break; }
+  }
+  // Left
+  let left = 0;
+  for (let x = 0; x < c.width; x++) {
+    let hasContent = false;
+    for (let y = top; y <= bottom; y += Math.max(1, Math.floor((bottom-top) / 64))) {
+      if (!isDark((y * c.width + x) * 4)) { hasContent = true; break; }
+    }
+    if (hasContent) { left = x; break; }
+  }
+  // Right
+  let right = c.width - 1;
+  for (let x = c.width - 1; x > left; x--) {
+    let hasContent = false;
+    for (let y = top; y <= bottom; y += Math.max(1, Math.floor((bottom-top) / 64))) {
+      if (!isDark((y * c.width + x) * 4)) { hasContent = true; break; }
+    }
+    if (hasContent) { right = x; break; }
+  }
+  const cw = right - left + 1;
+  const ch = bottom - top + 1;
+  if (cw <= 0 || ch <= 0) return c;
+  const out = document.createElement("canvas");
+  out.width = cw; out.height = ch;
+  out.getContext("2d").drawImage(c, left, top, cw, ch, 0, 0, cw, ch);
+  return out;
+}
+
+/** Engine'in son render'ını hedefle karşılaştır — mean ΔE (LAB). */
+function evaluateCurrentRender(eng) {
+  const { targetLab, targetW, targetH } = studio.admin.opt;
+  if (!targetLab) return Infinity;
+  // Engine'in _srcCanvas'ını 256 wide downsample
+  const cmp = document.createElement("canvas");
+  cmp.width = targetW; cmp.height = targetH;
+  const cctx = cmp.getContext("2d");
+  cctx.imageSmoothingQuality = "medium";
+  cctx.drawImage(eng._srcCanvas, 0, 0, targetW, targetH);
+  const rgb = cctx.getImageData(0, 0, targetW, targetH).data;
+  let sum = 0, cnt = 0;
+  for (let i = 0; i < targetW * targetH; i++) {
+    const [L, a, b] = rgbToLab(rgb[i*4], rgb[i*4+1], rgb[i*4+2]);
+    const dL = L - targetLab[i*3];
+    const da = a - targetLab[i*3+1];
+    const db = b - targetLab[i*3+2];
+    sum += Math.sqrt(dL*dL + da*da + db*db);
+    cnt++;
+  }
+  return sum / Math.max(1, cnt);
+}
+
+async function evalConfig(eng, cfg) {
+  eng.setConfig(cfg);
+  eng.resegment();
+  studio.workingCodes.forEach((code, i) => eng.setSlot(i, code));
+  const data = eng.render({ intensity: studio.admin.intensity });
+  eng._srcCtx.putImageData(data, 0, 0);
+  return evaluateCurrentRender(eng);
+}
+
+function uniform(lo, hi) { return lo + Math.random() * (hi - lo); }
+function uniformInt(lo, hi) { return Math.round(uniform(lo, hi)); }
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+/** Phase 1: uniform wide sample. */
+function sampleWide() {
+  return {
+    sigma2Mult:     uniform(...OPT_BOUNDS.sigma2Mult),
+    blurSigma:      uniform(...OPT_BOUNDS.blurSigma),
+    chromaWeight:   uniform(...OPT_BOUNDS.chromaWeight),
+    shiftBlurSigma: uniform(...OPT_BOUNDS.shiftBlurSigma),
+    smoothLo:       uniform(...OPT_BOUNDS.smoothLo),
+    smoothHi:       uniform(...OPT_BOUNDS.smoothHi),
+    minScale:       uniform(...OPT_BOUNDS.minScale),
+    maxScale:       uniform(...OPT_BOUNDS.maxScale),
+    kmeansMaxIter:  uniformInt(...OPT_BOUNDS.kmeansMaxIter),
+  };
+}
+
+/** Phase 2: Gaussian perturbation around best, narrowing over time. */
+function sampleNarrow(best, narrow) {
+  // narrow: 0..1, 0 = no noise, 1 = wide
+  const g = (lo, hi) => {
+    const range = (hi - lo) * narrow * 0.5;
+    // 2 uniforms → approx. Gaussian
+    const n = (Math.random() + Math.random() - 1);
+    return n * range;
+  };
+  const b = OPT_BOUNDS;
+  return {
+    sigma2Mult:     clamp(best.sigma2Mult     + g(...b.sigma2Mult),     ...b.sigma2Mult),
+    blurSigma:      clamp(best.blurSigma      + g(...b.blurSigma),      ...b.blurSigma),
+    chromaWeight:   clamp(best.chromaWeight   + g(...b.chromaWeight),   ...b.chromaWeight),
+    shiftBlurSigma: clamp(best.shiftBlurSigma + g(...b.shiftBlurSigma), ...b.shiftBlurSigma),
+    smoothLo:       clamp(best.smoothLo       + g(...b.smoothLo),       ...b.smoothLo),
+    smoothHi:       clamp(best.smoothHi       + g(...b.smoothHi),       ...b.smoothHi),
+    minScale:       clamp(best.minScale       + g(...b.minScale),       ...b.minScale),
+    maxScale:       clamp(best.maxScale       + g(...b.maxScale),       ...b.maxScale),
+    kmeansMaxIter:  clamp(Math.round(best.kmeansMaxIter + g(...b.kmeansMaxIter)), ...b.kmeansMaxIter),
+  };
+}
+
+async function runOptimizer() {
+  const eng = studio.recolor.engine;
+  const opt = studio.admin.opt;
+  if (!eng || !opt.targetLab) { alert("Önce halı seç ve hedef görseli yükle."); return; }
+  if (opt.running) return;
+
+  const budget = parseInt($("adminOptBudget").value) || 40;
+  const fastMode = $("adminOptFast").checked;
+  const prog = $("adminOptProgress");
+  const startBtn = $("adminOptimize");
+  const stopBtn = $("adminOptStop");
+  opt.running = true; opt.stop = false;
+  startBtn.disabled = true;
+  stopBtn.hidden = false;
+
+  // Hızlı mod: çözünürlüğü düşür (optimization süresi 3-5x azalır)
+  let savedMaxSide = eng.config.maxSide;
+  if (fastMode && savedMaxSide > 768) {
+    eng.setConfig({ ...studio.admin.config, maxSide: 768 });
+    prog.textContent = `[init] Hızlı mod için ${savedMaxSide}→768 reload...\n`;
+    await eng.loadImage(studio.currentRug.img_url);
+  }
+
+  // Başlangıç: current config
+  let bestCfg = { ...studio.admin.config };
+  bestCfg.maxSide = eng.config.maxSide; // current
+  let bestScore = await evalConfig(eng, bestCfg);
+  const startScore = bestScore;
+  const log = [`[start] δE=${bestScore.toFixed(2)}  (budget=${budget}, fast=${fastMode})`];
+  prog.textContent = log.join("\n");
+
+  const phase1 = Math.ceil(budget / 2);
+  for (let i = 0; i < budget; i++) {
+    if (opt.stop) { log.push("[stop] kullanıcı durdurdu"); break; }
+    const inPhase1 = i < phase1;
+    // Narrow factor: phase2'de iterasyon arttıkça daralır
+    const narrow = inPhase1 ? 1.0 : 1.0 - (i - phase1) / Math.max(1, (budget - phase1));
+    const candCfg = inPhase1 ? sampleWide() : sampleNarrow(bestCfg, narrow * 0.6);
+    candCfg.maxSide = eng.config.maxSide;
+    // Fixed paramlar
+    candCfg.sigma2Min = DEFAULT_CONFIG.sigma2Min;
+    candCfg.sigma2Max = DEFAULT_CONFIG.sigma2Max;
+    candCfg.topM = bestCfg.topM;
+    candCfg.sampleStride = bestCfg.sampleStride;
+
+    const t0 = performance.now();
+    let score;
+    try {
+      score = await evalConfig(eng, candCfg);
+    } catch (e) {
+      score = Infinity;
+    }
+    const dt = (performance.now() - t0).toFixed(0);
+    const phase = inPhase1 ? "W" : "N";
+    const mark = score < bestScore ? " ★" : "";
+    log.push(`[${String(i+1).padStart(3)}/${budget} ${phase}] δE=${score.toFixed(2)} (best=${bestScore.toFixed(2)}) ${dt}ms${mark}`);
+    if (score < bestScore) {
+      bestScore = score;
+      bestCfg = { ...candCfg };
+    }
+    // Son 12 satırı göster (çok kalabalık olmasın)
+    prog.textContent = log.slice(-14).join("\n");
+    prog.scrollTop = prog.scrollHeight;
+    // Tarayıcıyı düşürme — event loop'a soluk ver
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  // Hızlı mod'dan tam çözünürlüğe geri dön
+  if (fastMode && savedMaxSide > 768) {
+    bestCfg.maxSide = savedMaxSide;
+    eng.setConfig(bestCfg);
+    prog.textContent = log.slice(-14).join("\n") + `\n[finalize] ${savedMaxSide}px ile tekrar render...`;
+    await eng.loadImage(studio.currentRug.img_url);
+    const finalScore = await evalConfig(eng, bestCfg);
+    log.push(`[final-hires] δE=${finalScore.toFixed(2)}`);
+  }
+
+  // Best config'i uygula + kaydet
+  studio.admin.config = { ...bestCfg };
+  syncAdminPanelUI();
+  eng.setConfig(bestCfg);
+  eng.resegment();
+  applyRecolor();
+  updateAdminStats();
+  persistAdminConfig();
+
+  const improv = ((startScore - bestScore) / startScore * 100).toFixed(1);
+  log.push(`[done] δE ${startScore.toFixed(2)}→${bestScore.toFixed(2)} (%${improv} iyileşme) — config kaydedildi`);
+  prog.textContent = log.slice(-16).join("\n");
+
+  opt.running = false;
+  startBtn.disabled = false;
+  stopBtn.hidden = true;
+}
+
 
 function toggleAdminPanel() {
   const panel = $("adminPanel");

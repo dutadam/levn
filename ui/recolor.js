@@ -33,7 +33,7 @@ function linearToSrgb(u) {
   const v = u <= 0.0031308 ? u * 12.92 : 1.055 * Math.pow(u, 1 / 2.4) - 0.055;
   return Math.max(0, Math.min(255, Math.round(v * 255)));
 }
-function rgbToLab(r, g, b) {
+export function rgbToLab(r, g, b) {
   const rl = srgbToLinear(r), gl = srgbToLinear(g), bl = srgbToLinear(b);
   const x = (rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375) / 0.95047;
   const y = (rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750) / 1.0;
