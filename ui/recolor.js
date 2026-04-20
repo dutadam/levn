@@ -688,26 +688,47 @@ export class RecolorEngine {
       shiftMap[i * 3 + 2] = shiftB * normFactor * intensity;
     }
 
-    // Aşama 2: Shift map'e blur uygula — salt-pepper speckle ölür, organik geçiş olur
+    // Aşama 2: Shift map'e blur uygula — boundary geçişleri için
     const blurredShift = this.config.shiftBlurSigma > 0.01
       ? gaussianBlur3(shiftMap, this.w, this.h, this.config.shiftBlurSigma)
       : shiftMap;
 
-    // Aşama 3: Blur'lu shift'i orijinal LAB'a ekle (doku korunur)
+    // Aşama 3: Confidence-tabanlı blend — ham (sharp) vs blur (smooth)
+    //
+    // Problem 1: shift map blur, unchanged piksellerin ZERO shift'ini komşulardan
+    // non-zero ile karıştırıp bleed yaratıyordu (strict hard-lock zayıflıyordu).
+    //
+    // Problem 2: blur interior pikselleri de yumuşatıyordu — deep cluster pikselleri
+    // (primaryW≈0.95) gereksiz yere bulanıklaşıyor, netlik kayboluyordu.
+    //
+    // Çözüm:
+    //   - Unchanged primary → shift = 0 (strict, blur bypass'lanır → bleed yok)
+    //   - Changed primary:
+    //       deep pixel (primaryW > 0.85): conf≈1 → ham shift (sharp, netlik)
+    //       boundary (primaryW ≈ 0.5-0.7): conf≈0 → blurred shift (smooth geçiş)
     for (let i = 0; i < n; i++) {
-      const sL = blurredShift[i * 3];
-      const sA = blurredShift[i * 3 + 1];
-      const sB = blurredShift[i * 3 + 2];
-      // Hiç shift yoksa pikseli atla (orig pixel zaten out'ta)
+      const primaryJ = this.labelsM[i * M];
+      if (!changed[primaryJ]) continue; // STRICT: unchanged cluster → koşulsuz atla
+
+      const primaryW = this.weightsM[i * M];
+      const conf = smoothstep(0.5, 0.85, primaryW); // deep=1, boundary=0
+
+      const rawL = shiftMap[i * 3];
+      const rawA = shiftMap[i * 3 + 1];
+      const rawB = shiftMap[i * 3 + 2];
+      const blurL = blurredShift[i * 3];
+      const blurA = blurredShift[i * 3 + 1];
+      const blurB = blurredShift[i * 3 + 2];
+
+      const sL = conf * rawL + (1 - conf) * blurL;
+      const sA = conf * rawA + (1 - conf) * blurA;
+      const sB = conf * rawB + (1 - conf) * blurB;
       if (sL === 0 && sA === 0 && sB === 0) continue;
+
       const L = this.origLab[i * 3];
       const A = this.origLab[i * 3 + 1];
       const B = this.origLab[i * 3 + 2];
-      const newL = L + sL;
-      const newA = A + sA;
-      const newB = B + sB;
-
-      const [nr, ng, nb] = labToRgb(newL, newA, newB);
+      const [nr, ng, nb] = labToRgb(L + sL, A + sA, B + sB);
       out[i * 4] = nr;
       out[i * 4 + 1] = ng;
       out[i * 4 + 2] = nb;
