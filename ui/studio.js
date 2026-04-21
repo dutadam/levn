@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=25";
-import { openPalette } from "./palette.js?v=25";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=25";
+} from "./shared.js?v=26";
+import { openPalette } from "./palette.js?v=26";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=26";
 
 const studio = {
   // Picker (rug list)

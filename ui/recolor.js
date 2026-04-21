@@ -401,6 +401,67 @@ export class RecolorEngine {
       this.origLab[i * 3 + 1] = A;
       this.origLab[i * 3 + 2] = B;
     }
+
+    // ★ BACKGROUND MASKESİ: ürün fotoğraflarında halının kenarında BEYAZ arka plan
+    // oluyor. Bu alanlar render'dan HARİÇ tutulmalı (değişmemeli).
+    // Algoritma: kenar pikselini (kenardan 2px içeri) tara. L>92 + chroma<5 (beyaz/nötr)
+    // ise bu piksel background olarak işaretlenir. Sonra 4-connected flood-fill ile
+    // kenarla bağlı tüm bg pikselleri maske'ye alınır. İç beyaz desenler etkilenmez.
+    this.bgMask = this._computeBackgroundMask();
+  }
+
+  /** Ürün fotoğrafı beyaz kenarlarını tespit et — flood-fill kenardan başlar. */
+  _computeBackgroundMask() {
+    const n = this.w * this.h;
+    const mask = new Uint8Array(n); // 1 = background, 0 = halı
+    const L_MIN = 92;   // ≥ 92 L → çok açık
+    const CHROMA_MAX = 5.0; // √(a²+b²) < 5 → nötr
+    const isBg = (i) => {
+      const L = this.origLab[i * 3];
+      const a = this.origLab[i * 3 + 1];
+      const b = this.origLab[i * 3 + 2];
+      return L >= L_MIN && (a * a + b * b) < CHROMA_MAX * CHROMA_MAX;
+    };
+    // BFS kuyruğu — kenar piksellerini başlangıç noktası yap
+    const queue = [];
+    const w = this.w, h = this.h;
+    for (let x = 0; x < w; x++) {
+      if (isBg(x)) { mask[x] = 1; queue.push(x); }
+      const bi = (h - 1) * w + x;
+      if (isBg(bi)) { mask[bi] = 1; queue.push(bi); }
+    }
+    for (let y = 0; y < h; y++) {
+      const li = y * w;
+      if (isBg(li)) { mask[li] = 1; queue.push(li); }
+      const ri = y * w + (w - 1);
+      if (isBg(ri)) { mask[ri] = 1; queue.push(ri); }
+    }
+    // Flood fill — 4-connected
+    let head = 0;
+    while (head < queue.length) {
+      const i = queue[head++];
+      const x = i % w, y = (i / w) | 0;
+      const neighbors = [];
+      if (x > 0) neighbors.push(i - 1);
+      if (x < w - 1) neighbors.push(i + 1);
+      if (y > 0) neighbors.push(i - w);
+      if (y < h - 1) neighbors.push(i + w);
+      for (const j of neighbors) {
+        if (!mask[j] && isBg(j)) {
+          mask[j] = 1;
+          queue.push(j);
+        }
+      }
+    }
+    // Kaç piksel bg?
+    let count = 0;
+    for (let i = 0; i < n; i++) if (mask[i]) count++;
+    const pct = ((count / n) * 100).toFixed(1);
+    // Çok az ise (e.g. %1'den az), muhtemelen yanlış tespit — mask'i boş bırak
+    if (count < n * 0.01) {
+      return null;
+    }
+    return mask;
   }
 
   /**
@@ -451,10 +512,12 @@ export class RecolorEngine {
     const useMaha = false;
 
     // Alt-örnekleme: BLUR'lu LAB'dan örnekle (cluster atama için)
+    // Background (beyaz kenar) pikselleri cluster'a dahil edilmez
     const sampledLabs = [];
     for (let i = 0; i < n; i += sampleStride) {
       const a = this.origPixels[i * 4 + 3];
       if (a < 32) continue;
+      if (this.bgMask && this.bgMask[i]) continue; // background skip
       sampledLabs.push(
         this.segLab[i * 3],
         this.segLab[i * 3 + 1],
@@ -500,6 +563,8 @@ export class RecolorEngine {
     this.labelsM = new Uint8Array(n * M);
     this.weightsM = new Float32Array(n * M);
     for (let i = 0; i < n; i++) {
+      // Background pikseli: cluster atamasına dahil etme (render'da zaten skip)
+      if (this.bgMask && this.bgMask[i]) continue;
       // ★ Blur'lu LAB üstünden assign (smooth membership, no per-pixel noise)
       const L = this.segLab[i * 3], A = this.segLab[i * 3 + 1], B = this.segLab[i * 3 + 2];
       const bestD = new Float32Array(M); bestD.fill(Infinity);
@@ -541,6 +606,7 @@ export class RecolorEngine {
       const sumL = new Float64Array(k), suma = new Float64Array(k), sumb = new Float64Array(k);
       const cnt = new Uint32Array(k);
       for (let i = 0; i < n; i++) {
+        if (this.bgMask && this.bgMask[i]) continue; // bg pikseli stats'a dahil değil
         const j = this.labelsM[i * M]; // primary cluster
         sumL[j] += this.origLab[i * 3];
         suma[j] += this.origLab[i * 3 + 1];
@@ -560,6 +626,7 @@ export class RecolorEngine {
       }
       const vsL = new Float64Array(k), vsa = new Float64Array(k), vsb = new Float64Array(k);
       for (let i = 0; i < n; i++) {
+        if (this.bgMask && this.bgMask[i]) continue; // bg pikseli std hesabına dahil değil
         const j = this.labelsM[i * M];
         const dL = this.origLab[i * 3] - this.clusterMeanL[j];
         const da = this.origLab[i * 3 + 1] - this.clusterMeana[j];
@@ -680,6 +747,8 @@ export class RecolorEngine {
     // Aşama 3: Shift map'i orijinal LAB'a uygula → doku korunur + organik geçiş.
     const shiftMap = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
+      // ★ BACKGROUND: ürün fotoğrafının beyaz kenarları dokunulmaz
+      if (this.bgMask && this.bgMask[i]) continue;
       // ★ STRICT HARD-LOCK: primary cluster değişmediyse piksel dokunulmaz.
       // Soft edge effect → shiftBlur'dan geliyor (shiftBlurSigma=2.0), pixel-level
       // accumulation'dan değil. Bu sayede değişmeyen renklere sızma yok.
@@ -741,6 +810,8 @@ export class RecolorEngine {
     //       deep pixel (primaryW > 0.85): conf≈1 → ham shift (sharp, netlik)
     //       boundary (primaryW ≈ 0.5-0.7): conf≈0 → blurred shift (smooth geçiş)
     for (let i = 0; i < n; i++) {
+      // Background maske: beyaz kenar dokunulmaz
+      if (this.bgMask && this.bgMask[i]) continue;
       const primaryJ = this.labelsM[i * M];
       if (!changed[primaryJ]) continue; // STRICT: unchanged cluster → koşulsuz atla
 

@@ -44,17 +44,40 @@ export async function loadAll() {
 
 /**
  * Bir kod için swatch görsel URL'i. Tip-aware — halının tipine göre doğru varyant.
+ *
+ * GÜVENİLİRLİK FİLTRESİ:
+ *   Palette'te source='residual_cluster' veya mode='primary'/'plain_primary' ise
+ *   fiziksel JPG muhtemelen heterojen (multi-color halıdan çıkarılmış). Swatch
+ *   olarak göstermek kullanıcıyı yanıltır. Bu durumda güvenilir tipe fallback.
+ *
  * @param {string} code   Renk kodu (ör. "7141")
  * @param {string} [tip]  İsteğe bağlı halı tipi (A/C/M/E). Verilmezse en iyi varyant.
  */
 export function assetUrl(code, tip) {
   const a = state.assets[code];
   if (!a) return "";
+  // Palette'ten tip güvenilirliğini kontrol et
+  const palCode = state.palette[code];
+  const isReliable = (t) => {
+    // Assets'te bu tip yok → güvensiz
+    if (!a[t] || !a[t].file) return false;
+    // Palette'te bu tip residual ise dosya heterojen (gerçek swatch değil)
+    if (palCode && palCode[t] && palCode[t].source === "residual_cluster") return false;
+    // Asset mode güvensiz ise (plain_primary/primary multi-color halıdan)
+    const mode = a[t].mode;
+    if (mode && mode !== "plain_single") return false;
+    return true;
+  };
   // Yeni format: {A: {file,...}, C: {file,...}, M: {file,...}}
   if (typeof a === "object" && !a.file) {
-    // Tam eşleşme
+    // 1) İstenen tip güvenilirse onu kullan
+    if (tip && isReliable(tip)) return ASSET_BASE + a[tip].file;
+    // 2) Sadece plain_single olan diğer tiplere fallback
+    for (const t of ["C", "M", "A", "E", "D"]) {
+      if (isReliable(t)) return ASSET_BASE + a[t].file;
+    }
+    // 3) Hiç güvenilir yoksa: istenen tip dosyası (visually yanıltıcı ama boş swatch'tan iyi)
     if (tip && a[tip] && a[tip].file) return ASSET_BASE + a[tip].file;
-    // Fallback: C → M → A → E → ne varsa
     for (const t of ["C", "M", "A", "E", "D"]) {
       if (a[t] && a[t].file) return ASSET_BASE + a[t].file;
     }
