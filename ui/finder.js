@@ -1,6 +1,6 @@
 /* Levn — Finder modu: renk seç → uyumlu halılar (eski ana mod). */
 
-import { state, assetUrl, escapeHtml, normalize, sortedByFamily, collectionLabel, colorFamily } from "./shared.js?v=23";
+import { state, assetUrl, escapeHtml, normalize, sortedByFamily, collectionLabel, colorFamily } from "./shared.js?v=24";
 
 const finder = {
   selected: new Set(),

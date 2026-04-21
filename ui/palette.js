@@ -1,9 +1,10 @@
 /* Levn — paylaşılan renk paleti popover. Studio slot tıklandığında açılır. */
 
-import { state, assetUrl, escapeHtml, normalize, verifiedSortedColors, colorFamily } from "./shared.js?v=23";
+import { state, assetUrl, escapeHtml, normalize, verifiedSortedColors, colorFamily } from "./shared.js?v=24";
 
 let resolveFn = null;
 let currentSlotIndex = -1;
+let currentRugTip = null;  // Halının SKU tip harfi (A/C/M/E) — swatch varyantı için
 let searchQ = "";
 let verifiedOnly = true;
 
@@ -44,14 +45,13 @@ function render() {
         <span class="fg-count">${famCounts[fam.key]}</span>`;
       grid.appendChild(header);
     }
-    const asset = state.assets[code];
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "palette-card" + (c.verified ? "" : " unverified");
     btn.dataset.code = code;
-    const fb = asset && asset.mode === "fallback" ? " fallback" : "";
+    // ★ Tip-aware swatch: halının SKU tipine göre doğru varyant (7141_M vs 7141_C vs 7141_A)
     btn.innerHTML = `
-      <div class="swatch${fb}" style="background-image:url('${assetUrl(code)}')"></div>
+      <div class="swatch" style="background-image:url('${assetUrl(code, currentRugTip)}')"></div>
       <div class="meta">
         <span class="name">${escapeHtml(c.name_tr)}</span>
         <span class="code">${code}</span>
@@ -81,14 +81,14 @@ function close() {
   }
 }
 
-export function openPalette({ slotIndex, title, currentCode }) {
+export function openPalette({ slotIndex, title, currentCode, rugTip }) {
   currentSlotIndex = slotIndex;
+  currentRugTip = rugTip || null;  // halının SKU tip harfi — swatch için
   $("paletteTitle").textContent = title || "Renk seç";
   $("paletteSearch").value = "";
   searchQ = "";
   render();
   $("palettePopover").hidden = false;
-  // Focus search for quick typing
   setTimeout(() => $("paletteSearch").focus(), 50);
   return new Promise((resolve) => { resolveFn = resolve; });
 }

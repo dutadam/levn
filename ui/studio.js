@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=23";
-import { openPalette } from "./palette.js?v=23";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=23";
+} from "./shared.js?v=24";
+import { openPalette } from "./palette.js?v=24";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=24";
 
 const studio = {
   // Picker (rug list)
@@ -87,8 +87,9 @@ function renderPicker() {
       card.classList.add("active");
     }
     const codes = (rug.sku_parsed && rug.sku_parsed.codes) || [];
+    const rugTip = (rug.sku_parsed && rug.sku_parsed.tip) ? rug.sku_parsed.tip.toUpperCase() : null;
     const dots = codes.map((c) =>
-      `<span class="palette-dot" style="background-image:url('${assetUrl(c)}')"></span>`
+      `<span class="palette-dot" style="background-image:url('${assetUrl(c, rugTip)}')"></span>`
     ).join("");
     card.innerHTML = `
       <div class="picker-img">
@@ -441,22 +442,21 @@ function renderSkuAndSlots() {
 
   const slots = $("slotsGrid");
   slots.innerHTML = "";
+  const curRugTip = (studio.currentRug && studio.currentRug.sku_parsed && studio.currentRug.sku_parsed.tip)
+    ? studio.currentRug.sku_parsed.tip.toUpperCase() : null;
   studio.workingCodes.forEach((code, i) => {
     const c = state.colors[code];
-    const asset = state.assets[code];
     const changed = code !== origCodes[i];
     const slot = document.createElement("button");
     slot.type = "button";
-    slot.className = "slot"
-      + (asset && asset.mode === "fallback" ? " fallback" : "")
-      + (changed ? " changed" : "");
+    slot.className = "slot" + (changed ? " changed" : "");
     const origName = changed
       ? (state.colors[origCodes[i]] ? state.colors[origCodes[i]].name_tr : origCodes[i])
       : "";
     slot.innerHTML = `
       <div class="slot-index">${i + 1}</div>
       ${changed ? `<div class="slot-changed-badge">değişti</div>` : ""}
-      <div class="slot-swatch" style="background-image:url('${assetUrl(code)}')"></div>
+      <div class="slot-swatch" style="background-image:url('${assetUrl(code, curRugTip)}')"></div>
       <div class="slot-meta">
         <span class="slot-name">${escapeHtml((c && c.name_tr) || "—")}</span>
         <span class="slot-code">${escapeHtml(code)}</span>
@@ -465,10 +465,13 @@ function renderSkuAndSlots() {
       <div class="slot-edit-hint">${changed ? "tekrar değiştir" : "değiştir"}</div>
     `;
     slot.addEventListener("click", async () => {
+      const rugTip = (studio.currentRug && studio.currentRug.sku_parsed && studio.currentRug.sku_parsed.tip)
+        ? studio.currentRug.sku_parsed.tip.toUpperCase() : null;
       const res = await openPalette({
         slotIndex: i,
         title: `Slot ${i + 1} — renk seç`,
         currentCode: code,
+        rugTip,  // Swatch'lar doğru varyantı göstersin
       });
       if (res && res.code) {
         studio.workingCodes[i] = res.code;
@@ -600,12 +603,13 @@ function renderSamePalette() {
 
 function similarCard(rug, scoreInfo) {
   const codes = (rug.sku_parsed && rug.sku_parsed.codes) || [];
+  const similarRugTip = (rug.sku_parsed && rug.sku_parsed.tip) ? rug.sku_parsed.tip.toUpperCase() : null;
   const selSet = new Set(studio.workingCodes);
   const dots = codes.map((code) => {
     const m = selSet.has(code);
     return `<span class="palette-dot ${m ? "match" : ""}"
               title="${escapeHtml(colorName(code))}"
-              style="background-image:url('${assetUrl(code)}')"></span>`;
+              style="background-image:url('${assetUrl(code, similarRugTip)}')"></span>`;
   }).join("");
 
   const a = document.createElement("a");
