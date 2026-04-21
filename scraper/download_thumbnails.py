@@ -1,13 +1,22 @@
-"""Levn — her renk kodu için bir temsili görsel indir.
+"""Levn — her (renk_kodu, tip_harfi) çifti için temsili görsel indir.
+
+YAPISAL KEŞİF (2026-04):
+  Plain halılar aynı kodla farklı tip harflerinde (A, C, M, E, D) ayrı TON
+  varyantları olarak üretiliyor. Örn:
+    2025-A-7141 → BUZ MAVİSİ koyu soğuk
+    2025-M-7141 → BUZ MAVİSİ açık hafif yeşil
+    (ΔE fark ≈ 12.8 — çok büyük!)
+
+  Multi-color halının SKU'sundaki tip harfi (6088-**M**-...) hangi varyant
+  paletinin kullanıldığını belirliyor.
 
 Strateji:
-  1. Tercih: tek renk ürün (PLAIN ya da bu kodu YALNIZCA içeren ürün)
-  2. 2. tercih: bu kod SKU'da ilk sırada (ana renk) olan ürün
-  3. Fallback: bu kodu içeren herhangi bir ürün
+  Her (code, tip) kombinasyonu için PLAIN tek-renk halısını bul ve indir.
+  Plain'i yoksa fallback: o tipteki ana-renk (ilk kod) ürünü.
 
 Çıktı:
-  assets/colors/<code>.jpg   # ürünün tam görseli
-  data/color_assets.json     # kod → {file, product_id, mode (plain/primary/fallback)}
+  assets/colors/<code>_<tip>.jpg   # örn: 7141_M.jpg, 7141_A.jpg
+  data/color_assets.json           # {code: {tip: {file, product_id, ...}}}
 """
 from __future__ import annotations
 import json
@@ -36,7 +45,6 @@ def download(url: str, dest: Path, retries: int = 2) -> bool:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data = resp.read()
             if len(data) < 1024:
-                # 404 placeholder or broken
                 return False
             dest.write_bytes(data)
             return True
@@ -48,71 +56,114 @@ def download(url: str, dest: Path, retries: int = 2) -> bool:
     return False
 
 
-def pick_best_product(code: str, products: list[dict]) -> tuple[dict, str] | None:
-    """En iyi temsili ürünü seç: plain > primary > fallback."""
-    candidates = []
-    for p in products:
+def normalize_img_url(url: str) -> str:
+    """CDN cdn-cgi/image prefix → orijinal (daha yüksek kalite)."""
+    if "cdn-cgi/image/" in url:
+        url = url.split("cdn-cgi/image/")[1]
+        url = "https://static.ticimax.cloud/" + url.split("/", 1)[1]
+    return url
+
+
+def collect_variants(raw: list[dict]) -> dict:
+    """{code: {tip: [list of products]}} şeklinde grupla.
+
+    Plain tek-renk halıları tip-specific — örn. 2025-A-7141 bizim için
+    (7141, A) varyantı. Multi-color halılarda tip karışık olabilir ama
+    biz sadece plain tek-renkli ürünleri birincil kaynak olarak alacağız.
+    """
+    # İlk aşama: saf plain halılar (1 renk kodu)
+    plain_single = defaultdict(dict)  # {code: {tip: product}}
+    for p in raw:
+        if p.get("collection") != "plain":
+            continue
+        sku_raw = p.get("sku_raw", "") or ""
+        parts = sku_raw.split("-")
+        if len(parts) != 3:  # desen-tip-kod (tek renk)
+            continue
+        tip = parts[1].upper()
+        code = parts[2]
+        plain_single[code][tip] = p
+
+    # İkinci aşama: bu kod o tipte primary (ilk kod) olarak geçen ürünler
+    primary_by_tip = defaultdict(lambda: defaultdict(list))  # {code: {tip: [products]}}
+    for p in raw:
         sku = p.get("sku_parsed") or {}
         codes = sku.get("codes") or []
-        if code not in codes:
+        if not codes:
             continue
-        unique = list(dict.fromkeys(codes))
-        is_single = len(unique) == 1
-        is_primary = len(unique) > 0 and unique[0] == code
-        # Image URL mutlaka olsun
-        if not p.get("img_url"):
+        sku_raw = p.get("sku_raw", "") or ""
+        parts = sku_raw.split("-")
+        if len(parts) < 3:
             continue
-        candidates.append((p, is_single, is_primary))
+        tip = parts[1].upper()
+        first_code = codes[0]
+        primary_by_tip[first_code][tip].append(p)
 
-    if not candidates:
-        return None
-
-    # Önce tek renk, sonra ana renk (ilk pozisyon), sonra fallback
-    for p, is_single, is_primary in candidates:
-        if is_single:
-            return p, "plain_single"
-    for p, is_single, is_primary in candidates:
-        if is_primary:
-            return p, "primary"
-    return candidates[0][0], "fallback"
+    return plain_single, primary_by_tip
 
 
 def main():
     raw = json.loads((DATA_DIR / "_raw.json").read_text(encoding="utf-8"))
-    color_db = json.loads((DATA_DIR / "color_db.json").read_text(encoding="utf-8"))
+    rugs = json.loads((DATA_DIR / "rug_db.json").read_text(encoding="utf-8"))
 
-    assets = {}
+    # Rug'larda kullanılan (code, tip) çiftleri — indirmemiz gereken setler
+    needed = set()  # {(code, tip)}
+    for r in rugs:
+        sku = r.get("sku_parsed") or {}
+        codes = sku.get("codes") or []
+        sku_raw = r.get("sku_raw", "") or ""
+        parts = sku_raw.split("-")
+        if len(parts) < 3:
+            continue
+        tip = parts[1].upper()
+        for code in codes:
+            needed.add((code, tip))
+
+    print(f"Halılardan çıkarılan (code, tip) çifti: {len(needed)}")
+
+    plain_single, primary_by_tip = collect_variants(raw)
+
+    assets = {}  # {code: {tip: {...}}}
     stats = defaultdict(int)
-    total = len(color_db)
-    print(f"Toplam renk kodu: {total}")
-    print()
+    total = len(needed)
 
-    for i, (code, v) in enumerate(sorted(color_db.items()), 1):
-        pick = pick_best_product(code, raw)
-        if not pick:
-            print(f"  [{i:3d}/{total}] {code:5s} {v['name_tr']:25s} — ürün bulunamadı")
+    # Sıralı indir (progress gösterimi için)
+    for i, (code, tip) in enumerate(sorted(needed), 1):
+        # Öncelik 1: saf plain tek-renk, aynı tip
+        product = None
+        mode = None
+        if tip in plain_single.get(code, {}):
+            product = plain_single[code][tip]
+            mode = "plain_single"
+        # Öncelik 2: aynı tip, ilk koddaki primary ürün
+        elif tip in primary_by_tip.get(code, {}):
+            product = primary_by_tip[code][tip][0]
+            mode = "primary"
+        # Öncelik 3: farklı tipte plain (en son çare — TON UYUMSUZ OLABİLİR)
+        elif code in plain_single:
+            other_tips = sorted(plain_single[code].keys())
+            product = plain_single[code][other_tips[0]]
+            mode = f"fallback_tip_{other_tips[0]}"
+        # Öncelik 4: farklı tipte primary
+        elif code in primary_by_tip:
+            other_tips = sorted(primary_by_tip[code].keys())
+            product = primary_by_tip[code][other_tips[0]][0]
+            mode = f"fallback_primary_{other_tips[0]}"
+
+        if not product:
+            print(f"  [{i:3d}/{total}] {code}_{tip} — ürün bulunamadı")
             stats["no_product"] += 1
             continue
-        product, mode = pick
-        img_url = product["img_url"]
-        # CDN cdn-cgi/image prefix'li URL'leri orijinale çevir (daha yüksek kalite)
-        if "cdn-cgi/image/" in img_url:
-            img_url = img_url.split("cdn-cgi/image/")[1]
-            # format: "width=-,quality=99/59097/..." → "59097/..."
-            img_url = "https://static.ticimax.cloud/" + img_url.split("/", 1)[1]
 
-        # Dosya uzantısı
+        img_url = normalize_img_url(product["img_url"])
         ext = ".jpg"
-        if img_url.lower().endswith((".png", ".jpeg", ".webp")):
-            ext = "." + img_url.rsplit(".", 1)[-1].lower()
-            if ext == ".jpeg":
-                ext = ".jpg"
-
-        dest = ASSETS_DIR / f"{code}{ext}"
+        dest = ASSETS_DIR / f"{code}_{tip}{ext}"
         ok = download(img_url, dest)
         if ok:
-            assets[code] = {
-                "file": f"assets/colors/{code}{ext}",
+            if code not in assets:
+                assets[code] = {}
+            assets[code][tip] = {
+                "file": f"assets/colors/{code}_{tip}{ext}",
                 "product_id": product["product_id"],
                 "product_title": product["title"],
                 "source_url": img_url,
@@ -120,10 +171,10 @@ def main():
             }
             stats[mode] += 1
             marker = "★" if mode == "plain_single" else ("+" if mode == "primary" else "·")
-            print(f"  [{i:3d}/{total}] {code:5s} {v['name_tr']:25s} {marker} {mode}")
+            print(f"  [{i:3d}/{total}] {code}_{tip:2s} {marker} {mode}")
         else:
             stats["download_fail"] += 1
-            print(f"  [{i:3d}/{total}] {code:5s} {v['name_tr']:25s} ✗ indirme başarısız")
+            print(f"  [{i:3d}/{total}] {code}_{tip} ✗ indirme başarısız")
         time.sleep(REQUEST_DELAY_SEC)
 
     (DATA_DIR / "color_assets.json").write_text(
@@ -134,8 +185,11 @@ def main():
     print()
     print("=== ÖZET ===")
     for k, v in sorted(stats.items()):
-        print(f"  {k:20s} {v}")
-    print(f"Toplam indirildi: {len(assets)} / {total}")
+        print(f"  {k:28s} {v}")
+    # Kaç unique kod, kaç tip var?
+    n_codes = len(assets)
+    n_pairs = sum(len(v) for v in assets.values())
+    print(f"Kod sayısı: {n_codes}  |  (code, tip) çifti: {n_pairs}")
     print(f"Dizin: {ASSETS_DIR}")
 
 

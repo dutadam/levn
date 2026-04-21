@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=22";
-import { openPalette } from "./palette.js?v=22";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=22";
+} from "./shared.js?v=23";
+import { openPalette } from "./palette.js?v=23";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=23";
 
 const studio = {
   // Picker (rug list)
@@ -212,6 +212,7 @@ async function initRecolorFor(rug) {
   showRecolorSpinner(true);
 
   const codes = (rug.sku_parsed && rug.sku_parsed.codes) || [];
+  const rugTip = (rug.sku_parsed && rug.sku_parsed.tip) ? rug.sku_parsed.tip.toUpperCase() : null;
   if (!codes.length || !rug.img_url || !Object.keys(state.palette).length) {
     showRecolorSpinner(false);
     return;
@@ -223,7 +224,8 @@ async function initRecolorFor(rug) {
     await eng.loadImage(rug.img_url);
     // Sırada başka halı seçildi mi? Bu yarışı kaybettiysek çık.
     if (token !== studio.recolor.loadToken) return;
-    const { drift } = eng.segment(codes);
+    // ★ Tip-aware segmentation: halının tip harfi (A/C/M/E) palette varyantını seçer
+    const { drift } = eng.segment(codes, { tip: rugTip });
     if (token !== studio.recolor.loadToken) return;
     studio.recolor.scores = drift;
     studio.recolor.ready = true;

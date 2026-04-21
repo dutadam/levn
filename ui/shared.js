@@ -42,9 +42,27 @@ export async function loadAll() {
   state.collections = [...collSet].sort();
 }
 
-export function assetUrl(code) {
+/**
+ * Bir kod için swatch görsel URL'i. Tip-aware — halının tipine göre doğru varyant.
+ * @param {string} code   Renk kodu (ör. "7141")
+ * @param {string} [tip]  İsteğe bağlı halı tipi (A/C/M/E). Verilmezse en iyi varyant.
+ */
+export function assetUrl(code, tip) {
   const a = state.assets[code];
-  return a ? ASSET_BASE + a.file : "";
+  if (!a) return "";
+  // Yeni format: {A: {file,...}, C: {file,...}, M: {file,...}}
+  if (typeof a === "object" && !a.file) {
+    // Tam eşleşme
+    if (tip && a[tip] && a[tip].file) return ASSET_BASE + a[tip].file;
+    // Fallback: C → M → A → E → ne varsa
+    for (const t of ["C", "M", "A", "E", "D"]) {
+      if (a[t] && a[t].file) return ASSET_BASE + a[t].file;
+    }
+    const first = Object.values(a)[0];
+    return first && first.file ? ASSET_BASE + first.file : "";
+  }
+  // Legacy flat format
+  return a.file ? ASSET_BASE + a.file : "";
 }
 
 export function colorName(code) {

@@ -141,44 +141,85 @@ def seeded_kmeans(pixels_lab, seeds, seeds_mask, max_iter=15):
     return centers, labels, counts
 
 
+def rug_tip(rug: dict) -> str:
+    """Rug SKU'sundan tip harfini çıkar. '6088-M-...' → 'M'."""
+    sku = rug.get("sku_raw") or ""
+    parts = sku.split("-")
+    if len(parts) >= 2 and parts[1]:
+        return parts[1].upper()
+    return "?"
+
+
+def lab_seed_for(code: str, tip: str, palette: dict):
+    """Tip-aware palette lookup. Önce tam eşleşme, sonra C→M→A fallback."""
+    entry = palette.get(code)
+    if not entry:
+        return None
+    if tip in entry:
+        return entry[tip]["lab"], tip
+    for fb in ("C", "M", "A", "E", "D"):
+        if fb in entry:
+            return entry[fb]["lab"], fb
+    # Eski flat format (legacy)
+    if "lab" in entry:
+        return entry["lab"], None
+    return None
+
+
 def main():
     rugs = json.load(open(DATA_DIR / "rug_db.json"))
     palette = json.load(open(DATA_DIR / "color_palette.json"))
 
-    # Tüm kodları bul
-    codes_in_rugs = set()
+    # Rug'larda geçen (code, tip) çifleri — eksik olanları bul
+    needed_pairs = set()  # {(code, tip)}
     for r in rugs:
         sp = r.get("sku_parsed")
         if not sp:
             continue
+        tip = rug_tip(r)
         for c in sp.get("codes") or []:
-            codes_in_rugs.add(c)
+            needed_pairs.add((c, tip))
 
-    missing = sorted(codes_in_rugs - set(palette.keys()))
-    print(f"Eksik kod: {len(missing)}  (toplam {len(codes_in_rugs)}'den)")
+    # Şu an palette'te olan (code, tip) çiftleri
+    have_pairs = set()
+    for code, entry in palette.items():
+        if not isinstance(entry, dict):
+            continue
+        # Yeni tip-aware format
+        if "lab" not in entry:
+            for tip in entry:
+                have_pairs.add((code, tip))
+        else:
+            # Legacy flat format — tip bilinmiyor, yok sayılır
+            pass
 
-    # Her eksik kod için: o kodu içeren halılardan toplanan cluster center'lar
-    estimates = defaultdict(list)  # code → list of (center_lab, count, std_lab)
+    missing_pairs = sorted(needed_pairs - have_pairs)
+    missing_set = set(missing_pairs)
+    print(f"Rug'larda: {len(needed_pairs)} (code,tip) çifti")
+    print(f"Eksik: {len(missing_pairs)}")
 
-    # Her eksik kod için kullanılacak halıları seç (öncelik: az sayıda eksik olanlar)
-    for code in missing:
+    estimates = defaultdict(list)  # (code, tip) → list of (center_lab, count, std_lab)
+
+    # Her eksik (code, tip) için: aynı tipteki halılardan topla
+    for code, tip in missing_pairs:
         candidates = []
         for r in rugs:
+            if rug_tip(r) != tip:
+                continue  # sadece aynı tip halıdan örnekle (DOĞRU TON için kritik)
             sp = r.get("sku_parsed")
             if not sp:
                 continue
             codes = sp.get("codes") or []
             if code not in codes:
                 continue
-            # Kaç tanesi palette'te var?
-            known = sum(1 for c in codes if c in palette)
+            # Kaç kod (code, tip) olarak BİLİNİYOR?
+            known = sum(1 for c in codes if (c, tip) not in missing_set)
             unknown = len(codes) - known
             candidates.append((r, unknown, len(codes)))
-        # Önce az eksikli halıları dene (daha az belirsiz)
         candidates.sort(key=lambda x: (x[1], x[2]))
         selected = candidates[:MAX_RUGS_PER_CODE]
         if not selected:
-            print(f"  [skip] {code}: hiç halı bulunamadı")
+            print(f"  [skip] {code}_{tip}: bu tipte halı bulunamadı")
             continue
 
         for rug, unknown_count, total_codes in selected:
@@ -196,23 +237,22 @@ def main():
                 img = Image.open(thumb).convert("RGB")
                 img.thumbnail((THUMB_SIDE, THUMB_SIDE), Image.Resampling.LANCZOS)
                 arr = np.array(img).reshape(-1, 3)
-                # Aşırı karanlık (background) pikselleri ele
                 brightness = arr.sum(axis=1)
                 arr = arr[brightness > 30]
                 if len(arr) < 1000:
                     continue
                 pixels_lab = rgb_to_lab_arr(arr)
 
-                # Seed'ler hazırla
+                # Seed'ler: aynı tip palette'ten al
                 k = len(codes)
                 seeds = np.zeros((k, 3))
                 seeds_mask = np.zeros(k, dtype=bool)
                 for i, c in enumerate(codes):
-                    if c in palette:
-                        seeds[i] = palette[c]["lab"]
+                    seed_lookup = lab_seed_for(c, tip, palette)
+                    if seed_lookup is not None and c != code:
+                        seeds[i] = seed_lookup[0]
                         seeds_mask[i] = True
                     else:
-                        # Rastgele piksel
                         seeds[i] = pixels_lab[np.random.randint(len(pixels_lab))]
                         seeds_mask[i] = False
 
@@ -220,40 +260,37 @@ def main():
                     pixels_lab, seeds, seeds_mask, max_iter=KMEANS_ITER
                 )
 
-                # Eksik kodun cluster index'ini bul (seeds_mask=False olan)
                 for i, c in enumerate(codes):
                     if c == code and not seeds_mask[i]:
-                        if counts[i] < 200:  # çok küçük cluster → güvenilmez
+                        if counts[i] < 200:
                             continue
-                        # Cluster std
                         cluster_px = pixels_lab[labels == i]
                         if len(cluster_px) < 50:
                             continue
                         std_lab = cluster_px.std(axis=0)
-                        estimates[code].append((centers[i].tolist(), int(counts[i]), std_lab.tolist()))
+                        estimates[(code, tip)].append(
+                            (centers[i].tolist(), int(counts[i]), std_lab.tolist())
+                        )
                         break
 
             except Exception as e:
-                print(f"  [err] {code} {pid}: {e}", file=sys.stderr)
+                print(f"  [err] {code}_{tip} {pid}: {e}", file=sys.stderr)
                 continue
 
-    # Her eksik kod için: ağırlıklı ortalama
+    # Her eksik (code, tip) için: ağırlıklı ortalama
     print(f"\n=== SONUÇ ===")
     added = 0
-    for code in missing:
-        ests = estimates.get(code, [])
+    for (code, tip) in missing_pairs:
+        ests = estimates.get((code, tip), [])
         if not ests:
             continue
         labs = np.array([e[0] for e in ests])
         counts = np.array([e[1] for e in ests], dtype=float)
         stds = np.array([e[2] for e in ests])
-        # Piksel sayısı ağırlıklı mean
         weights = counts / counts.sum()
         mean_lab = (labs * weights[:, None]).sum(axis=0)
-        # std: ortalama std (biraz üst sınır koy, çok düşük olmasın)
         mean_std = np.maximum((stds * weights[:, None]).sum(axis=0), [2.0, 0.8, 0.8])
 
-        # RGB'ye geri çevir (yaklaşık)
         L, a, b = mean_lab
         fy = (L + 16) / 116
         fx = a / 500 + fy
@@ -275,7 +312,7 @@ def main():
         r_, g_, b_ = [c/255.0 for c in rgb]
         h, l, s = colorsys.rgb_to_hls(r_, g_, b_)
 
-        palette[code] = {
+        entry = {
             "rgb": rgb,
             "hsl": [round(h*360, 1), round(s, 3), round(l, 3)],
             "lab": [round(v, 2) for v in mean_lab.tolist()],
@@ -284,8 +321,11 @@ def main():
             "source": "residual_cluster",
             "n_samples": len(ests),
         }
+        if code not in palette or not isinstance(palette[code], dict) or "lab" in palette.get(code, {}):
+            palette[code] = {}
+        palette[code][tip] = entry
         added += 1
-        print(f"  {code}: RGB={rgb}  LAB=[{mean_lab[0]:.1f},{mean_lab[1]:.1f},{mean_lab[2]:.1f}]  ({len(ests)} halıdan)")
+        print(f"  {code}_{tip}: RGB={rgb}  LAB=[{mean_lab[0]:.1f},{mean_lab[1]:.1f},{mean_lab[2]:.1f}]  ({len(ests)} halıdan)")
 
     # Kaydet
     json.dump(
@@ -294,7 +334,8 @@ def main():
         ensure_ascii=False,
         indent=2,
     )
-    print(f"\n→ {added} yeni kod eklendi  |  Toplam palette: {len(palette)}")
+    n_pairs_final = sum(len(v) for v in palette.values() if isinstance(v, dict) and "lab" not in v)
+    print(f"\n→ {added} yeni (code,tip) çifti eklendi  |  Toplam çift: {n_pairs_final}")
 
 
 if __name__ == "__main__":

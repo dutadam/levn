@@ -172,40 +172,54 @@ def main() -> int:
         return 1
 
     assets = json.loads(COLOR_ASSETS_JSON.read_text("utf-8"))
-    palette: dict[str, dict] = {}
+    palette: dict[str, dict] = {}  # {code: {tip: {rgb, hsl, lab, lab_std, hex, source}}}
     missing = 0
+    total_pairs = 0
 
-    for code, info in assets.items():
-        file_rel = info.get("file") if isinstance(info, dict) else None
-        if not file_rel:
-            # Fallback: code'dan türet
-            file_rel = f"assets/colors/{code}.jpg"
-        img_path = ROOT / file_rel
-        if not img_path.exists():
-            print(f"[skip] {code}: {file_rel} bulunamadı", file=sys.stderr)
-            missing += 1
+    # Yeni yapı: assets[code] = {tip: {file, mode, ...}} (tip-aware)
+    for code, per_tip in assets.items():
+        # Legacy: bazı girişler eski flat formatta olabilir (yalnız backward-compat)
+        if not isinstance(per_tip, dict) or "file" in per_tip:
+            # Eski flat format — yok sayılır, migrate edilmeli
+            print(f"[warn] {code}: eski flat format, migrate edin", file=sys.stderr)
             continue
 
-        stats = dominant_lab_stats(img_path)
-        if stats is None:
-            missing += 1
-            continue
+        code_entry: dict[str, dict] = {}
+        for tip, info in per_tip.items():
+            total_pairs += 1
+            file_rel = info.get("file") if isinstance(info, dict) else None
+            if not file_rel:
+                file_rel = f"assets/colors/{code}_{tip}.jpg"
+            img_path = ROOT / file_rel
+            if not img_path.exists():
+                print(f"[skip] {code}_{tip}: {file_rel} bulunamadı", file=sys.stderr)
+                missing += 1
+                continue
 
-        (lab_mean, lab_std, rgb_mean) = stats
-        r, g, b = rgb_mean
-        palette[code] = {
-            "rgb": [r, g, b],
-            "hsl": list(rgb_to_hsl(r, g, b)),
-            "lab": list(lab_mean),
-            "lab_std": list(lab_std),
-            "hex": hex_of(r, g, b),
-            "source": info.get("mode") if isinstance(info, dict) else None,
-        }
+            stats = dominant_lab_stats(img_path)
+            if stats is None:
+                missing += 1
+                continue
+
+            (lab_mean, lab_std, rgb_mean) = stats
+            r, g, b = rgb_mean
+            code_entry[tip] = {
+                "rgb": [r, g, b],
+                "hsl": list(rgb_to_hsl(r, g, b)),
+                "lab": list(lab_mean),
+                "lab_std": list(lab_std),
+                "hex": hex_of(r, g, b),
+                "source": info.get("mode") if isinstance(info, dict) else None,
+            }
+        if code_entry:
+            palette[code] = code_entry
 
     OUTPUT_JSON.write_text(
         json.dumps(palette, ensure_ascii=False, indent=2, sort_keys=True), "utf-8"
     )
-    print(f"[ok] {len(palette)} renk → {OUTPUT_JSON.relative_to(ROOT)} ({missing} eksik)")
+    n_codes = len(palette)
+    n_pairs = sum(len(v) for v in palette.values())
+    print(f"[ok] {n_codes} kod, {n_pairs} (code,tip) çifti → {OUTPUT_JSON.relative_to(ROOT)} ({missing} eksik)")
     return 0
 
 

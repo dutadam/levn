@@ -347,6 +347,31 @@ export class RecolorEngine {
     this.maxSide = this.config.maxSide;
   }
 
+  /** Tip-aware palette lookup: halının tip harfine göre doğru varyantı getir.
+   *
+   * Plain halılar aynı kodla farklı tip harflerinde (A/C/M/E) farklı TON
+   * üretiyor. Örn: 7141_A koyu soğuk, 7141_M açık hafif yeşil (ΔE≈12.8).
+   * Multi-color halının tipine göre doğru ton kullanılmalı.
+   *
+   * Fallback: tam eşleşme yoksa C → M → A → E → ne varsa.
+   */
+  paletteEntry(code, tip) {
+    const entry = this.palette[code];
+    if (!entry) return null;
+    // Yeni tip-aware format: {A: {...}, C: {...}, M: {...}}
+    if (!("lab" in entry)) {
+      if (tip && entry[tip]) return entry[tip];
+      // Fallback sırası: C (genelde en genel), sonra M, sonra ilki
+      const order = ["C", "M", "A", "E", "D"];
+      for (const t of order) if (entry[t]) return entry[t];
+      const keys = Object.keys(entry);
+      if (keys.length) return entry[keys[0]];
+      return null;
+    }
+    // Legacy flat format — eski veri
+    return entry;
+  }
+
   async loadImage(url) {
     const img = await loadHTMLImage(url);
     this.img = img;
@@ -385,6 +410,7 @@ export class RecolorEngine {
   segment(codes, opts = {}) {
     const sampleStride = opts.sampleStride ?? this.config.sampleStride;
     if (!this.origPixels) throw new Error("loadImage çağrılmadı");
+    this.rugTip = opts.tip || this.rugTip || null; // halının SKU tip harfi (A/C/M/E)
     const n = this.w * this.h;
     const chromaW = this.config.chromaWeight;
 
@@ -392,11 +418,11 @@ export class RecolorEngine {
     // cluster'ı bozmasın. Shift hesabı hâlâ origLab'dan (doku korunsun).
     this.segLab = gaussianBlurLab(this.origLab, this.w, this.h, this.config.blurSigma);
 
-    // Seed hazırla: her slot için palette LAB; yoksa k-means++ ile doldur
+    // Seed hazırla: her slot için palette LAB — halının tip'ine göre (A/C/M/E)
     const seeds = [];
-    const seedStds = []; // Plain halıdan öğrenilen per-axis std (Mahalanobis için)
+    const seedStds = [];
     for (const code of codes) {
-      const pal = this.palette[code];
+      const pal = this.paletteEntry(code, this.rugTip);
       if (pal && pal.lab) {
         seeds.push(pal.lab.slice());
         seedStds.push(pal.lab_std ? pal.lab_std.slice() : null);
@@ -553,9 +579,12 @@ export class RecolorEngine {
     // Slot hedef LAB + std'leri (başlangıç: orijinal = palette LAB)
     this.slotOriginalCodes = codes.slice();   // değişiklik tespiti için sabit
     this.slotTargetCodes = codes.slice();
-    this.slotTargetLab = codes.map((c) => (this.palette[c] && this.palette[c].lab) || null);
+    this.slotTargetLab = codes.map((c) => {
+      const p = this.paletteEntry(c, this.rugTip);
+      return (p && p.lab) || null;
+    });
     this.slotTargetStd = codes.map((c) => {
-      const p = this.palette[c];
+      const p = this.paletteEntry(c, this.rugTip);
       return (p && p.lab_std) ? p.lab_std : null;
     });
 
@@ -580,7 +609,8 @@ export class RecolorEngine {
   setSlot(slotIdx, newCode) {
     if (slotIdx < 0 || slotIdx >= this.slotTargetCodes.length) return;
     this.slotTargetCodes[slotIdx] = newCode;
-    const p = this.palette[newCode];
+    // Yeni renk de aynı tip-aware palette'ten alınsın (halının tip'i ile eşleşsin)
+    const p = this.paletteEntry(newCode, this.rugTip);
     this.slotTargetLab[slotIdx] = (p && p.lab) || null;
     this.slotTargetStd[slotIdx] = (p && p.lab_std) || null;
   }
