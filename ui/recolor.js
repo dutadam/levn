@@ -249,7 +249,7 @@ export const DEFAULT_CONFIG = {
   shiftBlurSigma: 2.0,    // Render shift map blur (salt-pepper siler, organik geçiş)
   preserveUnchanged: 0.75,// Sıkı koruma — değişmemiş renklere bleed olmaz
   maxKmeansDrift: 6,      // Düşük — cluster swap matematiksel olarak imkânsız
-  useMahalanobis: true,   // ★ Her rengin plain halısındaki σ ile eşleşme (lab_std'dan)
+  useMahalanobis: false,  // Devre dışı — plain halı σ'ları multi-color için aşırı dar
 };
 
 /**
@@ -416,9 +416,13 @@ export class RecolorEngine {
       ];
       seedStds[j] = null;
     }
-    // Eğer HERHANGİ biri std'siz ise Mahalanobis'i kapat (tutarsızlığı önle)
-    const hasAllStds = seedStds.every((s) => s && s.length >= 3);
-    const useMaha = this.config.useMahalanobis && hasAllStds;
+    // Mahalanobis artık kullanılmıyor (hem k-means hem soft-assign Euclidean).
+    // Neden: plain halının σ değerleri (özellikle σ_b) multi-color halı için aşırı dar.
+    // Örn: 5621 σ_b=0.3, 7141 σ_b=0.66 → Mahalanobis cluster merkezlerini drift
+    // edemeyecek şekilde sabitliyor. Halıda buz mavisi aslında b=-3~-5 olabilir
+    // (lighting/doku), bu pikseller 5621'e yanlış atanıyordu.
+    // Euclidean + chromaW=3.5 + maxDrift=6 → cluster'lar gerçek veri'ye uyum sağlar.
+    const useMaha = false;
 
     // Alt-örnekleme: BLUR'lu LAB'dan örnekle (cluster atama için)
     const sampledLabs = [];
