@@ -202,6 +202,17 @@ def main() -> int:
                 continue
 
             (lab_mean, lab_std, rgb_mean) = stats
+            # ★ Kalite kontrol: σ_a veya σ_b > 6 ise görsel heterojen (multi-color),
+            # tek-renk swatch değil. Bu LAB güvenilmez → atla, residual extraction alsın.
+            # Sadece plain_primary/primary gibi güvensiz mod'lar için kontrol et
+            # (plain_single σ'lar genelde düşük = düz renk).
+            mode = info.get("mode") if isinstance(info, dict) else None
+            if mode and mode != "plain_single":
+                if lab_std[1] > 6.0 or lab_std[2] > 6.0:
+                    print(f"[skip] {code}_{tip}: heterojen görsel (σ_a={lab_std[1]:.1f}, σ_b={lab_std[2]:.1f}, mode={mode})", file=sys.stderr)
+                    missing += 1
+                    continue
+
             r, g, b = rgb_mean
             code_entry[tip] = {
                 "rgb": [r, g, b],
@@ -209,7 +220,7 @@ def main() -> int:
                 "lab": list(lab_mean),
                 "lab_std": list(lab_std),
                 "hex": hex_of(r, g, b),
-                "source": info.get("mode") if isinstance(info, dict) else None,
+                "source": mode,
             }
         if code_entry:
             palette[code] = code_entry

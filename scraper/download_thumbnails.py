@@ -67,39 +67,44 @@ def normalize_img_url(url: str) -> str:
 def collect_variants(raw: list[dict]) -> dict:
     """{code: {tip: [list of products]}} şeklinde grupla.
 
-    Plain tek-renk halıları tip-specific — örn. 2025-A-7141 bizim için
-    (7141, A) varyantı. Multi-color halılarda tip karışık olabilir ama
-    biz sadece plain tek-renkli ürünleri birincil kaynak olarak alacağız.
+    3 kaynak tipi:
+      1. plain_single: 'plain' koleksiyonu + saf tek-renk SKU (örn. 2025-A-7141)
+      2. plain_primary: 'plain' koleksiyonu + ilk kod eşleşen ama 2+ kod
+         (örn. 2025-M-6451-8333 'PLAIN MERCAN (M) HALI' — 8333 küçük accent,
+         ana renk 6451). Title "PLAIN" ile başlar ve 1 renk adı geçer.
+      3. primary: diğer koleksiyonlardaki ilk-kod-eşleşen ürünler (en son çare)
     """
-    # İlk aşama: saf plain halılar (1 renk kodu)
-    plain_single = defaultdict(dict)  # {code: {tip: product}}
-    for p in raw:
-        if p.get("collection") != "plain":
-            continue
-        sku_raw = p.get("sku_raw", "") or ""
-        parts = sku_raw.split("-")
-        if len(parts) != 3:  # desen-tip-kod (tek renk)
-            continue
-        tip = parts[1].upper()
-        code = parts[2]
-        plain_single[code][tip] = p
+    plain_single = defaultdict(dict)    # {code: {tip: product}}
+    plain_primary = defaultdict(dict)   # {code: {tip: product}}  ← YENİ
+    primary_by_tip = defaultdict(lambda: defaultdict(list))
 
-    # İkinci aşama: bu kod o tipte primary (ilk kod) olarak geçen ürünler
-    primary_by_tip = defaultdict(lambda: defaultdict(list))  # {code: {tip: [products]}}
     for p in raw:
-        sku = p.get("sku_parsed") or {}
-        codes = sku.get("codes") or []
-        if not codes:
-            continue
         sku_raw = p.get("sku_raw", "") or ""
         parts = sku_raw.split("-")
         if len(parts) < 3:
             continue
         tip = parts[1].upper()
+        codes = (p.get("sku_parsed") or {}).get("codes") or []
+        if not codes:
+            continue
         first_code = codes[0]
-        primary_by_tip[first_code][tip].append(p)
+        collection = p.get("collection", "")
+        title = (p.get("title") or "").upper()
 
-    return plain_single, primary_by_tip
+        if collection == "plain":
+            if len(codes) == 1:
+                plain_single[first_code][tip] = p
+            # PLAIN başlıklı çok-kodlu halılar: "PLAIN MERCAN (M) HALI" gibi
+            # (2. kod accent). Bunlar da ana renk için güvenilir kaynak.
+            elif title.startswith("PLAIN"):
+                # Aynı (code,tip) için zaten plain_primary varsa ilki kalsın
+                if tip not in plain_primary[first_code]:
+                    plain_primary[first_code][tip] = p
+        else:
+            # Diğer koleksiyonlar → genel primary
+            primary_by_tip[first_code][tip].append(p)
+
+    return plain_single, plain_primary, primary_by_tip
 
 
 def main():
@@ -121,7 +126,7 @@ def main():
 
     print(f"Halılardan çıkarılan (code, tip) çifti: {len(needed)}")
 
-    plain_single, primary_by_tip = collect_variants(raw)
+    plain_single, plain_primary, primary_by_tip = collect_variants(raw)
 
     assets = {}  # {code: {tip: {...}}}
     stats = defaultdict(int)
@@ -129,22 +134,29 @@ def main():
 
     # Sıralı indir (progress gösterimi için)
     for i, (code, tip) in enumerate(sorted(needed), 1):
-        # Öncelik 1: saf plain tek-renk, aynı tip
         product = None
         mode = None
+        # Öncelik 1: saf plain tek-renk (1 kodlu), aynı tip
         if tip in plain_single.get(code, {}):
             product = plain_single[code][tip]
             mode = "plain_single"
-        # Öncelik 2: aynı tip, ilk koddaki primary ürün
+        # Öncelik 2: PLAIN halısı (title "PLAIN..." ama SKU'da 2+ kod), ana renk bu
+        elif tip in plain_primary.get(code, {}):
+            product = plain_primary[code][tip]
+            mode = "plain_primary"
+        # Öncelik 3: aynı tip, ilk kod konumunda diğer koleksiyonlar
         elif tip in primary_by_tip.get(code, {}):
             product = primary_by_tip[code][tip][0]
             mode = "primary"
-        # Öncelik 3: farklı tipte plain (en son çare — TON UYUMSUZ OLABİLİR)
+        # Öncelik 4: farklı tipte plain (TON UYUMSUZ — son çare)
         elif code in plain_single:
             other_tips = sorted(plain_single[code].keys())
             product = plain_single[code][other_tips[0]]
             mode = f"fallback_tip_{other_tips[0]}"
-        # Öncelik 4: farklı tipte primary
+        elif code in plain_primary:
+            other_tips = sorted(plain_primary[code].keys())
+            product = plain_primary[code][other_tips[0]]
+            mode = f"fallback_plain_{other_tips[0]}"
         elif code in primary_by_tip:
             other_tips = sorted(primary_by_tip[code].keys())
             product = primary_by_tip[code][other_tips[0]][0]

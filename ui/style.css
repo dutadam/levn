@@ -905,7 +905,13 @@ h1.display, h2.display, h3.display {
   grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
   gap: 14px;
 }
+/* Wrapper: slot + opsiyonel revert buton nested olmaz (HTML kuralı) */
+.slot-wrap {
+  position: relative;
+  display: block;
+}
 .slot {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -922,6 +928,39 @@ h1.display, h2.display, h3.display {
   min-height: 180px;
   font: inherit;
 }
+/* Slot değişmişse wrapper üzerinden aksent rengi */
+.slot-wrap.changed .slot {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.slot-wrap.changed .slot:hover { border-color: var(--accent-dark); }
+/* Revert butonu: sağ üst köşede küçük yuvarlak */
+.slot-revert {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(58, 35, 12, 0.12);
+  transition: background 0.15s, color 0.15s, transform 0.15s var(--ease-spring);
+  z-index: 2;
+}
+.slot-revert:hover {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+  transform: rotate(-40deg) scale(1.08);
+}
+.slot-revert svg { display: block; }
 .slot:hover {
   border-color: var(--text-muted);
   transform: translateY(-3px);
@@ -1005,27 +1044,8 @@ h1.display, h2.display, h3.display {
 }
 .slot:hover .slot-edit-hint { opacity: 1; }
 
-.slot.changed {
-  border-color: var(--accent);
-  background: var(--accent-light);
-}
-.slot.changed:hover { border-color: var(--accent-dark); }
-.slot.changed .slot-swatch {
+.slot-wrap.changed .slot .slot-swatch {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 0 0 3px var(--accent);
-}
-.slot-changed-badge {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 8.5px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  z-index: 2;
 }
 .slot-orig {
   font-size: 9.5px;
@@ -2068,17 +2088,27 @@ h1.display, h2.display, h3.display {
   .picker-img { width: 56px; height: 56px; }
   .picker-title { font-size: 12px; }
 
-  /* Preview image küçült */
+  /* Preview image — mobilde %80, border-radius child'lara da uygulanır */
   .rug-preview-image {
-    width: 60%;
+    width: 82%;
     margin: 0 auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .rug-preview-image .preview-orig-img,
+  .rug-preview-image .recolor-canvas {
     border-radius: var(--radius-lg);
   }
   .editor-preview { text-align: center; }
 
-  /* Slots: 2 kolon */
-  .slots-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Slots: 2 kolon, daha kompakt */
+  .slots-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .slot { min-height: 150px; padding: 14px 8px 10px; border-radius: var(--radius); }
   .slot-swatch { width: 64px; height: 64px; }
+  .slot-name { font-size: 12px; }
+  .slot-code { font-size: 10px; }
+  .slot-revert { width: 24px; height: 24px; top: 6px; left: 6px; }
+  .slot-revert svg { width: 12px; height: 12px; }
 
   /* Similar cards */
   .similar-card { width: 140px; }

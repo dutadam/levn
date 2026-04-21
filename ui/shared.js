@@ -107,15 +107,24 @@ export function findExactMatch(desen, codes, excludeId) {
 /* ---- Koleksiyon isim formatı ---- */
 const COLLECTION_DISPLAY = {
   "plain": "Plain",
-  "marquise": "Marquise",
+  "amorph": "Amorph",
   "coral": "Coral",
   "crystal": "Crystal",
-  "istanbul": "Istanbul",
+  "ethnique": "Ethnique",
+  "istanbul": "İstanbul",
+  "marquise": "Marquise",
+  "marrakesh": "Marrakesh",
   "monochrome": "Monochrome",
-  "shell": "Shell",
-  "amorph": "Amorph",
-  "art-deco-56": "Art Deco",
   "mystic-81": "Mystic",
+  "oriental": "Oriental",
+  "patch": "Patch",
+  "pearl": "Pearl",
+  "sapphire": "Sapphire",
+  "shell": "Shell",
+  "trinity": "Trinity",
+  "vintage": "Vintage",
+  // Filtre/tag sayfaları
+  "art-deco-56": "Art Deco",
   "cok-renkli-77": "Çok Renkli",
 };
 export function collectionLabel(slug) {

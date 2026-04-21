@@ -32,10 +32,10 @@
     },
     "C": {
       "file": "assets/colors/1031_C.jpg",
-      "mode": "primary",
-      "product_id": "7191",
-      "product_title": "MEDALLION SARI - HARDAL HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/8051-c-1031-4031-d01-da.jpg"
+      "mode": "plain_primary",
+      "product_id": "3508",
+      "product_title": "PLAIN SARI (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-1031-4717f8.jpg"
     },
     "E": {
       "file": "assets/colors/1031_E.jpg",
@@ -182,10 +182,10 @@
     },
     "C": {
       "file": "assets/colors/1841_C.jpg",
-      "mode": "primary",
-      "product_id": "3583",
-      "product_title": "SERENITY AÇIK GRİ - BEJ - KOYU GRİ - KOYU BEJ - KÖMÜR - BUZ MAVİSİ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/6050-c-1841-2721-6941-5820-1941-7141-e-f403.jpg"
+      "mode": "plain_primary",
+      "product_id": "3503",
+      "product_title": "PLAIN AÇIK GRİ (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/buyuk/2025-c-1841-8557-8.jpg"
     },
     "E": {
       "file": "assets/colors/1841_E.jpg",
@@ -302,10 +302,10 @@
     },
     "C": {
       "file": "assets/colors/2541_C.jpg",
-      "mode": "primary",
-      "product_id": "7236",
-      "product_title": "COAST YEŞİL - ANTRASİT HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/4045-c-2541-2941-5e3cb1.jpg"
+      "mode": "plain_primary",
+      "product_id": "3499",
+      "product_title": "PLAIN YEŞİL (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-2541-6744ba.jpg"
     },
     "E": {
       "file": "assets/colors/2541_E.jpg",
@@ -431,10 +431,10 @@
   "2941": {
     "A": {
       "file": "assets/colors/2941_A.jpg",
-      "mode": "primary",
-      "product_id": "2374",
-      "product_title": "AXIS ANTRASİT - BEJ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/buyuk/3110-a-2941-2721-bca0-2..jpg"
+      "mode": "plain_primary",
+      "product_id": "2979",
+      "product_title": "PLAIN ANTRASİT (A) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-a-2941-4923-4..jpg"
     },
     "C": {
       "file": "assets/colors/2941_C.jpg",
@@ -498,10 +498,10 @@
     },
     "C": {
       "file": "assets/colors/3668_C.jpg",
-      "mode": "primary",
-      "product_id": "3371",
-      "product_title": "MAJESTY FUŞYA - PETROL - KİREMİT - BUZ MAVİSİ - YEŞİL HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/6032-c-3668-5901-1831-7141-2541-10149-..jpg"
+      "mode": "plain_primary",
+      "product_id": "3494",
+      "product_title": "PLAIN FUŞYA (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-3668-3289f0.jpg"
     },
     "E": {
       "file": "assets/colors/3668_E.jpg",
@@ -528,10 +528,10 @@
     },
     "C": {
       "file": "assets/colors/4031_C.jpg",
-      "mode": "primary",
-      "product_id": "3645",
-      "product_title": "THALIA HARDAL - KİVİ - SARI HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/5066-c-4031-7741-1031-b6dc-8.jpg"
+      "mode": "plain_primary",
+      "product_id": "3493",
+      "product_title": "PLAIN HARDAL (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-4031-0744e7.jpg"
     },
     "E": {
       "file": "assets/colors/4031_E.jpg",
@@ -641,10 +641,10 @@
   "4395": {
     "A": {
       "file": "assets/colors/4395_A.jpg",
-      "mode": "primary",
-      "product_id": "2505",
-      "product_title": "CLOVE BAKIR - KÖMÜR HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3307-a-4395-1941-9-403e..jpg"
+      "mode": "plain_primary",
+      "product_id": "2985",
+      "product_title": "PLAIN BAKIR (A) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-a-4395-9726-4..jpg"
     },
     "C": {
       "file": "assets/colors/4395_C.jpg",
@@ -662,7 +662,7 @@
     },
     "M": {
       "file": "assets/colors/4395_M.jpg",
-      "mode": "primary",
+      "mode": "plain_primary",
       "product_id": "3439",
       "product_title": "PLAIN BAKIR (M) HALI",
       "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-m-4395-697494.jpg"
@@ -708,10 +708,10 @@
     },
     "C": {
       "file": "assets/colors/4618_C.jpg",
-      "mode": "primary",
-      "product_id": "2588",
-      "product_title": "FOG MAVİ - BEJ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/buyuk/3544-c-4618-2721-362-df..jpg"
+      "mode": "plain_primary",
+      "product_id": "3487",
+      "product_title": "PLAIN MAVİ (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-4618-86416-.jpg"
     },
     "E": {
       "file": "assets/colors/4618_E.jpg",
@@ -761,10 +761,10 @@
   "4921": {
     "A": {
       "file": "assets/colors/4921_A.jpg",
-      "mode": "primary",
-      "product_id": "2482",
-      "product_title": "COAST VİZON - KİREMİT HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3235-a-4921-1831--497a-..jpg"
+      "mode": "plain_primary",
+      "product_id": "2989",
+      "product_title": "PLAIN VİZON (A) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-a-4921-249588..jpg"
     },
     "C": {
       "file": "assets/colors/4921_C.jpg",
@@ -842,10 +842,10 @@
     },
     "M": {
       "file": "assets/colors/5431_M.jpg",
-      "mode": "primary",
-      "product_id": "2587",
-      "product_title": "NET MÜRDÜM - VİŞNE ÇÜRÜĞÜ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3543-m-5431-4511-10-4da..jpg"
+      "mode": "plain_primary",
+      "product_id": "3433",
+      "product_title": "PLAIN MÜRDÜM (M) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-m-5431-6596af.jpg"
     }
   },
   "5501": {
@@ -888,10 +888,10 @@
     },
     "C": {
       "file": "assets/colors/5531_C.jpg",
-      "mode": "primary",
-      "product_id": "3660",
-      "product_title": "DESERT MOR - LACİVERT - TURKUAZ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3648-c-5531-1441-2241-a8cc-4.jpg"
+      "mode": "plain_primary",
+      "product_id": "3481",
+      "product_title": "PLAIN MOR (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-5531-4587-4.jpg"
     },
     "E": {
       "file": "assets/colors/5531_E.jpg",
@@ -971,10 +971,10 @@
   "5711": {
     "A": {
       "file": "assets/colors/5711_A.jpg",
-      "mode": "primary",
-      "product_id": "2377",
-      "product_title": "AXIS KIRMIZI - AÇIK GRİ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3110-a-5711-1841-0fa5-9..jpg"
+      "mode": "plain_primary",
+      "product_id": "2994",
+      "product_title": "PLAIN KIRMIZI (A) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-a-5711-2295f8..jpg"
     },
     "C": {
       "file": "assets/colors/5711_C.jpg",
@@ -1061,10 +1061,10 @@
   "5901": {
     "A": {
       "file": "assets/colors/5901_A.jpg",
-      "mode": "primary",
-      "product_id": "2502",
-      "product_title": "CRACK PETROL - KREM HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3306-a-5901-5621-ebdf4a.jpg"
+      "mode": "plain_primary",
+      "product_id": "2997",
+      "product_title": "PLAIN PETROL (A) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-a-5901-684947..jpg"
     },
     "C": {
       "file": "assets/colors/5901_C.jpg",
@@ -1172,10 +1172,10 @@
     },
     "M": {
       "file": "assets/colors/6451_M.jpg",
-      "mode": "primary",
-      "product_id": "3308",
-      "product_title": "BLOSSOM MERCAN - NİL YEŞİLİ - AÇIK KREM HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/5042-m-6451-9811-1621--b2a3-..jpg"
+      "mode": "plain_primary",
+      "product_id": "3424",
+      "product_title": "PLAIN MERCAN (M) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-m-6451-83333a.jpg"
     }
   },
   "6568": {
@@ -1428,7 +1428,7 @@
     },
     "M": {
       "file": "assets/colors/7741_M.jpg",
-      "mode": "primary",
+      "mode": "plain_primary",
       "product_id": "3417",
       "product_title": "PLAIN KİVİ (M) HALI",
       "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/buyuk/2025-m-7741-3905f0.jpg"
@@ -1534,10 +1534,10 @@
     },
     "C": {
       "file": "assets/colors/8441_C.jpg",
-      "mode": "primary",
-      "product_id": "7280",
-      "product_title": "AURORA KOYU TURKUAZ - LACİVERT - VİŞNE ÇÜRÜĞÜ - TURUNCU - GOLD HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/6114-c-8441-1441-4511-0711-1521-c919d-.jpg"
+      "mode": "plain_primary",
+      "product_id": "3463",
+      "product_title": "PLAIN KOYU TURKUAZ (C) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-c-8441-3631d5.jpg"
     },
     "E": {
       "file": "assets/colors/8441_E.jpg",
@@ -1617,19 +1617,19 @@
     },
     "M": {
       "file": "assets/colors/9379_M.jpg",
-      "mode": "primary",
-      "product_id": "7247",
-      "product_title": "CRACK KOYU KAHVE - KOYU BEJ - BUZ MAVİSİ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/5114-m-9379-5820-7141-501a-a.jpg"
+      "mode": "plain_primary",
+      "product_id": "4672",
+      "product_title": "PLAIN KOYU KAHVE (M) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-m-9379-1904cd.jpg"
     }
   },
   "9500": {
     "A": {
       "file": "assets/colors/9500_A.jpg",
-      "mode": "primary",
-      "product_id": "2370",
-      "product_title": "BARBER SİYAH - KOYU BEJ HALI",
-      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/3087-a-9500-5820--4de7a..jpg"
+      "mode": "plain_primary",
+      "product_id": "3008",
+      "product_title": "PLAIN SİYAH (A) HALI",
+      "source_url": "https://static.ticimax.cloud/59097/Uploads/UrunResimleri/thumb/2025-a-9500-17349-..jpg"
     },
     "C": {
       "file": "assets/colors/9500_C.jpg",

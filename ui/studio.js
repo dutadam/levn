@@ -15,9 +15,9 @@
 import {
   state, assetUrl, colorName, escapeHtml, normalize, buildSku, findExactMatch,
   collectionLabel, allCollectionsSorted,
-} from "./shared.js?v=24";
-import { openPalette } from "./palette.js?v=24";
-import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=24";
+} from "./shared.js?v=25";
+import { openPalette } from "./palette.js?v=25";
+import { RecolorEngine, DEFAULT_CONFIG, rgbToLab } from "./recolor.js?v=25";
 
 const studio = {
   // Picker (rug list)
@@ -447,15 +447,19 @@ function renderSkuAndSlots() {
   studio.workingCodes.forEach((code, i) => {
     const c = state.colors[code];
     const changed = code !== origCodes[i];
-    const slot = document.createElement("button");
-    slot.type = "button";
-    slot.className = "slot" + (changed ? " changed" : "");
     const origName = changed
       ? (state.colors[origCodes[i]] ? state.colors[origCodes[i]].name_tr : origCodes[i])
       : "";
+
+    // Wrapper: slot button + opsiyonel revert button (nested button olmaz)
+    const wrap = document.createElement("div");
+    wrap.className = "slot-wrap" + (changed ? " changed" : "");
+
+    const slot = document.createElement("button");
+    slot.type = "button";
+    slot.className = "slot";
     slot.innerHTML = `
       <div class="slot-index">${i + 1}</div>
-      ${changed ? `<div class="slot-changed-badge">değişti</div>` : ""}
       <div class="slot-swatch" style="background-image:url('${assetUrl(code, curRugTip)}')"></div>
       <div class="slot-meta">
         <span class="slot-name">${escapeHtml((c && c.name_tr) || "—")}</span>
@@ -471,18 +475,40 @@ function renderSkuAndSlots() {
         slotIndex: i,
         title: `Slot ${i + 1} — renk seç`,
         currentCode: code,
-        rugTip,  // Swatch'lar doğru varyantı göstersin
+        rugTip,
       });
       if (res && res.code) {
         studio.workingCodes[i] = res.code;
-        applyRecolor();               // canlı görsel güncelle
+        applyRecolor();
         renderSkuAndSlots();
         renderModifiedIndicator();
         renderExistingMatch();
         renderSimilar();
       }
     });
-    slots.appendChild(slot);
+    wrap.appendChild(slot);
+
+    // Değiştiyse "orijinale döndür" butonu
+    if (changed) {
+      const revert = document.createElement("button");
+      revert.type = "button";
+      revert.className = "slot-revert";
+      revert.title = `Orijinale döndür (${origName})`;
+      revert.setAttribute("aria-label", `Slot ${i + 1} orijinale döndür`);
+      revert.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 1 1 1.6 3.9"/><polyline points="2 4 2 8 6 8"/></svg>`;
+      revert.addEventListener("click", (e) => {
+        e.stopPropagation();
+        studio.workingCodes[i] = origCodes[i];
+        applyRecolor();
+        renderSkuAndSlots();
+        renderModifiedIndicator();
+        renderExistingMatch();
+        renderSimilar();
+      });
+      wrap.appendChild(revert);
+    }
+
+    slots.appendChild(wrap);
   });
 }
 
